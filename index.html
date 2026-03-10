@@ -238,6 +238,37 @@
     border-color: var(--gold);
   }
   .service-item input[type="checkbox"] { display: none; }
+  .repair-detail-box {
+    margin: -6px 0 10px 0;
+    padding: 12px 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 10px 10px;
+  }
+  .repair-detail-box label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+  .repair-detail-box textarea {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--parchment);
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+  .repair-detail-box textarea:focus {
+    outline: none;
+    border-color: var(--tan);
+  }
   .service-check {
     width: 18px; height: 18px;
     border: 2px solid var(--gray);
@@ -962,12 +993,7 @@
             <span class="service-price">$5</span>
           </label>
 
-          <label class="service-item" data-price="85">
-            <input type="checkbox" name="services[]" value="Sewing (Velcro replacement, repairs, etc.) - $85/hr" data-price="85">
-            <div class="service-check"></div>
-            <span class="service-name">Sewing <em style="font-size:11px;opacity:0.65;">— Velcro replacement, repairs, etc.</em></span>
-            <span class="service-price">$85/hr</span>
-          </label>
+
 
           <label class="service-item" data-price="65">
             <input type="checkbox" name="services[]" value="Wash Rig - $65" data-price="65">
@@ -980,12 +1006,29 @@
 
         <div class="service-category">
           <div class="cat-label">Repair</div>
-          <label class="service-item" data-price="0">
+
+          <label class="service-item" data-price="85" onclick="toggleRepairBox(this, 'sewing-detail')">
+            <input type="checkbox" name="services[]" value="Sewing (Velcro replacement, repairs, etc.) - $85/hr" data-price="85">
+            <div class="service-check"></div>
+            <span class="service-name">Sewing <em style="font-size:11px;opacity:0.65;">— Velcro replacement, repairs, etc.</em></span>
+            <span class="service-price">$85/hr</span>
+          </label>
+          <div class="repair-detail-box" id="sewing-detail" style="display:none;">
+            <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Describe what needs to be sewn</label>
+            <textarea name="sewing_description" placeholder="e.g. Velcro on closing flap is worn, needs replacement on both sides..." rows="3"></textarea>
+          </div>
+
+          <label class="service-item" data-price="0" onclick="toggleRepairBox(this, 'patch-detail')">
             <input type="checkbox" name="services[]" value="Canopy Patch (depends on size/location) - Varies">
             <div class="service-check"></div>
             <span class="service-name">Canopy Patch <span style="color:var(--gray);font-size:12px">(depends on size and location of damage)</span></span>
             <span class="service-price" style="color:var(--gray)">Varies</span>
           </label>
+          <div class="repair-detail-box" id="patch-detail" style="display:none;">
+            <label style="font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Describe the damage / patch location</label>
+            <textarea name="patch_description" placeholder="e.g. Small tear near cell 4, approximately 2 inches long..." rows="3"></textarea>
+          </div>
+
         </div>
 
         <div class="service-category">
@@ -1343,6 +1386,16 @@
   document.getElementById('rushModal').addEventListener('click', function(e) {
     if (e.target === this) this.classList.remove('open');
   });
+
+  function toggleRepairBox(label, boxId) {
+    const cb = label.querySelector('input[type="checkbox"]');
+    const box = document.getElementById(boxId);
+    if (!box) return;
+    // Use setTimeout so checkbox state updates first
+    setTimeout(() => {
+      box.style.display = cb.checked ? 'block' : 'none';
+    }, 0);
+  }
 
   function resetForm() {
     // 1. Hide success, show form first
