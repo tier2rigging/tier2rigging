@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Rig — Tier2 Rigging LLC</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@400;600;700&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #1c1c1e;
+    --card:      #252527;
+    --card-mid:  #2c2c2f;
+    --input-bg:  #161618;
+    --border:    rgba(200,185,150,0.2);
+    --tan:       #c8a96e;
+    --tan-light: #e0c080;
+    --parchment: #f2ede4;
+    --muted:     #9a9890;
+    --danger:    #c0522a;
+    --success:   #4a9e6a;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--parchment);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(200,169,110,0.07) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(200,185,150,0.03) 39px, rgba(200,185,150,0.03) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(200,185,150,0.03) 39px, rgba(200,185,150,0.03) 40px);
+  }
+
+  /* HEADER */
+  .site-header {
+    background: linear-gradient(180deg, #141414 0%, #1a1a1a 55%, #222222 100%);
+    border-bottom: 2px solid var(--tan);
+    padding: 18px 24px;
+    text-align: center;
+  }
+  .header-logo { font-family: 'Bebas Neue', sans-serif; font-size: clamp(26px,5vw,40px); letter-spacing: 3px; color: var(--parchment); line-height: 1; }
+  .header-logo span { color: var(--tan-light); }
+  .header-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-top: 3px; }
+
+  .wrap { max-width: 620px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── VERIFY GATE ─────────────────────────────────────────── */
+  .gate-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+  .gate-head {
+    background: linear-gradient(90deg, rgba(200,169,110,0.13), transparent);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 22px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .gate-icon { width: 38px; height: 38px; background: var(--tan); border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .gate-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; }
+  .gate-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .gate-body { padding: 22px; }
+
+  /* greeting when serial is pre-filled from QR */
+  .qr-greeting {
+    background: rgba(200,169,110,0.08);
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13.5px;
+    color: var(--parchment);
+    margin-bottom: 18px;
+    line-height: 1.5;
+    display: none;
+  }
+  .qr-greeting.show { display: block; }
+  .qr-greeting strong { color: var(--tan-light); }
+
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); margin-bottom: 7px; }
+  .field input {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 7px; color: var(--parchment); font-family: 'Barlow', sans-serif;
+    font-size: 15px; padding: 11px 14px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+  }
+  .field input::placeholder { color: rgba(154,152,144,0.45); }
+  .field input:focus { border-color: var(--tan); box-shadow: 0 0 0 3px rgba(200,169,110,0.15); }
+  .field input[readonly] { opacity: 0.7; cursor: default; }
+
+  .btn-verify {
+    width: 100%; padding: 14px;
+    background: linear-gradient(135deg, var(--tan), var(--tan-light));
+    color: #1c1c1e; font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 3px; border: none; border-radius: 8px;
+    cursor: pointer; margin-top: 4px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(200,169,110,0.3);
+  }
+  .btn-verify:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,169,110,0.4); }
+
+  .privacy-note { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+  .error-box { display: none; background: rgba(192,82,42,0.1); border: 1px solid rgba(192,82,42,0.35); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: #e07a5a; margin-top: 12px; line-height: 1.5; }
+  .error-box.show { display: block; }
+
+  /* LOADING */
+  .loading-box { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+  .loading-box.show { display: block; }
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(200,169,110,0.2); border-top-color: var(--tan); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── DASHBOARD ───────────────────────────────────────────── */
+  .dashboard { display: none; animation: fadeUp 0.4s ease both; }
+  .dashboard.show { display: block; }
+
+  /* Welcome bar */
+  .welcome-bar {
+    background: linear-gradient(135deg, var(--card-mid), var(--card));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  }
+  .welcome-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1.5px; color: var(--parchment); }
+  .welcome-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .btn-signout { background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 13px; letter-spacing: 1px; padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s; }
+  .btn-signout:hover { border-color: var(--tan); color: var(--tan); }
+
+  /* BIG CTA — New Work Order */
+  .cta-new-order {
+    background: linear-gradient(135deg, rgba(200,169,110,0.15), rgba(200,169,110,0.05));
+    border: 1.5px solid rgba(200,169,110,0.35);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 18px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .cta-new-order:hover { border-color: var(--tan); background: linear-gradient(135deg, rgba(200,169,110,0.22), rgba(200,169,110,0.08)); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,169,110,0.2); }
+  .cta-left { display: flex; align-items: center; gap: 14px; }
+  .cta-icon { font-size: 32px; }
+  .cta-text-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: var(--tan-light); }
+  .cta-text-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .cta-arrow { font-size: 24px; color: var(--tan); }
+
+  /* DUE BANNER */
+  .due-banner { border-radius: 10px; padding: 13px 18px; margin-bottom: 18px; display: flex; align-items: center; gap: 12px; font-size: 13.5px; line-height: 1.5; }
+  .due-banner.ok { background: rgba(74,158,106,0.1); border: 1px solid rgba(74,158,106,0.25); }
+  .due-banner.warn { background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.25); }
+  .due-banner.overdue { background: rgba(192,82,42,0.12); border: 1px solid rgba(192,82,42,0.3); }
+  .due-banner-icon { font-size: 26px; flex-shrink: 0; }
+  .due-banner strong { display: block; font-size: 14px; margin-bottom: 2px; }
+  .due-banner.ok strong { color: #6fcf97; }
+  .due-banner.warn strong { color: var(--tan-light); }
+  .due-banner.overdue strong { color: #e07a5a; }
+
+  /* RIG CARD */
+  .section-label { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .rig-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .rig-card-head { background: linear-gradient(90deg, rgba(200,169,110,0.12), transparent); border-bottom: 1px solid var(--border); padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  .rig-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; }
+  .rig-serial { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan); background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.2); padding: 3px 10px; border-radius: 20px; }
+  .rig-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .rig-field { padding: 12px 18px; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+  .rig-field:nth-child(even) { border-right: none; }
+  .rig-field:nth-last-child(-n+2) { border-bottom: none; }
+  .rig-field-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  .rig-field-val { font-size: 14px; color: var(--parchment); }
+  @media (max-width: 440px) { .rig-grid { grid-template-columns: 1fr; } .rig-field { border-right: none; } .rig-field:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); } .rig-field:last-child { border-bottom: none; } }
+
+  /* SERVICE HISTORY */
+  .service-record { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; animation: fadeUp 0.3s ease both; }
+  .record-head { background: var(--card-mid); padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); }
+  .record-wo { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan); }
+  .record-date { font-size: 12px; color: var(--muted); }
+  .record-body { padding: 13px 16px; }
+  .svc-line { display: flex; align-items: baseline; gap: 8px; padding: 3px 0; font-size: 13.5px; color: var(--parchment); line-height: 1.4; }
+  .svc-line::before { content: '▸'; color: var(--tan); font-size: 10px; flex-shrink: 0; }
+  .record-footer { display: flex; gap: 16px; flex-wrap: wrap; padding: 9px 16px; border-top: 1px solid var(--border); background: rgba(200,169,110,0.04); }
+  .record-meta { font-size: 12px; color: var(--muted); }
+  .record-meta strong { color: var(--tan-light); }
+  .record-status { padding: 2px 10px; border-radius: 20px; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+  .record-status.received { background: rgba(200,169,110,0.15); color: var(--tan-light); }
+  .record-status.complete { background: rgba(74,158,106,0.15); color: #6fcf97; }
+
+  /* NO RECORDS */
+  .no-records { text-align: center; padding: 36px 20px; color: var(--muted); font-size: 14px; line-height: 1.7; background: var(--card); border: 1px solid var(--border); border-radius: 10px; }
+  .no-records .icon { font-size: 36px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-logo">TIER<span>2</span> RIGGING LLC</div>
+  <div class="header-sub">My Rig Portal</div>
+</header>
+
+<div class="wrap">
+
+  <!-- ── VERIFY GATE ── -->
+  <div class="gate-card" id="gateCard">
+    <div class="gate-head">
+      <div class="gate-icon">🪂</div>
+      <div>
+        <div class="gate-title">My Rig Portal</div>
+        <div class="gate-sub">View your service history & submit new work orders</div>
+      </div>
+    </div>
+    <div class="gate-body">
+      <div class="qr-greeting" id="qrGreeting">
+        👋 Welcome! Your rig's QR code brought you here.<br>
+        <strong>Enter your email to access your records.</strong>
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" id="inputEmail" placeholder="Email used on your work order" autocomplete="email">
+      </div>
+      <div class="field" id="serialField">
+        <label>Container Serial Number</label>
+        <input type="text" id="inputSerial" placeholder="e.g. JO-12345" autocomplete="off">
+      </div>
+      <button class="btn-verify" onclick="doVerify()">🔓 ACCESS MY RIG</button>
+      <div class="privacy-note">
+        <span>🔒</span>
+        <span>Your email and serial number are used together to verify ownership. Records are private.</span>
+      </div>
+      <div class="error-box" id="errorBox"></div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-box" id="loadingBox">
+    <div class="spinner"></div>
+    Loading your rig records...
+  </div>
+
+  <!-- ── DASHBOARD ── -->
+  <div class="dashboard" id="dashboard">
+
+    <!-- Welcome -->
+    <div class="welcome-bar">
+      <div>
+        <div class="welcome-name" id="welcomeName">Welcome Back</div>
+        <div class="welcome-sub">Tier2 Rigging LLC — Rig Portal</div>
+      </div>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+    </div>
+
+    <!-- CTA: New Work Order -->
+    <a class="cta-new-order" id="newOrderLink" href="https://tier2rigging.com" target="_blank">
+      <div class="cta-left">
+        <div class="cta-icon">📋</div>
+        <div>
+          <div class="cta-text-title">Submit a New Work Order</div>
+          <div class="cta-text-sub">Drop off your rig — select services & we'll have your ticket ready</div>
+        </div>
+      </div>
+      <div class="cta-arrow">→</div>
+    </a>
+
+    <!-- Due Banner -->
+    <div id="dueBanner"></div>
+
+    <!-- Rig Info -->
+    <div class="section-label">Your Gear</div>
+    <div class="rig-card" id="rigCard"></div>
+
+    <!-- Service History -->
+    <div class="section-label" id="historyLabel">Service History</div>
+    <div id="historyList"></div>
+
+  </div>
+</div>
+
+<script>
+  const GAS_URL = "https://script.google.com/macros/s/AKfycby6L86t1oFXTLsVJhULt3q2S4o7O5HEaD_ypa0mXpe_il9caDGDWrlg4aXRiYHL2eYw/exec";
+
+  // Pre-fill serial from QR code URL param
+  window.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const serial = params.get('serial') || params.get('s') || '';
+    if (serial) {
+      document.getElementById('inputSerial').value = serial.toUpperCase();
+      document.getElementById('inputSerial').setAttribute('readonly', true);
+      document.getElementById('qrGreeting').classList.add('show');
+    }
+    // Restore session if saved
+    const saved = sessionStorage.getItem('t2_session');
+    if (saved) {
+      try {
+        const session = JSON.parse(saved);
+        renderDashboard(session.records, session.serial);
+      } catch(e) { sessionStorage.removeItem('t2_session'); }
+    }
+  });
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') doVerify(); });
+
+  async function doVerify() {
+    const email  = document.getElementById('inputEmail').value.trim().toLowerCase();
+    const serial = document.getElementById('inputSerial').value.trim().toUpperCase();
+    const errBox = document.getElementById('errorBox');
+    errBox.classList.remove('show');
+
+    if (!email) { errBox.textContent = 'Please enter your email address.'; errBox.classList.add('show'); return; }
+    if (!serial) { errBox.textContent = 'Please enter your container serial number.'; errBox.classList.add('show'); return; }
+
+    document.getElementById('gateCard').style.display = 'none';
+    document.getElementById('loadingBox').classList.add('show');
+
+    try {
+      const url  = GAS_URL + '?action=lookup&email=' + encodeURIComponent(email) + '&serial=' + encodeURIComponent(serial);
+      const resp = await fetch(url, { method: 'GET', mode: 'cors' });
+      const data = await resp.json();
+      document.getElementById('loadingBox').classList.remove('show');
+
+      if (data.status === 'ok' && data.records && data.records.length > 0) {
+        sessionStorage.setItem('t2_session', JSON.stringify({ records: data.records, serial }));
+        renderDashboard(data.records, serial);
+      } else if (data.status === 'not_found') {
+        document.getElementById('gateCard').style.display = 'block';
+        errBox.innerHTML = '❌ No records found. Double-check your email and serial number match what was on your work order.';
+        errBox.classList.add('show');
+      } else { throw new Error('Unknown error'); }
+    } catch(err) {
+      document.getElementById('loadingBox').classList.remove('show');
+      document.getElementById('gateCard').style.display = 'block';
+      errBox.innerHTML = '⚠️ Unable to connect. Please try again or contact Tier2 Rigging directly.';
+      errBox.classList.add('show');
+    }
+  }
+
+  function signOut() {
+    sessionStorage.removeItem('t2_session');
+    document.getElementById('dashboard').classList.remove('show');
+    document.getElementById('gateCard').style.display = 'block';
+    document.getElementById('inputEmail').value = '';
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('serial') && !params.get('s')) {
+      document.getElementById('inputSerial').value = '';
+    }
+  }
+
+  function renderDashboard(records, serial) {
+    const latest = records[0];
+    const name   = latest.full_name || 'Customer';
+
+    // Welcome
+    document.getElementById('welcomeName').textContent = name.split(' ')[0] + "'s Rig";
+
+    // Pre-fill new order link with serial
+    document.getElementById('newOrderLink').href =
+      'https://tier2rigging.com?serial=' + encodeURIComponent(serial) +
+      '&name=' + encodeURIComponent(latest.full_name || '') +
+      '&email=' + encodeURIComponent(latest.email || '') +
+      '&phone=' + encodeURIComponent(latest.phone || '');
+
+    // Due date banner
+    const reminderDate = latest.reminder_date ? new Date(latest.reminder_date) : null;
+    const now = new Date();
+    if (reminderDate) {
+      const days = Math.ceil((reminderDate - now) / (1000*60*60*24));
+      let cls = 'ok', icon = '✅', title = 'Service Current', msg = '';
+      if (days < 0) {
+        cls = 'overdue'; icon = '🚨'; title = 'Service OVERDUE';
+        msg = 'Overdue by ' + Math.abs(days) + ' days. <strong>Contact Tier2 Rigging immediately to schedule your reserve repack.</strong>';
+      } else if (days <= 30) {
+        cls = 'warn'; icon = '⚠️'; title = 'Service Due Soon';
+        msg = 'Due in ' + days + ' days (' + formatDate(reminderDate) + '). Schedule your repack soon.';
+      } else {
+        msg = 'Next service due ' + formatDate(reminderDate) + ' — ' + days + ' days away.';
+      }
+      document.getElementById('dueBanner').innerHTML = `
+        <div class="due-banner ${cls}">
+          <div class="due-banner-icon">${icon}</div>
+          <div><strong>${title}</strong>${msg}</div>
+        </div>`;
+    }
+
+    // Rig card
+    document.getElementById('rigCard').innerHTML = `
+      <div class="rig-card-head">
+        <div class="rig-name">${esc(latest.container || 'Your Container')}</div>
+        <span class="rig-serial">S/N: ${esc(serial)}</span>
+      </div>
+      <div class="rig-grid">
+        <div class="rig-field"><div class="rig-field-label">Main Canopy</div><div class="rig-field-val">${esc(latest.main_canopy||'—')}</div></div>
+        <div class="rig-field"><div class="rig-field-label">Reserve Canopy</div><div class="rig-field-val">${esc(latest.reserve_canopy||'—')}</div></div>
+        <div class="rig-field"><div class="rig-field-label">AAD Type</div><div class="rig-field-val">${esc(latest.aad_type||'—')}</div></div>
+        <div class="rig-field"><div class="rig-field-label">AAD Service Date</div><div class="rig-field-val">${esc(latest.aad_service_date||'—')}</div></div>
+      </div>`;
+
+    // History
+    document.getElementById('historyLabel').textContent = 'Service History — ' + records.length + ' record' + (records.length !== 1 ? 's' : '');
+    if (records.length === 0) {
+      document.getElementById('historyList').innerHTML = `<div class="no-records"><div class="icon">📋</div>No service records yet.</div>`;
+    } else {
+      document.getElementById('historyList').innerHTML = records.map((rec, i) => {
+        const svcs = (rec.services||'').split('\n').filter(s=>s.trim());
+        const statusClass = (rec.status||'').toLowerCase().includes('complete') ? 'complete' : 'received';
+        return `
+        <div class="service-record" style="animation-delay:${i*0.06}s">
+          <div class="record-head">
+            <span class="record-wo">📋 ${esc(rec.ticket||'—')}</span>
+            <span class="record-date">${esc(rec.date||'—')}</span>
+          </div>
+          <div class="record-body">
+            ${svcs.length ? svcs.map(s=>`<div class="svc-line">${esc(s)}</div>`).join('') : '<span style="color:var(--muted);font-size:13px;">No services recorded</span>'}
+          </div>
+          <div class="record-footer">
+            <span class="record-meta">Total: <strong>${esc(rec.total||'—')}</strong></span>
+            ${rec.rush && rec.rush !== 'No rush service needed' && rec.rush !== 'No rush' ? `<span class="record-meta">Rush: <strong>${esc(rec.rush)}</strong></span>` : ''}
+            <span class="record-status ${statusClass}">${esc(rec.status||'Received')}</span>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    document.getElementById('dashboard').classList.add('show');
+  }
+
+  function esc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function formatDate(d) {
+    if (!d) return '—';
+    const dt = new Date(d);
+    return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();
+  }
+</script>
+</body>
+</html>
