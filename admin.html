@@ -309,6 +309,30 @@
     .stats-bar { gap: 8px; }
     .table-wrap { padding: 12px; }
   }
+
+  /* INVOICE MODAL */
+  .invoice-modal {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; width: 100%; max-width: 500px;
+    margin: auto; overflow: hidden;
+  }
+  .invoice-options { display: flex; flex-direction: column; gap: 10px; padding: 24px; }
+  .invoice-opt-btn {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px; cursor: pointer;
+    transition: all 0.2s; text-align: left;
+  }
+  .invoice-opt-btn:hover { border-color: var(--tan); background: rgba(200,169,110,0.08); }
+  .invoice-opt-btn .opt-icon { font-size: 24px; }
+  .invoice-opt-btn .opt-label { font-weight: 600; font-size: 14px; color: var(--parchment); }
+  .invoice-opt-btn .opt-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .send-status { font-size: 13px; text-align: center; padding: 8px; min-height: 28px; }
+  .send-status.ok { color: var(--green); }
+  .send-status.err { color: var(--red); }
+  .btn-invoice { background: rgba(90,173,122,0.15); border: 1px solid rgba(90,173,122,0.3); color: #6dcc96; }
+  .btn-invoice:hover { background: rgba(90,173,122,0.25); }
+
 </style>
 </head>
 <body>
@@ -473,6 +497,7 @@
     <div class="modal-footer">
       <div class="save-msg" id="save-msg">✓ Saved successfully</div>
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-invoice" onclick="openInvoiceModal()">📨 Send Invoice</button>
       <button class="btn btn-primary" onclick="saveOrder()">Save Changes</button>
     </div>
   </div>
@@ -557,12 +582,17 @@ async function loadOrders() {
   }
 }
 
+function normalizeStatus(s) {
+  if (!s || s === 'Received') return 'New';
+  return s;
+}
+
 function updateStats() {
   const orders = allOrders;
   document.getElementById('stat-total').textContent = orders.length;
-  document.getElementById('stat-new').textContent = orders.filter(o => (o.status||'New') === 'New').length;
-  document.getElementById('stat-progress').textContent = orders.filter(o => o.status === 'In Progress').length;
-  document.getElementById('stat-ready').textContent = orders.filter(o => o.status === 'Ready for Pickup').length;
+  document.getElementById('stat-new').textContent = orders.filter(o => normalizeStatus(o.status) === 'New').length;
+  document.getElementById('stat-progress').textContent = orders.filter(o => normalizeStatus(o.status) === 'In Progress').length;
+  document.getElementById('stat-ready').textContent = orders.filter(o => normalizeStatus(o.status) === 'Ready for Pickup').length;
   const revenue = orders.reduce((s, o) => s + (parseFloat(o.estimatedTotal)||0), 0);
   document.getElementById('stat-revenue').textContent = '$' + revenue.toLocaleString();
 }
@@ -579,7 +609,7 @@ function renderTable() {
   let orders = allOrders;
 
   if (currentFilter !== 'all') {
-    orders = orders.filter(o => (o.status || 'New') === currentFilter);
+    orders = orders.filter(o => normalizeStatus(o.status) === currentFilter);
   }
   if (search) {
     orders = orders.filter(o =>
@@ -608,7 +638,7 @@ function renderTable() {
   const sorted = [...orders].reverse();
 
   sorted.forEach((o, i) => {
-    const status = o.status || 'New';
+    const status = normalizeStatus(o.status);
     const badgeClass = status === 'New' ? 'badge-new' :
                        status === 'In Progress' ? 'badge-progress' :
                        status === 'Ready for Pickup' ? 'badge-ready' : 'badge-complete';
@@ -649,7 +679,7 @@ function openModal(idx) {
   const o = allOrders[idx];
 
   document.getElementById('modal-title').textContent = 'WORK ORDER — ' + (o.woNum || '');
-  document.getElementById('edit-status').value = o.status || 'New';
+  document.getElementById('edit-status').value = normalizeStatus(o.status);
   document.getElementById('edit-completion').value = o.requestedCompletion || '';
   document.getElementById('edit-name').value = o.name || '';
   document.getElementById('edit-phone').value = o.phone || '';
@@ -796,11 +826,113 @@ async function saveOrder() {
   setTimeout(() => document.getElementById('save-msg').classList.remove('show'), 3000);
 }
 
+
+// INVOICE
+function openInvoiceModal() {
+  const o = allOrders[currentOrderIndex];
+  document.getElementById('invoice-modal-title').textContent = 'SEND INVOICE — ' + (o.woNum || '');
+  document.getElementById('invoice-customer-info').textContent = 'Customer: ' + (o.name || '—');
+  document.getElementById('invoice-email-addr').textContent = o.email || 'No email on file';
+  document.getElementById('invoice-phone-num').textContent = o.phone || 'No phone on file';
+  document.getElementById('send-status').textContent = '';
+  document.getElementById('send-status').className = 'send-status';
+  document.getElementById('invoice-overlay').classList.add('open');
+}
+function closeInvoiceModal() {
+  document.getElementById('invoice-overlay').classList.remove('open');
+}
+function closeInvoiceOutside(e) {
+  if (e.target === document.getElementById('invoice-overlay')) closeInvoiceModal();
+}
+
+async function sendInvoice(method) {
+  const o = allOrders[currentOrderIndex];
+  const statusEl = document.getElementById('send-status');
+  statusEl.textContent = 'Sending…';
+  statusEl.className = 'send-status';
+
+  // Build invoice data
+  const services = (o.servicesSelected || '').split(',').filter(Boolean);
+  let customItems = [];
+  try { customItems = JSON.parse(o.customItems || '[]'); } catch(e) {}
+
+  const invoiceData = {
+    action: 'sendInvoice',
+    method,
+    woNum: o.woNum,
+    name: o.name,
+    email: o.email,
+    phone: o.phone,
+    containerMakeModel: o.containerMakeModel,
+    containerSerial: o.containerSerial,
+    services: services.join(', '),
+    customItems: JSON.stringify(customItems),
+    total: o.estimatedTotal,
+    notes: o.notes || '',
+  };
+
+  try {
+    const body = Object.entries(invoiceData)
+      .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v||''))
+      .join('&');
+    await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body,
+      mode: 'no-cors'
+    });
+    statusEl.textContent = '✓ Invoice sent successfully!';
+    statusEl.className = 'send-status ok';
+  } catch(err) {
+    statusEl.textContent = '⚠ Send failed. Check GAS deployment.';
+    statusEl.className = 'send-status err';
+  }
+}
+
 // Keyboard shortcut
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') closeModal();
   if (e.key === 'Enter' && document.getElementById('login-screen').style.display !== 'none') doLogin();
 });
 </script>
+
+<!-- INVOICE MODAL -->
+<div class="modal-overlay" id="invoice-overlay" onclick="closeInvoiceOutside(event)">
+  <div class="invoice-modal">
+    <div class="modal-header">
+      <h2 id="invoice-modal-title">SEND INVOICE</h2>
+      <button class="modal-close" onclick="closeInvoiceModal()">✕</button>
+    </div>
+    <div style="padding: 16px 24px 0; color: var(--muted); font-size: 13px;" id="invoice-customer-info"></div>
+    <div class="invoice-options">
+      <button class="invoice-opt-btn" onclick="sendInvoice('email')">
+        <span class="opt-icon">📧</span>
+        <div>
+          <div class="opt-label">Send via Email</div>
+          <div class="opt-sub" id="invoice-email-addr">—</div>
+        </div>
+      </button>
+      <button class="invoice-opt-btn" onclick="sendInvoice('sms')">
+        <span class="opt-icon">💬</span>
+        <div>
+          <div class="opt-label">Send via Text (SMS)</div>
+          <div class="opt-sub" id="invoice-phone-num">—</div>
+        </div>
+      </button>
+      <button class="invoice-opt-btn" onclick="sendInvoice('both')">
+        <span class="opt-icon">📨</span>
+        <div>
+          <div class="opt-label">Send Both</div>
+          <div class="opt-sub">Email + Text</div>
+        </div>
+      </button>
+    </div>
+    <div class="send-status" id="send-status"></div>
+    <div style="padding: 0 24px 20px; display:flex; justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeInvoiceModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
