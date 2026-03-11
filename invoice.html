@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tier2 Rigging — Invoice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #f0f0f0;
+    font-family: 'DM Sans', Arial, sans-serif;
+    color: #222;
+    min-height: 100vh;
+    padding: 24px;
+  }
+
+  /* Print button bar — hidden when printing */
+  .print-bar {
+    max-width: 680px; margin: 0 auto 20px;
+    display: flex; gap: 12px; align-items: center; justify-content: flex-end;
+  }
+  .print-btn {
+    background: #1a1a1a; color: #c8a96e;
+    border: 2px solid #c8a96e; border-radius: 6px;
+    padding: 10px 22px; font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px; letter-spacing: 2px; cursor: pointer;
+    text-decoration: none; display: inline-block;
+    transition: background 0.2s;
+  }
+  .print-btn:hover { background: #2a2a2a; }
+  .save-btn {
+    background: transparent; color: #555;
+    border: 1px solid #ccc; border-radius: 6px;
+    padding: 10px 18px; font-size: 13px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: border-color 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .save-btn:hover { border-color: #999; color: #333; }
+
+  /* Invoice card */
+  .invoice {
+    max-width: 680px; margin: 0 auto;
+    background: #fff; border-radius: 8px;
+    overflow: hidden; box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+  }
+
+  /* Header */
+  .inv-header {
+    background: #1a1a1a;
+    border-bottom: 3px solid #c8a96e;
+    padding: 28px 36px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .inv-brand { }
+  .inv-brand-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 4px; color: #c8a96e; line-height: 1;
+  }
+  .inv-brand-sub {
+    font-size: 11px; letter-spacing: 2px; color: #888;
+    text-transform: uppercase; margin-top: 4px;
+  }
+  .inv-header-right { text-align: right; }
+  .inv-label { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+  .inv-wo { font-family: 'DM Mono', monospace; font-size: 15px; color: #c8a96e; margin-top: 3px; }
+  .inv-date { font-size: 13px; color: #aaa; margin-top: 6px; }
+
+  /* Customer + rig */
+  .inv-meta {
+    background: #f8f6f2; border-bottom: 1px solid #ede8df;
+    padding: 18px 36px; display: flex; gap: 40px;
+  }
+  .inv-meta-block { }
+  .inv-meta-label { font-size: 10px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .inv-meta-value { font-size: 14px; color: #333; font-weight: 600; }
+  .inv-meta-sub { font-size: 12px; color: #666; margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+  /* Body */
+  .inv-body { padding: 28px 36px; }
+
+  /* Services table */
+  .inv-section-label {
+    font-size: 10px; color: #999; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 0; }
+  .inv-table td {
+    padding: 10px 0; border-bottom: 1px solid #eee;
+    font-size: 14px; color: #333;
+  }
+  .inv-table td:last-child {
+    text-align: right; font-family: 'DM Mono', monospace;
+    color: #222; font-weight: 500; white-space: nowrap;
+  }
+  .inv-table tr:last-child td { border-bottom: none; }
+
+  /* Total */
+  .inv-total {
+    margin-top: 16px;
+    background: #1a1a1a; border-radius: 6px;
+    padding: 14px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .inv-total-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 2px; color: #fff;
+  }
+  .inv-total-amount {
+    font-family: 'DM Mono', monospace;
+    font-size: 24px; font-weight: 700; color: #c8a96e;
+  }
+
+  /* Notes */
+  .inv-notes {
+    margin-top: 16px; background: #fffbf5;
+    border: 1px solid #ede4cc; border-left: 4px solid #c8a96e;
+    border-radius: 4px; padding: 12px 16px;
+    font-size: 13px; color: #555; line-height: 1.6;
+  }
+  .inv-notes strong { color: #333; }
+
+  /* Pickup notice */
+  .inv-pickup {
+    margin-top: 20px; padding: 14px 16px;
+    background: #f8f6f2; border-radius: 6px;
+    font-size: 13px; color: #555; line-height: 1.6;
+    text-align: center;
+  }
+  .inv-pickup strong { color: #1a1a1a; }
+
+  /* QR / Portal */
+  .inv-portal {
+    border-top: 2px solid #ede8df;
+    padding: 24px 36px; text-align: center;
+    background: #f8f6f2;
+  }
+  .inv-portal-label {
+    font-size: 10px; color: #999; text-transform: uppercase;
+    letter-spacing: 1px; margin-bottom: 14px;
+  }
+  .inv-portal img {
+    border: 3px solid #c8a96e; border-radius: 6px;
+    display: block; margin: 0 auto 12px;
+  }
+  .inv-portal p { font-size: 13px; color: #666; margin-bottom: 8px; line-height: 1.5; }
+  .inv-portal a { color: #c8a96e; font-family: 'DM Mono', monospace; font-size: 12px; word-break: break-all; }
+
+  /* Footer */
+  .inv-footer {
+    background: #1a1a1a; padding: 16px 36px; text-align: center;
+  }
+  .inv-footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 3px; font-size: 14px; color: #c8a96e;
+  }
+  .inv-footer-contact { color: #666; font-size: 12px; margin-top: 4px; }
+  .inv-footer-tagline { color: #444; font-size: 11px; margin-top: 6px; }
+
+  /* Not found */
+  .not-found {
+    max-width: 680px; margin: 60px auto; text-align: center; color: #888;
+  }
+
+  /* ── PRINT STYLES ─────────────────────────────── */
+  @media print {
+    body { background: #fff; padding: 0; }
+    .print-bar { display: none !important; }
+    .invoice {
+      box-shadow: none; border-radius: 0;
+      max-width: 100%;
+    }
+    .inv-portal { display: block; }
+    a { color: #c8a96e !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="print-bar" id="print-bar">
+  <a class="save-btn" onclick="window.print()">💾 Save as PDF</a>
+  <a class="print-btn" onclick="window.print()">🖨 Print Invoice</a>
+</div>
+
+<div id="invoice-wrap"></div>
+
+<script>
+function getParam(name) {
+  const url = new URLSearchParams(window.location.search);
+  return url.get(name) || '';
+}
+
+function buildInvoice() {
+  const wo        = getParam('wo');
+  const name      = getParam('name');
+  const container = getParam('container');
+  const serial    = getParam('serial');
+  const services  = getParam('services');
+  const total     = parseFloat(getParam('total') || '0');
+  const notes     = getParam('notes');
+
+  if (!wo && !name) {
+    document.getElementById('invoice-wrap').innerHTML =
+      '<div class="not-found"><h2>Invoice Not Found</h2><p>No invoice data provided.</p></div>';
+    return;
+  }
+
+  const lineItems = services ? services.split('||').filter(Boolean) : [];
+  const portalUrl = serial
+    ? 'https://tier2rigging.com/customer.html?serial=' + encodeURIComponent(serial.toUpperCase())
+    : 'https://tier2rigging.com/customer.html';
+  const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=' + encodeURIComponent(portalUrl);
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Service rows
+  const serviceRows = lineItems.map(li => {
+    const parts = li.split(' — $');
+    const svcName = parts[0] || li;
+    const svcPrice = parts[1] ? '$' + parts[1] : '';
+    return `<tr><td>${svcName}</td><td>${svcPrice}</td></tr>`;
+  }).join('');
+
+  document.title = 'Invoice ' + wo + ' — Tier2 Rigging';
+
+  document.getElementById('invoice-wrap').innerHTML = `
+    <div class="invoice">
+
+      <div class="inv-header">
+        <div class="inv-brand">
+          <div class="inv-brand-name">TIER2 RIGGING</div>
+          <div class="inv-brand-sub">Parachute Rigging Services</div>
+        </div>
+        <div class="inv-header-right">
+          <div class="inv-label">Work Order</div>
+          <div class="inv-wo">${wo || '—'}</div>
+          <div class="inv-date">${today}</div>
+        </div>
+      </div>
+
+      <div class="inv-meta">
+        <div class="inv-meta-block">
+          <div class="inv-meta-label">Customer</div>
+          <div class="inv-meta-value">${name || '—'}</div>
+        </div>
+        ${container || serial ? `
+        <div class="inv-meta-block">
+          <div class="inv-meta-label">Rig</div>
+          <div class="inv-meta-value">${container || '—'}</div>
+          ${serial ? `<div class="inv-meta-sub">S/N: ${serial}</div>` : ''}
+        </div>` : ''}
+      </div>
+
+      <div class="inv-body">
+        <div class="inv-section-label">Services Performed</div>
+        <table class="inv-table">
+          ${serviceRows || '<tr><td colspan="2" style="color:#aaa;font-style:italic;">No services listed</td></tr>'}
+        </table>
+
+        <div class="inv-total">
+          <span class="inv-total-label">Total</span>
+          <span class="inv-total-amount">$${total.toFixed(2)}</span>
+        </div>
+
+        ${notes ? `
+        <div class="inv-notes">
+          <strong>Notes:</strong> ${notes}
+        </div>` : ''}
+
+        <div class="inv-pickup">
+          Please call or text <strong>(516) 902-8843</strong> to arrange pickup of your gear.
+        </div>
+      </div>
+
+      <div class="inv-portal">
+        <div class="inv-portal-label">Your Rig Portal</div>
+        <img src="${qrUrl}" width="140" height="140" alt="Rig Portal QR Code">
+        <p>Scan or click below to view your full service history or submit a new service request.</p>
+        <a href="${portalUrl}">${portalUrl}</a>
+      </div>
+
+      <div class="inv-footer">
+        <div class="inv-footer-brand">TIER2 RIGGING LLC</div>
+        <div class="inv-footer-contact">(516) 902-8843 &nbsp;·&nbsp; tier2riggingservices@gmail.com</div>
+        <div class="inv-footer-tagline">Blue skies! ✦</div>
+      </div>
+
+    </div>
+  `;
+}
+
+buildInvoice();
+</script>
+</body>
+</html>
