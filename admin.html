@@ -746,11 +746,16 @@ function openModal(idx) {
     const row = document.createElement('div');
     row.className = 'svc-row' + (isChecked ? ' checked-row' : '');
     row.innerHTML = `
-      <input type="checkbox" id="svc-${i}" ${isChecked ? 'checked' : ''} onchange="toggleSvc(this, ${svc.price})">
+      <input type="checkbox" id="svc-${i}" ${isChecked ? 'checked' : ''}>
       <label for="svc-${i}">${svc.name}</label>
-      <span class="svc-price">${svc.price > 0 ? '$'+svc.price : 'Varies'}</span>
+      <span style="display:flex;align-items:center;gap:3px;">
+        <span style="color:var(--muted);font-size:12px;">$</span>
+        <input type="number" class="svc-price-input" value="${svc.price}" min="0" step="1"
+          style="width:60px;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--tan);font-family:'DM Mono',monospace;font-size:12px;padding:2px 5px;text-align:right;"
+          oninput="recalcTotal()">
+      </span>
     `;
-    row.querySelector('input').addEventListener('change', function() {
+    row.querySelector('input[type="checkbox"]').addEventListener('change', function() {
       row.classList.toggle('checked-row', this.checked);
       recalcTotal();
     });
@@ -779,8 +784,10 @@ function closeModalOutside(e) {
 
 function recalcTotal() {
   let total = 0;
-  document.querySelectorAll('#services-editor .svc-row input[type="checkbox"]').forEach((cb, i) => {
-    if (cb.checked) total += ALL_SERVICES[i].price;
+  document.querySelectorAll('#services-editor .svc-row').forEach(row => {
+    const cb = row.querySelector('input[type="checkbox"]');
+    const priceInput = row.querySelector('.svc-price-input');
+    if (cb && cb.checked && priceInput) total += parseFloat(priceInput.value) || 0;
   });
   document.querySelectorAll('.custom-item').forEach(ci => {
     const price = parseFloat(ci.querySelector('input[type="number"]').value) || 0;
@@ -809,8 +816,13 @@ async function saveOrder() {
 
   // Collect checked services
   const checkedSvcs = [];
-  document.querySelectorAll('#services-editor .svc-row input[type="checkbox"]').forEach((cb, i) => {
-    if (cb.checked) checkedSvcs.push(ALL_SERVICES[i].name + ' - $' + ALL_SERVICES[i].price);
+  document.querySelectorAll('#services-editor .svc-row').forEach((row, i) => {
+    const cb = row.querySelector('input[type="checkbox"]');
+    const priceInput = row.querySelector('.svc-price-input');
+    if (cb && cb.checked) {
+      const price = priceInput ? (parseFloat(priceInput.value)||0) : ALL_SERVICES[i].price;
+      checkedSvcs.push(ALL_SERVICES[i].name + ' - $' + price);
+    }
   });
 
   // Collect custom items
@@ -999,9 +1011,14 @@ function openNewOrderModal() {
     row.innerHTML = `
       <input type="checkbox" id="no-svc-${i}">
       <label for="no-svc-${i}">${svc.name}</label>
-      <span class="svc-price">${svc.price > 0 ? '$'+svc.price : 'Varies'}</span>
+      <span style="display:flex;align-items:center;gap:3px;">
+        <span style="color:var(--muted);font-size:12px;">$</span>
+        <input type="number" class="svc-price-input" value="${svc.price}" min="0" step="1"
+          style="width:60px;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--tan);font-family:'DM Mono',monospace;font-size:12px;padding:2px 5px;text-align:right;"
+          oninput="recalcNewTotal()">
+      </span>
     `;
-    row.querySelector('input').addEventListener('change', function() {
+    row.querySelector('input[type="checkbox"]').addEventListener('change', function() {
       row.classList.toggle('checked-row', this.checked);
       recalcNewTotal();
     });
@@ -1028,8 +1045,10 @@ function selectDZ(dz) {
 function recalcNewTotal() {
   let total = 0;
   // Standard services
-  document.querySelectorAll('#no-services-editor .svc-row input[type="checkbox"]').forEach((cb, i) => {
-    if (cb.checked) total += ALL_SERVICES[i].price;
+  document.querySelectorAll('#no-services-editor .svc-row').forEach(row => {
+    const cb = row.querySelector('input[type="checkbox"]');
+    const priceInput = row.querySelector('.svc-price-input');
+    if (cb && cb.checked && priceInput) total += parseFloat(priceInput.value) || 0;
   });
   // Qty services
   total += (parseInt(document.getElementById('qty-tandem-reserve').value)||0) * 150;
@@ -1070,8 +1089,13 @@ async function submitNewOrder() {
 
   // Build services list
   const checkedSvcs = [];
-  document.querySelectorAll('#no-services-editor .svc-row input[type="checkbox"]').forEach((cb, i) => {
-    if (cb.checked) checkedSvcs.push(ALL_SERVICES[i].name + ' - $' + ALL_SERVICES[i].price);
+  document.querySelectorAll('#no-services-editor .svc-row').forEach((row, i) => {
+    const cb = row.querySelector('input[type="checkbox"]');
+    const priceInput = row.querySelector('.svc-price-input');
+    if (cb && cb.checked) {
+      const price = priceInput ? (parseFloat(priceInput.value)||0) : ALL_SERVICES[i].price;
+      checkedSvcs.push(ALL_SERVICES[i].name + ' - $' + price);
+    }
   });
 
   // Qty services
@@ -1185,4 +1209,88 @@ document.addEventListener('keydown', e => {
         </div>
       </button>
     </div>
-    <d
+    <div class="send-status" id="send-status"></div>
+    <div style="padding: 0 24px 20px; display:flex; justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="closeInvoiceModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW ORDER MODAL -->
+<div class="modal-overlay" id="new-order-overlay" onclick="closeNewOrderOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>NEW WORK ORDER</h2>
+      <button class="modal-close" onclick="closeNewOrderModal()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section">
+        <div class="modal-section-title">Customer / Account</div>
+        <div class="dz-selector">
+          <div class="dz-btn" id="dz-btn-fun" onclick="selectDZ('fun')">
+            <div class="dz-name">Fun Jumper</div>
+            <div class="dz-email">Individual customer</div>
+          </div>
+          <div class="dz-btn" id="dz-btn-gojump" onclick="selectDZ('gojump')">
+            <div class="dz-name">Go Jump New York</div>
+            <div class="dz-email">steve@gojump-america.com</div>
+          </div>
+          <div class="dz-btn" id="dz-btn-sussex" onclick="selectDZ('sussex')">
+            <div class="dz-name">Skydive Sussex</div>
+            <div class="dz-email">mackenzie@skydivesussex.com</div>
+          </div>
+        </div>
+        <div id="fun-jumper-fields" style="display:none">
+          <div class="info-grid">
+            <div class="info-field"><label>Full Name</label><input type="text" id="no-name"></div>
+            <div class="info-field"><label>Phone</label><input type="text" id="no-phone"></div>
+            <div class="info-field full"><label>Email</label><input type="text" id="no-email"></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Rig Information</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Container Make/Model</label><input type="text" id="no-container"></div>
+          <div class="info-field"><label>Container Serial #</label><input type="text" id="no-serial"></div>
+          <div class="info-field"><label>Main Canopy</label><input type="text" id="no-main"></div>
+          <div class="info-field"><label>Reserve Canopy</label><input type="text" id="no-reserve"></div>
+          <div class="info-field"><label>AAD Type</label><input type="text" id="no-aad"></div>
+          <div class="info-field"><label>Requested Completion</label><input type="text" id="no-completion"></div>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Services and Invoice</div>
+        <div class="services-editor" id="no-services-editor"></div>
+        <div style="margin-top:12px">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Quantity-Based Services</div>
+          <div class="qty-row"><input type="number" id="qty-tandem-reserve" min="0" value="0" oninput="recalcNewTotal()"><label>Tandem Reserve Repack</label><span class="svc-price">$150 each</span></div>
+          <div class="qty-row"><input type="number" id="qty-sport-reserve" min="0" value="0" oninput="recalcNewTotal()"><label>Sport Reserve Repack</label><span class="svc-price">$115 each</span></div>
+          <div class="qty-row"><input type="number" id="qty-tandem-reline" min="0" value="0" oninput="recalcNewTotal()"><label>Tandem Canopy Reline</label><span class="svc-price">$175 each</span></div>
+          <div class="qty-row"><input type="number" id="qty-pack-main" min="0" value="0" oninput="recalcNewTotal()"><label>Pack Main Tandem</label><span class="svc-price">$20 each</span></div>
+        </div>
+        <div style="margin-top:14px">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Custom Line Items</div>
+          <div id="no-custom-items"></div>
+          <button class="add-item-btn" onclick="addNewCustomItem()">+ Add Custom Item</button>
+        </div>
+        <div class="total-row" style="margin-top:16px">
+          <span>Total</span>
+          <strong id="no-total">$0.00</strong>
+        </div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Notes</div>
+        <div class="info-field"><textarea id="no-notes" placeholder="Any additional notes..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <div class="save-msg" id="no-save-msg" style="font-size:13px;"></div>
+      <button class="btn btn-ghost" onclick="closeNewOrderModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewOrder()">Create Order</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
