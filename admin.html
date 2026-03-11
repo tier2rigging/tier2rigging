@@ -66,6 +66,9 @@
   }
   .login-btn:hover { background: var(--tan-light); }
   .login-error { color: var(--red); font-size: 13px; margin-top: 12px; display: none; }
+  .login-hint { color: var(--tan); font-size: 13px; margin-top: 10px; background: rgba(200,169,110,0.1); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; }
+  .forgot-btn { display: inline-block; background: transparent; border: none; color: var(--muted); font-size: 12px; margin-top: 12px; cursor: pointer; text-decoration: underline; font-family: 'DM Sans', sans-serif; transition: color 0.2s; }
+  .forgot-btn:hover { color: var(--tan); }
 
   /* MAIN APP */
   #app { display: none; }
@@ -345,6 +348,7 @@
     <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">ENTER</button>
     <div class="login-error" id="login-error">Incorrect password</div>
+    <a class="forgot-btn" href="mailto:tier2riggingservices@gmail.com?subject=Admin%20Password%20Reset&body=Please%20send%20me%20the%20admin%20panel%20password.">Forgot password?</a>
   </div>
 </div>
 
@@ -496,8 +500,9 @@
     </div>
     <div class="modal-footer">
       <div class="save-msg" id="save-msg">✓ Saved successfully</div>
+      <button class="btn btn-danger" onclick="deleteOrder()">Delete</button>
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-invoice" onclick="openInvoiceModal()">📨 Send Invoice</button>
+      <button class="btn btn-invoice" onclick="openInvoiceModal()">Send Invoice</button>
       <button class="btn btn-primary" onclick="saveOrder()">Save Changes</button>
     </div>
   </div>
@@ -830,6 +835,13 @@ async function saveOrder() {
 // INVOICE
 function openInvoiceModal() {
   const o = allOrders[currentOrderIndex];
+  const status = normalizeStatus(o.status);
+
+  if (status !== 'Ready for Pickup' && status !== 'Complete') {
+    alert('Invoice can only be sent when the status is "Ready for Pickup" or "Complete".\n\nCurrent status: ' + status);
+    return;
+  }
+
   document.getElementById('invoice-modal-title').textContent = 'SEND INVOICE — ' + (o.woNum || '');
   document.getElementById('invoice-customer-info').textContent = 'Customer: ' + (o.name || '—');
   document.getElementById('invoice-email-addr').textContent = o.email || 'No email on file';
@@ -911,6 +923,32 @@ async function sendInvoice(method) {
   } catch(err) {
     statusEl.textContent = '⚠ Failed: ' + err.message;
     statusEl.className = 'send-status err';
+  }
+}
+
+
+// DELETE ORDER
+async function deleteOrder() {
+  const o = allOrders[currentOrderIndex];
+  const confirmed = confirm('Are you sure you want to delete work order ' + (o.woNum || '') + ' for ' + (o.name || 'this customer') + '?\n\nThis cannot be undone.');
+  if (!confirmed) return;
+
+  // Remove from local array
+  allOrders.splice(currentOrderIndex, 1);
+  closeModal();
+  updateStats();
+  renderTable();
+
+  // Send delete to GAS
+  try {
+    const params = new URLSearchParams({
+      action: 'deleteOrder',
+      rowIndex: String(o.rowIndex),
+      woNum: o.woNum || ''
+    });
+    fetch(GAS_URL + '?' + params.toString());
+  } catch(err) {
+    console.error('Delete error:', err);
   }
 }
 
