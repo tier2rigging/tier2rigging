@@ -700,6 +700,26 @@
     box-shadow: 0 8px 28px rgba(138,106,62,0.55);
   }
 
+
+  .equip-block {
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .equip-label {
+    background: rgba(200,169,110,0.08);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--tan);
+    font-weight: 600;
+  }
+  .equip-block .field-grid {
+    padding: 14px 16px;
+  }
 </style>
 </head>
 <body>
@@ -765,30 +785,95 @@
       </div>
       <p class="section-sub">This section helps us track your gear.</p>
       <div class="section-body">
-        <div class="field-grid col-2">
-          <div class="field">
-            <label>Container Make / Model <span class="req">*</span></label>
-            <input type="text" name="container_make_model" placeholder="e.g. Javelin Odyssey" required>
+        <!-- HARNESS & CONTAINER -->
+        <div class="equip-block">
+          <div class="equip-label">Harness &amp; Container</div>
+          <div class="field-grid col-2">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" name="container_manufacturer" placeholder="e.g. Sunpath, Javelin, Vector">
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input type="text" name="container_model" placeholder="e.g. Javelin Odyssey">
+            </div>
+            <div class="field">
+              <label>Serial Number <span class="req">*</span></label>
+              <input type="text" name="container_serial" placeholder="e.g. JO-12345" required>
+            </div>
+            <div class="field">
+              <label>Date of Manufacture</label>
+              <input type="date" name="container_dom">
+            </div>
           </div>
-          <div class="field">
-            <label>Container Serial Number <span class="req">*</span></label>
-            <input type="text" name="container_serial" placeholder="e.g. JO-12345" required>
+        </div>
+
+        <!-- MAIN CANOPY -->
+        <div class="equip-block">
+          <div class="equip-label">Main Canopy</div>
+          <div class="field-grid col-2">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" name="main_manufacturer" placeholder="e.g. Performance Designs, Icarus">
+            </div>
+            <div class="field">
+              <label>Model &amp; Size</label>
+              <input type="text" name="main_model" placeholder="e.g. Pilot 188">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" name="main_serial" placeholder="e.g. PDC-12345">
+            </div>
+            <div class="field">
+              <label>Date of Manufacture</label>
+              <input type="date" name="main_dom">
+            </div>
           </div>
-          <div class="field">
-            <label>Main Canopy (Make / Model / Size) <span class="opt">(optional)</span></label>
-            <input type="text" name="main_canopy" placeholder="e.g. Pilot 188">
+        </div>
+
+        <!-- RESERVE CANOPY -->
+        <div class="equip-block">
+          <div class="equip-label">Reserve Canopy</div>
+          <div class="field-grid col-2">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" name="reserve_manufacturer" placeholder="e.g. Performance Designs, Precision">
+            </div>
+            <div class="field">
+              <label>Model &amp; Size</label>
+              <input type="text" name="reserve_model" placeholder="e.g. PD Reserve 218">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" name="reserve_serial" placeholder="e.g. PDR-56789">
+            </div>
+            <div class="field">
+              <label>Date of Manufacture</label>
+              <input type="date" name="reserve_dom">
+            </div>
           </div>
-          <div class="field">
-            <label>Reserve Canopy (Make / Model / Size) <span class="opt">(optional)</span></label>
-            <input type="text" name="reserve_canopy" placeholder="e.g. PD Reserve 218">
-          </div>
-          <div class="field">
-            <label>AAD Type <span class="opt">(optional)</span></label>
-            <input type="text" name="aad_type" placeholder="Cypres / Vigil / M2 / None">
-          </div>
-          <div class="field">
-            <label>AAD DOM or Next Service Date <span class="opt">(optional)</span></label>
-            <input type="date" name="aad_service_date">
+        </div>
+
+        <!-- AAD -->
+        <div class="equip-block">
+          <div class="equip-label">AAD</div>
+          <div class="field-grid col-2">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" name="aad_manufacturer" placeholder="e.g. Airtec, Vigil, Mars">
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input type="text" name="aad_model" placeholder="e.g. Cypres 2, Vigil II, M2">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" name="aad_serial" placeholder="e.g. CY-12345">
+            </div>
+            <div class="field">
+              <label>Next Service Date</label>
+              <input type="date" name="aad_service_date">
+            </div>
           </div>
         </div>
       </div>
