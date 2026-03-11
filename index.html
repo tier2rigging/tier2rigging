@@ -129,10 +129,22 @@
     /* ── SERVICES ── */
     .service-category { margin-bottom: 18px; }
     .cat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--tan); font-weight: 700; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-    .service-item { display: flex; align-items: flex-start; gap: 12px; padding: 11px 14px; border-radius: 8px; cursor: pointer; transition: all 0.15s; border: 1px solid transparent; margin-bottom: 5px; }
-    .service-item:hover { background: rgba(200,169,110,0.07); border-color: rgba(200,169,110,0.15); }
-    .service-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--tan); margin-top: 2px; flex-shrink: 0; cursor: pointer; }
-    .service-item.checked { background: rgba(200,169,110,0.11); border-color: rgba(200,169,110,0.3); box-shadow: 0 0 0 1px rgba(200,169,110,0.1) inset; }
+    .service-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 16px; border-radius: 8px; cursor: pointer;
+      transition: all 0.15s; border: 1px solid var(--border);
+      margin-bottom: 6px; background: var(--input-bg);
+    }
+    .service-item:hover { background: #1e1e20; border-color: rgba(200,169,110,0.3); }
+    .service-item input[type="checkbox"] {
+      width: 20px; height: 20px; accent-color: var(--tan);
+      flex-shrink: 0; cursor: pointer; border-radius: 4px;
+    }
+    .service-item.checked { background: rgba(200,169,110,0.08); border-color: rgba(200,169,110,0.35); }
+    .svc-name { flex: 1; font-size: 14px; font-weight: 500; color: var(--parchment); }
+    .svc-note { font-size: 12px; color: var(--muted); font-weight: 400; }
+    .svc-price { font-family: 'DM Mono', monospace; font-size: 14px; color: var(--tan); white-space: nowrap; font-weight: 500; }
+    .svc-price.varies { color: var(--muted); }
     .svc-info { flex: 1; }
     .svc-name { font-size: 14px; font-weight: 500; }
     .svc-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
@@ -215,6 +227,28 @@
     }
     .collapsible.open .equip-body { display: block; }
     .collapsible.open > .equip-label { border-bottom: none; }
+
+  
+    /* ── SUPPLY STEPPERS ── */
+    .supply-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--input-bg);
+      margin-bottom: 6px;
+    }
+    .supply-info { flex: 1; }
+    .supply-name { font-size: 14px; font-weight: 500; }
+    .supply-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .supply-stepper { display: flex; align-items: center; gap: 10px; }
+    .step-btn {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(200,169,110,0.15); border: 1px solid rgba(200,169,110,0.3);
+      color: var(--tan); font-size: 18px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s; line-height: 1;
+    }
+    .step-btn:hover { background: rgba(200,169,110,0.25); }
+    .step-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 600; min-width: 24px; text-align: center; color: var(--parchment); }
 
   </style>
 </head>
@@ -422,19 +456,19 @@
           <div class="section-num">3</div>
           <h2>Requested Services</h2>
         </div>
-        <p class="section-sub">Select all services needed for your rig.</p>
+        <p class="section-sub"><em>Select all services needed for your rig.</em></p>
         <div class="section-body">
 
           <div class="service-category">
             <div class="cat-label">Reserve</div>
             <label class="service-item" data-price="115">
               <input type="checkbox" name="services[]" value="Reserve Inspection &amp; Repack (Sport) - $115">
-              <div class="svc-info"><div class="svc-name">Reserve Inspection &amp; Repack (Sport)</div></div>
+              <div class="svc-name">Reserve Inspection &amp; Repack (Sport)</div>
               <div class="svc-price">$115</div>
             </label>
             <label class="service-item" data-price="150">
               <input type="checkbox" name="services[]" value="Reserve Inspection &amp; Repack (Tandem) - $150">
-              <div class="svc-info"><div class="svc-name">Reserve Inspection &amp; Repack (Tandem)</div></div>
+              <div class="svc-name">Reserve Inspection &amp; Repack (Tandem)</div>
               <div class="svc-price">$150</div>
             </label>
           </div>
@@ -443,17 +477,17 @@
             <div class="cat-label">Inspection</div>
             <label class="service-item" data-price="25">
               <input type="checkbox" name="services[]" value="Inspect Main or Reserve - $25">
-              <div class="svc-info"><div class="svc-name">Inspect Main or Reserve</div></div>
+              <div class="svc-name">Inspect Main or Reserve</div>
               <div class="svc-price">$25</div>
             </label>
             <label class="service-item" data-price="20">
-              <input type="checkbox" name="services[]" value="Inspect Harness/Container - $20">
-              <div class="svc-info"><div class="svc-name">Inspect Harness/Container</div></div>
+              <input type="checkbox" name="services[]" value="Inspect Harness / Container - $20">
+              <div class="svc-name">Inspect Harness / Container</div>
               <div class="svc-price">$20</div>
             </label>
             <label class="service-item" data-price="120">
-              <input type="checkbox" name="services[]" value="Inspect &amp; Pack Pilot Emergency Rig - $120">
-              <div class="svc-info"><div class="svc-name">Inspect &amp; Pack Pilot Emergency Rig</div></div>
+              <input type="checkbox" name="services[]" value="Inspect &amp; Pack Pilot's Emergency Rig - $120">
+              <div class="svc-name">Inspect &amp; Pack Pilot's Emergency Rig</div>
               <div class="svc-price">$120</div>
             </label>
           </div>
@@ -462,123 +496,123 @@
             <div class="cat-label">Packing</div>
             <label class="service-item" data-price="15">
               <input type="checkbox" name="services[]" value="Pack Main Sport - $15">
-              <div class="svc-info"><div class="svc-name">Pack Main (Sport)</div></div>
+              <div class="svc-name">Pack Main Sport <span class="svc-note">&mdash; <em>Included with Sport Reserve Repack</em></span></div>
               <div class="svc-price">$15</div>
             </label>
             <label class="service-item" data-price="20">
               <input type="checkbox" name="services[]" value="Pack Main Tandem - $20">
-              <div class="svc-info"><div class="svc-name">Pack Main (Tandem)</div></div>
+              <div class="svc-name">Pack Main Tandem</div>
               <div class="svc-price">$20</div>
-            </label>
-          </div>
-
-          <div class="service-category">
-            <div class="cat-label">Assembly</div>
-            <label class="service-item" data-price="140">
-              <input type="checkbox" name="services[]" value="Assembly/Inspection/Pack Reserve (Sport) - $140">
-              <div class="svc-info"><div class="svc-name">Assembly / Inspection / Pack Reserve (Sport)</div></div>
-              <div class="svc-price">$140</div>
-            </label>
-            <label class="service-item" data-price="175">
-              <input type="checkbox" name="services[]" value="Assembly/Inspection/Pack Reserve (Tandem) - $175">
-              <div class="svc-info"><div class="svc-name">Assembly / Inspection / Pack Reserve (Tandem)</div></div>
-              <div class="svc-price">$175</div>
-            </label>
-            <label class="service-item" data-price="75">
-              <input type="checkbox" name="services[]" value="Pack Main - $75">
-              <div class="svc-info"><div class="svc-name">Pack Main</div></div>
-              <div class="svc-price">$75</div>
-            </label>
-            <label class="service-item" data-price="10">
-              <input type="checkbox" name="services[]" value="Disassemble - $10">
-              <div class="svc-info"><div class="svc-name">Disassemble</div></div>
-              <div class="svc-price">$10</div>
             </label>
           </div>
 
           <div class="service-category">
             <div class="cat-label">AAD</div>
             <label class="service-item" data-price="0">
-              <input type="checkbox" name="services[]" value="AAD Batteries/Service - Varies">
-              <div class="svc-info"><div class="svc-name">AAD Batteries / Service</div></div>
-              <div class="svc-price">Varies</div>
+              <input type="checkbox" name="services[]" value="AAD Batteries / Service - Varies">
+              <div class="svc-name">AAD Batteries / Service</div>
+              <div class="svc-price varies">Varies</div>
             </label>
             <label class="service-item" data-price="10">
               <input type="checkbox" name="services[]" value="Install AAD - $10">
-              <div class="svc-info"><div class="svc-name">Install AAD</div></div>
+              <div class="svc-name">Install AAD</div>
               <div class="svc-price">$10</div>
-            </label>
-            <label class="service-item" data-price="0">
-              <input type="checkbox" name="services[]" value="Reserve Safety Stow Replacement - Varies">
-              <div class="svc-info"><div class="svc-name">Reserve Safety Stow Replacement</div></div>
-              <div class="svc-price">Varies</div>
             </label>
           </div>
 
           <div class="service-category">
             <div class="cat-label">Lines</div>
+            <label class="service-item" data-price="0">
+              <input type="checkbox" name="services[]" value="Reserve Safety Stow Replacement - Varies">
+              <div class="svc-name">Reserve Safety Stow Replacement</div>
+              <div class="svc-price varies">Varies</div>
+            </label>
             <label class="service-item" data-price="40">
               <input type="checkbox" name="services[]" value="Replace Lower Steering Lines - $40">
-              <div class="svc-info"><div class="svc-name">Replace Lower Steering Lines</div></div>
+              <div class="svc-name">Replace Lower Steering Lines</div>
               <div class="svc-price">$40</div>
             </label>
             <label class="service-item" data-price="65">
-              <input type="checkbox" name="services[]" value="Toggles to Cascades - $65">
-              <div class="svc-info"><div class="svc-name">Toggles to Cascades</div></div>
+              <input type="checkbox" name="services[]" value="Replace Steering Lines Toggles to Cascades - $65">
+              <div class="svc-name">Replace Steering Lines Toggles to Cascades</div>
               <div class="svc-price">$65</div>
             </label>
             <label class="service-item" data-price="0">
               <input type="checkbox" name="services[]" value="Full Line Set - Varies">
-              <div class="svc-info"><div class="svc-name">Full Line Set</div></div>
-              <div class="svc-price">Varies</div>
+              <div class="svc-name">Full Line Set</div>
+              <div class="svc-price varies">Varies</div>
             </label>
             <label class="service-item" data-price="130">
               <input type="checkbox" name="services[]" value="Re-line Sport - $130">
-              <div class="svc-info"><div class="svc-name">Re-line (Sport)</div></div>
+              <div class="svc-name">Re-line Sport <span class="svc-note">(lines not included)</span></div>
               <div class="svc-price">$130</div>
             </label>
             <label class="service-item" data-price="175">
               <input type="checkbox" name="services[]" value="Re-line Tandem - $175">
-              <div class="svc-info"><div class="svc-name">Re-line (Tandem)</div></div>
+              <div class="svc-name">Re-line Tandem <span class="svc-note">(lines not included)</span></div>
               <div class="svc-price">$175</div>
             </label>
             <label class="service-item" data-price="35">
               <input type="checkbox" name="services[]" value="Slinks - $35">
-              <div class="svc-info"><div class="svc-name">Slinks</div></div>
+              <div class="svc-name">Slinks <span class="svc-note">&mdash; <em>Recommended with New Line Set orders</em></span></div>
               <div class="svc-price">$35</div>
             </label>
           </div>
 
           <div class="service-category">
-            <div class="cat-label">Additional</div>
+            <div class="cat-label">Assembly Reserve</div>
+            <label class="service-item" data-price="140">
+              <input type="checkbox" name="services[]" value="Assembly, Inspection &amp; Pack Reserve (Sport) - $140">
+              <div class="svc-name">Assembly, Inspection &amp; Pack Reserve (Sport)</div>
+              <div class="svc-price">$140</div>
+            </label>
+            <label class="service-item" data-price="175">
+              <input type="checkbox" name="services[]" value="Assembly, Inspection &amp; Repack Reserve (Tandem) - $175">
+              <div class="svc-name">Assembly, Inspection &amp; Repack Reserve (Tandem)</div>
+              <div class="svc-price">$175</div>
+            </label>
+            <label class="service-item" data-price="75">
+              <input type="checkbox" name="services[]" value="Assembly, Inspection &amp; Pack Main - $75">
+              <div class="svc-name">Assembly, Inspection &amp; Pack Main</div>
+              <div class="svc-price">$75</div>
+            </label>
+            <label class="service-item" data-price="10">
+              <input type="checkbox" name="services[]" value="Disassemble Main or Reserve - $10">
+              <div class="svc-name">Disassemble Main or Reserve</div>
+              <div class="svc-price">$10</div>
+            </label>
+          </div>
+
+          <div class="service-category">
+            <div class="cat-label">Additional Services</div>
             <label class="service-item" data-price="25">
               <input type="checkbox" name="services[]" value="Install Slider Bumpers - $25">
-              <div class="svc-info"><div class="svc-name">Install Slider Bumpers</div></div>
+              <div class="svc-name">Install Slider Bumpers</div>
               <div class="svc-price">$25</div>
             </label>
             <label class="service-item" data-price="20">
               <input type="checkbox" name="services[]" value="Fabric Tensile Test - $20">
-              <div class="svc-info"><div class="svc-name">Fabric Tensile Test</div></div>
+              <div class="svc-name">Fabric Tensile Test</div>
               <div class="svc-price">$20</div>
             </label>
             <label class="service-item" data-price="25">
               <input type="checkbox" name="services[]" value="Kill Line Replacement - $25">
-              <div class="svc-info"><div class="svc-name">Kill Line Replacement</div></div>
+              <div class="svc-name">Kill Line Replacement</div>
               <div class="svc-price">$25</div>
             </label>
             <label class="service-item" data-price="100">
               <input type="checkbox" name="services[]" value="BOC Replacement - $100">
-              <div class="svc-info"><div class="svc-name">BOC Replacement</div></div>
+              <div class="svc-name">BOC Replacement</div>
               <div class="svc-price">$100</div>
             </label>
             <label class="service-item" data-price="5">
-              <input type="checkbox" name="services[]" value="Tack Slinks/Links - $5">
-              <div class="svc-info"><div class="svc-name">Tack Slinks / Links</div></div>
+              <input type="checkbox" name="services[]" value="Tack Slinks / Links - $5">
+              <div class="svc-name">Tack Slinks / Links</div>
               <div class="svc-price">$5</div>
             </label>
             <label class="service-item" data-price="65">
               <input type="checkbox" name="services[]" value="Wash Rig - $65">
-              <div class="svc-info"><div class="svc-name">Wash Rig</div></div>
+              <div class="svc-name">Wash Rig <span class="svc-note">&mdash; <span style="color:#c0522a;font-weight:600;">DOES NOT INCLUDE</span> <em>disassemble/reassemble, inspect &amp; pack reserve, main repack or AAD reinstall</em></span></div>
               <div class="svc-price">$65</div>
             </label>
           </div>
@@ -587,63 +621,14 @@
             <div class="cat-label">Repair</div>
             <label class="service-item" data-price="0">
               <input type="checkbox" name="services[]" value="Sewing - $85/hr">
-              <div class="svc-info">
-                <div class="svc-name">Sewing</div>
-                <div class="field" style="margin-top:8px;display:none" id="sewing-desc-field">
-                  <input type="text" name="sewing_description" placeholder="Describe the sewing work needed...">
-                </div>
-              </div>
+              <div class="svc-name">Sewing <span class="svc-note">&mdash; <em>Velcro replacement, repairs, etc.</em></span></div>
               <div class="svc-price">$85/hr</div>
             </label>
             <label class="service-item" data-price="0">
               <input type="checkbox" name="services[]" value="Canopy Patch - Varies">
-              <div class="svc-info">
-                <div class="svc-name">Canopy Patch</div>
-                <div class="field" style="margin-top:8px;display:none" id="patch-desc-field">
-                  <input type="text" name="patch_description" placeholder="Describe the patch location...">
-                </div>
-              </div>
-              <div class="svc-price">Varies</div>
+              <div class="svc-name">Canopy Patch <span class="svc-note">(depends on size and location of damage)</span></div>
+              <div class="svc-price varies">Varies</div>
             </label>
-          </div>
-
-          <!-- Supplies -->
-          <div class="service-category">
-            <div class="cat-label">Supplies (if needed)</div>
-            <div class="field-grid col-2" style="margin-top:4px">
-              <div class="field">
-                <label>Closing Loops</label>
-                <input type="number" name="supply_loops" min="0" value="0" placeholder="0">
-              </div>
-              <div class="field">
-                <label>Rubber Bands</label>
-                <input type="number" name="supply_bands" min="0" value="0" placeholder="0">
-              </div>
-              <div class="field">
-                <label>Elastic Keepers</label>
-                <input type="number" name="supply_keepers" min="0" value="0" placeholder="0">
-              </div>
-            </div>
-          </div>
-
-          <!-- Total -->
-          <div class="total-display">
-            <div>
-              <div class="total-label">Estimated Total</div>
-              <div class="total-amount" id="total-display">$0</div>
-            </div>
-            <div style="font-size:12px;color:var(--muted);text-align:right;max-width:200px;">Final total may vary for services marked "Varies"</div>
-          </div>
-
-          <!-- Rush -->
-          <div class="rush-row">
-            <input type="checkbox" name="rush_service" id="rush-check" value="Yes">
-            <label for="rush-check" class="rush-label">
-              <strong>Rush Service</strong>
-              <span style="font-size:12px;color:var(--muted);margin-left:6px;">Priority handling — contact for availability</span>
-            </label>
-            <input type="hidden" name="rush_fee" id="rush-fee-field" value="$0">
-            <div class="rush-fee" id="rush-fee-display"></div>
           </div>
 
         </div>
@@ -660,18 +645,18 @@
             <label>Additional Services or Special Requests <span class="opt">(optional)</span></label>
             <textarea name="other_service" placeholder="Describe any additional work, special requests, or services not listed above..." rows="3"></textarea>
           </div>
-          <div class="field" style="margin-top:16px">
+          <div class="field" style="margin-top:20px">
             <label>Is there known damage?</label>
-            <div class="radio-group">
+            <div class="radio-group" style="margin-top:10px">
               <label class="radio-item selected" id="damage-no">
                 <input type="radio" name="known_damage" value="No" checked>
                 <div class="radio-dot"></div>
-                No
+                NO
               </label>
               <label class="radio-item" id="damage-yes">
                 <input type="radio" name="known_damage" value="Yes">
                 <div class="radio-dot"></div>
-                Yes
+                YES
               </label>
             </div>
           </div>
@@ -692,13 +677,81 @@
         </div>
         <div class="section-body">
           <div class="field">
-            <label>Additional Notes <span class="opt">(optional)</span></label>
-            <textarea name="notes" placeholder="Anything else we should know..."></textarea>
+            <label>Additional Notes or Instructions <span class="opt">(optional)</span></label>
+            <textarea name="notes" placeholder="e.g. Soft reserve handle, canopy flying off heading, slider grommet wear..." rows="4"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. EXTRAS / SUPPLIES -->
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-num">6</div>
+          <h2>Extras / Supplies</h2>
+        </div>
+        <p class="section-sub"><em>Add any supplies you need with your service.</em></p>
+        <div class="section-body">
+          <div class="supply-item">
+            <div class="supply-info">
+              <div class="supply-name">Main Closing Loops</div>
+              <div class="supply-meta">5 per pack &bull; $3/pack</div>
+            </div>
+            <div class="supply-stepper">
+              <button type="button" class="step-btn" onclick="stepSupply('supply_loops',-1)">&#8722;</button>
+              <span class="step-val" id="supply_loops_display">0</span>
+              <button type="button" class="step-btn" onclick="stepSupply('supply_loops',1)">+</button>
+              <input type="hidden" name="supply_loops" id="supply_loops" value="0">
+            </div>
+          </div>
+          <div class="supply-item">
+            <div class="supply-info">
+              <div class="supply-name">Rubber Bands</div>
+              <div class="supply-meta">5 per pack &bull; $1/pack</div>
+            </div>
+            <div class="supply-stepper">
+              <button type="button" class="step-btn" onclick="stepSupply('rubber_bands',-1)">&#8722;</button>
+              <span class="step-val" id="rubber_bands_display">0</span>
+              <button type="button" class="step-btn" onclick="stepSupply('rubber_bands',1)">+</button>
+              <input type="hidden" name="supply_bands" id="rubber_bands" value="0">
+            </div>
+          </div>
+          <div class="supply-item">
+            <div class="supply-info">
+              <div class="supply-name">Elastic Keepers</div>
+              <div class="supply-meta">3 per pack &bull; $2/pack</div>
+            </div>
+            <div class="supply-stepper">
+              <button type="button" class="step-btn" onclick="stepSupply('elastic_keepers',-1)">&#8722;</button>
+              <span class="step-val" id="elastic_keepers_display">0</span>
+              <button type="button" class="step-btn" onclick="stepSupply('elastic_keepers',1)">+</button>
+              <input type="hidden" name="supply_keepers" id="elastic_keepers" value="0">
+            </div>
+          </div>
+
+          <!-- TOTAL -->
+          <div class="total-display">
+            <div>
+              <div class="total-label">Estimated Total</div>
+              <div class="total-amount" id="total-display">$0</div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);text-align:right;max-width:180px;">Final total may vary for services marked "Varies"</div>
+          </div>
+
+          <!-- RUSH -->
+          <div class="rush-row">
+            <input type="checkbox" name="rush_service" id="rush-check" value="Yes">
+            <label for="rush-check" class="rush-label">
+              <strong>Rush Service</strong>
+              <span style="font-size:12px;color:var(--muted);margin-left:6px;">Priority handling — contact for availability</span>
+            </label>
+            <input type="hidden" name="rush_fee" id="rush-fee-field" value="$0">
+            <div class="rush-fee" id="rush-fee-display"></div>
           </div>
         </div>
       </div>
 
       <button type="submit" class="submit-btn" id="submit-btn">Submit Service Request</button>
+
     </form>
   </div>
 </div>
@@ -932,6 +985,16 @@
       var hasData = Array.from(block.querySelectorAll('input')).some(function(i) { return i.value; });
       if (hasData) block.classList.add('open');
     });
+  }
+
+  // ── SUPPLY STEPPERS ──────────────────────────────────────
+  function stepSupply(id, delta) {
+    var inp = document.getElementById(id);
+    var disp = document.getElementById(id + '_display');
+    if (!inp || !disp) return;
+    var val = Math.max(0, (parseInt(inp.value) || 0) + delta);
+    inp.value = val;
+    disp.textContent = val;
   }
 </script>
 </body>
