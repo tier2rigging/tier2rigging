@@ -720,6 +720,181 @@
   .equip-block .field-grid {
     padding: 14px 16px;
   }
+
+  /* ── Returning Customer Lookup ── */
+  .returning-box {
+    background: rgba(200,169,110,0.07);
+    border: 1px solid rgba(200,169,110,0.3);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 4px;
+  }
+  .returning-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px;
+    color: var(--tan-light, #e0c080);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .returning-sub {
+    font-size: 13px;
+    color: var(--muted, #9a9890);
+    margin: 0 0 12px;
+  }
+  .returning-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .returning-row input {
+    flex: 1;
+    min-width: 200px;
+  }
+  .returning-row button {
+    background: var(--tan, #c8a96e);
+    color: #1c1c1e;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .returning-row button:hover { opacity: 0.85; }
+  .lookup-msg {
+    margin-top: 8px;
+    font-size: 13px;
+    min-height: 16px;
+  }
+  .lookup-msg.ok  { color: #6dcc96; }
+  .lookup-msg.err { color: #e07070; }
+  .lookup-results {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .rig-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(200,169,110,0.2);
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .rig-card:hover { border-color: var(--tan); background: rgba(200,169,110,0.08); }
+  .rig-card.selected { border-color: #6dcc96; background: rgba(109,204,150,0.08); }
+  .rig-card-info { flex: 1; }
+  .rig-card-name { font-size: 14px; font-weight: 600; color: var(--parchment); }
+  .rig-card-detail { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .rig-card-serial { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan); }
+  .rig-use-btn {
+    background: transparent;
+    border: 1px solid var(--tan);
+    color: var(--tan);
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+  .rig-use-btn:hover { background: var(--tan); color: #1c1c1e; }
+  .returning-divider {
+    text-align: center;
+    position: relative;
+    margin: 18px 0 14px;
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .returning-divider::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: var(--border);
+  }
+  .returning-divider span {
+    background: var(--card, #252527);
+    padding: 0 12px;
+    position: relative;
+  }
+
+
+  .prefill-banner {
+    background: rgba(109,204,150,0.1);
+    border: 1px solid rgba(109,204,150,0.35);
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: fadeUp 0.4s ease both;
+  }
+  .prefill-icon { font-size: 22px; color: #6dcc96; }
+  .prefill-text { font-size: 14px; color: var(--parchment); }
+  .prefill-text strong { color: #6dcc96; }
+
+  .returning-card {
+    background: rgba(200,169,110,0.07);
+    border: 1px solid rgba(200,169,110,0.3);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  .returning-card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 1px;
+    color: var(--tan-light, #e0c080);
+    margin-bottom: 4px;
+  }
+  .returning-card-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  .returning-card-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .returning-card-row input {
+    flex: 1;
+    min-width: 200px;
+  }
+  .returning-card-row button {
+    background: var(--tan, #c8a96e);
+    color: #1c1c1e;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.2s;
+  }
+  .returning-card-row button:hover { opacity: 0.85; }
+  .lookup-msg { margin-top: 8px; font-size: 13px; min-height: 16px; }
+  .lookup-msg.ok  { color: #6dcc96; }
+  .lookup-msg.err { color: #e07070; }
+
 </style>
 </head>
 <body>
@@ -742,6 +917,26 @@
     <input type="hidden" name="_replyto" id="replyto_field">
     <input type="hidden" name="ticket_number" id="ticket_field">
     <input type="hidden" name="estimated_total" id="total_field">
+
+    <!-- RETURNING CUSTOMER BANNER -->
+    <div id="prefill-banner" style="display:none" class="prefill-banner">
+      <div class="prefill-icon">&#x2713;</div>
+      <div class="prefill-text">
+        <strong>Rig info loaded from your service record.</strong>
+        Just select the services you need and submit.
+      </div>
+    </div>
+
+    <!-- RETURNING CUSTOMER SERIAL LOOKUP -->
+    <div class="returning-card" id="returning-card">
+      <div class="returning-card-title">&#x21BA; Returning Customer?</div>
+      <p class="returning-card-sub">Enter your container serial number and we'll pull up your rig info.</p>
+      <div class="returning-card-row">
+        <input type="text" id="serial-lookup-input" placeholder="Container serial # (e.g. JO-12345)" autocomplete="off">
+        <button type="button" id="serial-lookup-btn">Load My Rig</button>
+      </div>
+      <div id="serial-lookup-msg" class="lookup-msg"></div>
+    </div>
 
     <!-- 1. CUSTOMER INFORMATION -->
     <div class="section-card">
@@ -785,6 +980,7 @@
       </div>
       <p class="section-sub">This section helps us track your gear.</p>
       <div class="section-body">
+
         <!-- HARNESS & CONTAINER -->
         <div class="equip-block">
           <div class="equip-label">Harness &amp; Container</div>
@@ -1534,6 +1730,201 @@
     document.getElementById('total_field').value = '$' + total;
   }
 
+
+  // ── Returning Customer Lookup ─────────────────────────────
+  const GAS_LOOKUP_URL = 'https://script.google.com/macros/s/AKfycby6L86t1oFXTLsVJhULt3q2S4o7O5HEaD_ypa0mXpe_il9caDGDWrlg4aXRiYHL2eYw/exec';
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var btn = document.getElementById('lookup-btn');
+    if (btn) btn.addEventListener('click', lookupCustomer);
+    var inp = document.getElementById('lookup-query');
+    if (inp) inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); lookupCustomer(); }
+    });
+  });
+
+  async function lookupCustomer() {
+    var query = (document.getElementById('lookup-query').value || '').trim();
+    var msgEl = document.getElementById('lookup-msg');
+    var resultsEl = document.getElementById('lookup-results');
+    if (!query) {
+      msgEl.className = 'lookup-msg err';
+      msgEl.textContent = 'Please enter a name or email address.';
+      return;
+    }
+    msgEl.className = 'lookup-msg';
+    msgEl.textContent = 'Searching...';
+    resultsEl.style.display = 'none';
+    resultsEl.innerHTML = '';
+
+    try {
+      var url = GAS_LOOKUP_URL + '?action=lookupCustomer&query=' + encodeURIComponent(query);
+      var res = await fetch(url);
+      var data = await res.json();
+
+      if (!data.orders || data.orders.length === 0) {
+        msgEl.className = 'lookup-msg err';
+        msgEl.textContent = 'No records found. Please fill in your gear info below.';
+        return;
+      }
+
+      msgEl.className = 'lookup-msg ok';
+      msgEl.textContent = 'Found ' + data.orders.length + ' rig' + (data.orders.length > 1 ? 's' : '') + ' on file. Select one to auto-fill:';
+      resultsEl.style.display = 'flex';
+
+      data.orders.forEach(function(order) {
+        var card = document.createElement('div');
+        card.className = 'rig-card';
+        var container = [order.containerManufacturer, order.containerModel].filter(Boolean).join(' ') || order.containerMakeModel || 'Unknown Container';
+        var reserve = [order.reserveManufacturer, order.reserveModel].filter(Boolean).join(' ') || order.reserveCanopy || '-';
+        var aad = [order.aadManufacturer, order.aadModel].filter(Boolean).join(' ') || order.aadType || '-';
+        card.innerHTML = '<div class="rig-card-info">'
+          + '<div class="rig-card-name">' + container + '</div>'
+          + '<div class="rig-card-detail">Reserve: ' + reserve + ' &nbsp;|&nbsp; AAD: ' + aad + '</div>'
+          + '<div class="rig-card-serial">S/N: ' + (order.containerSerial || '-') + '</div>'
+          + '</div>'
+          + '<button type="button" class="rig-use-btn">Use This Rig</button>';
+
+        (function(o, c) {
+          c.querySelector('.rig-use-btn').addEventListener('click', function() {
+            fillRigFromOrder(o);
+            document.querySelectorAll('.rig-card').forEach(function(x) { x.classList.remove('selected'); });
+            c.classList.add('selected');
+            c.querySelector('.rig-use-btn').textContent = '\u2713 Selected';
+            msgEl.className = 'lookup-msg ok';
+            msgEl.textContent = 'Rig info filled in. Review below and update anything that has changed.';
+          });
+        })(order, card);
+
+        resultsEl.appendChild(card);
+      });
+
+    } catch(err) {
+      msgEl.className = 'lookup-msg err';
+      msgEl.textContent = 'Lookup failed. Please fill in your gear info manually.';
+    }
+  }
+
+  function fillRigFromOrder(o) {
+    function set(name, val) {
+      var el = document.querySelector('[name="' + name + '"]');
+      if (el && val) el.value = val;
+    }
+    set('container_manufacturer', o.containerManufacturer || '');
+    set('container_model',        o.containerModel || '');
+    set('container_serial',       o.containerSerial || '');
+    set('container_dom',          o.containerDom || '');
+    set('main_manufacturer',      o.mainManufacturer || '');
+    set('main_model',             o.mainModel || o.mainCanopy || '');
+    set('main_serial',            o.mainSerial || '');
+    set('main_dom',               o.mainDom || '');
+    set('reserve_manufacturer',   o.reserveManufacturer || '');
+    set('reserve_model',          o.reserveModel || o.reserveCanopy || '');
+    set('reserve_serial',         o.reserveSerial || '');
+    set('reserve_dom',            o.reserveDom || '');
+    set('aad_manufacturer',       o.aadManufacturer || '');
+    set('aad_model',              o.aadModel || o.aadType || '');
+    set('aad_serial',             o.aadSerial || '');
+    set('aad_dom',                o.aadDom || '');
+    document.querySelector('.equip-block').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  RETURNING CUSTOMER + QR PRE-FILL
+  // ═══════════════════════════════════════════════════════════
+  const GAS_URL_FORM = 'https://script.google.com/macros/s/AKfycby6L86t1oFXTLsVJhULt3q2S4o7O5HEaD_ypa0mXpe_il9caDGDWrlg4aXRiYHL2eYw/exec';
+
+  function setField(name, val) {
+    if (!val) return;
+    var el = document.querySelector('[name="' + name + '"]');
+    if (el) el.value = val;
+  }
+
+  function fillRigFields(d) {
+    setField('container_manufacturer', d.container_manufacturer || d.containerManufacturer || '');
+    setField('container_model',        d.container_model        || d.containerModel        || '');
+    setField('container_serial',       d.container_serial       || d.containerSerial       || d.serial || '');
+    setField('container_dom',          d.container_dom          || d.containerDom          || '');
+    setField('main_manufacturer',      d.main_manufacturer      || d.mainManufacturer      || '');
+    setField('main_model',             d.main_model             || d.mainModel             || d.mainCanopy || '');
+    setField('main_serial',            d.main_serial            || d.mainSerial            || '');
+    setField('main_dom',               d.main_dom               || d.mainDom               || '');
+    setField('reserve_manufacturer',   d.reserve_manufacturer   || d.reserveManufacturer   || '');
+    setField('reserve_model',          d.reserve_model          || d.reserveModel          || d.reserveCanopy || '');
+    setField('reserve_serial',         d.reserve_serial         || d.reserveSerial         || '');
+    setField('reserve_dom',            d.reserve_dom            || d.reserveDom            || '');
+    setField('aad_manufacturer',       d.aad_manufacturer       || d.aadManufacturer       || '');
+    setField('aad_model',              d.aad_model              || d.aadModel              || d.aadType || '');
+    setField('aad_serial',             d.aad_serial             || d.aadSerial             || '');
+    // also fill customer info if available
+    setField('full_name', d.name || d.full_name || '');
+    setField('email',     d.email || '');
+    setField('phone',     d.phone || '');
+  }
+
+  function showPrefillBanner() {
+    var b = document.getElementById('prefill-banner');
+    var c = document.getElementById('returning-card');
+    if (b) b.style.display = 'flex';
+    if (c) c.style.display = 'none';
+  }
+
+  // ── On page load: check URL params from QR code ──
+  document.addEventListener('DOMContentLoaded', function() {
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('prefill') === '1') {
+      var d = {};
+      params.forEach(function(v, k) { d[k] = v; });
+      fillRigFields(d);
+      showPrefillBanner();
+      // Scroll past customer info straight to services
+      setTimeout(function() {
+        var svc = document.querySelector('.section-card:nth-child(3)');
+        if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
+    }
+
+    // Bind serial lookup button
+    var btn = document.getElementById('serial-lookup-btn');
+    if (btn) btn.addEventListener('click', serialLookup);
+    var inp = document.getElementById('serial-lookup-input');
+    if (inp) inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); serialLookup(); }
+    });
+  });
+
+  // ── Serial number lookup ──
+  async function serialLookup() {
+    var serial = (document.getElementById('serial-lookup-input').value || '').trim();
+    var msgEl  = document.getElementById('serial-lookup-msg');
+    if (!serial) {
+      msgEl.className = 'lookup-msg err';
+      msgEl.textContent = 'Please enter your container serial number.';
+      return;
+    }
+    msgEl.className = 'lookup-msg';
+    msgEl.textContent = 'Looking up...';
+    try {
+      var res = await fetch(GAS_URL_FORM + '?action=lookupSerial&serial=' + encodeURIComponent(serial));
+      var data = await res.json();
+      if (!data.order) {
+        msgEl.className = 'lookup-msg err';
+        msgEl.textContent = 'No record found for that serial number. Please fill in your info below.';
+        return;
+      }
+      fillRigFields(data.order);
+      showPrefillBanner();
+      msgEl.className = 'lookup-msg ok';
+      msgEl.textContent = 'Rig loaded! Review your info and select services below.';
+      setTimeout(function() {
+        var svc = document.querySelector('.section-card:nth-child(3)');
+        if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 600);
+    } catch(err) {
+      msgEl.className = 'lookup-msg err';
+      msgEl.textContent = 'Lookup failed. Please fill in your info manually.';
+    }
+  }
 </script>
 
 </body>
