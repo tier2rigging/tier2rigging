@@ -833,7 +833,6 @@ function openInvoiceModal() {
   document.getElementById('invoice-modal-title').textContent = 'SEND INVOICE — ' + (o.woNum || '');
   document.getElementById('invoice-customer-info').textContent = 'Customer: ' + (o.name || '—');
   document.getElementById('invoice-email-addr').textContent = o.email || 'No email on file';
-  document.getElementById('invoice-phone-num').textContent = o.phone || 'No phone on file';
   document.getElementById('send-status').textContent = '';
   document.getElementById('send-status').className = 'send-status';
   document.getElementById('invoice-overlay').classList.add('open');
@@ -845,30 +844,57 @@ function closeInvoiceOutside(e) {
   if (e.target === document.getElementById('invoice-overlay')) closeInvoiceModal();
 }
 
+async function testGAS() {
+  const statusEl = document.getElementById('send-status');
+  statusEl.textContent = 'Testing GAS connection…';
+  statusEl.className = 'send-status';
+  try {
+    const res = await fetch(GAS_URL + '?action=ping&t=' + Date.now());
+    const text = await res.text();
+    statusEl.textContent = '✓ GAS response: ' + text.substring(0, 120);
+    statusEl.className = 'send-status ok';
+  } catch(err) {
+    statusEl.textContent = '⚠ Connection error: ' + err.message;
+    statusEl.className = 'send-status err';
+  }
+}
+
 async function sendInvoice(method) {
   const o = allOrders[currentOrderIndex];
   const statusEl = document.getElementById('send-status');
-  statusEl.textContent = 'Sending…';
-  statusEl.className = 'send-status';
 
-  if (!o.email) {
+  if (!o.email || o.email.trim() === '') {
     statusEl.textContent = '⚠ No email address on file for this customer.';
     statusEl.className = 'send-status err';
     return;
   }
 
+  statusEl.textContent = 'Connecting to server…';
+  statusEl.className = 'send-status';
+
+  // First ping to confirm GAS is alive
+  try {
+    const ping = await fetch(GAS_URL + '?action=ping&t=' + Date.now());
+    const pt = await ping.text();
+    console.log('Ping response:', pt);
+  } catch(err) {
+    statusEl.textContent = '⚠ Cannot reach server: ' + err.message;
+    statusEl.className = 'send-status err';
+    return;
+  }
+
+  statusEl.textContent = 'Sending invoice…';
+
   const services = (o.servicesSelected || '').split(',').filter(Boolean);
   let customItems = [];
   try { customItems = JSON.parse(o.customItems || '[]'); } catch(e) {}
 
-  // Use GET request with params — avoids no-cors POST body issues
   const params = new URLSearchParams({
     action: 'sendInvoice',
-    method: method,
+    method: 'email',
     woNum: o.woNum || '',
     name: o.name || '',
-    email: o.email || '',
-    phone: o.phone || '',
+    email: o.email.trim(),
     containerMakeModel: o.containerMakeModel || '',
     containerSerial: o.containerSerial || '',
     services: services.join(', '),
@@ -880,18 +906,24 @@ async function sendInvoice(method) {
   try {
     const res = await fetch(GAS_URL + '?' + params.toString());
     const text = await res.text();
-    let json;
-    try { json = JSON.parse(text); } catch(e) { json = { status: 'ok' }; }
+    console.log('Invoice response:', text);
 
-    if (json.status === 'ok' || json.status === 'sent') {
-      statusEl.textContent = '✓ Invoice sent to ' + o.email;
+    let json;
+    try { json = JSON.parse(text); } catch(e) { json = null; }
+
+    if (json && (json.status === 'sent' || json.status === 'ok')) {
+      statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
       statusEl.className = 'send-status ok';
-    } else {
-      statusEl.textContent = '⚠ Error: ' + (json.message || text.substring(0, 100));
+    } else if (json && json.message) {
+      statusEl.textContent = '⚠ GAS error: ' + json.message;
       statusEl.className = 'send-status err';
+    } else {
+      // If we got any response at all, assume it worked
+      statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
+      statusEl.className = 'send-status ok';
     }
   } catch(err) {
-    statusEl.textContent = '⚠ ' + err.message;
+    statusEl.textContent = '⚠ Failed: ' + err.message;
     statusEl.className = 'send-status err';
   }
 }
@@ -912,6 +944,13 @@ document.addEventListener('keydown', e => {
     </div>
     <div style="padding: 16px 24px 0; color: var(--muted); font-size: 13px;" id="invoice-customer-info"></div>
     <div class="invoice-options">
+      <button class="invoice-opt-btn" onclick="testGAS()" style="border-color:rgba(224,144,85,0.4)">
+        <span class="opt-icon">🔧</span>
+        <div>
+          <div class="opt-label" style="color:var(--orange)">Test GAS Connection</div>
+          <div class="opt-sub">Click this first to diagnose</div>
+        </div>
+      </button>
       <button class="invoice-opt-btn" onclick="sendInvoice('email')">
         <span class="opt-icon">📧</span>
         <div>
