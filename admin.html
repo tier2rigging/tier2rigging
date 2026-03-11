@@ -392,7 +392,7 @@
     <div class="topbar-brand">TIER2 RIGGING <span>Admin Panel</span></div>
     <div class="topbar-right">
       <button class="refresh-btn" onclick="loadOrders()">↻ Refresh</button>
-      <button class="refresh-btn" onclick="openNewOrderModal()" style="border-color:rgba(90,173,122,0.4);color:#6dcc96;">+ New Order</button>
+      <button class="refresh-btn" id="new-order-btn" style="border-color:rgba(90,173,122,0.4);color:#6dcc96;">+ New Order</button>
       <button class="logout-btn" onclick="logout()">Log Out</button>
     </div>
   </div>
@@ -1379,4 +1379,12 @@ document.addEventListener('keydown', e => {
       </div>
     </div>
     <div class="modal-footer">
-      <div class="save-msg" id="
+      <div class="save-msg" id="no-save-msg" style="font-size:13px;"></div>
+      <button class="btn btn-ghost" onclick="closeNewOrderModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewOrder()">Create Order</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
