@@ -844,20 +844,6 @@ function closeInvoiceOutside(e) {
   if (e.target === document.getElementById('invoice-overlay')) closeInvoiceModal();
 }
 
-async function testGAS() {
-  const statusEl = document.getElementById('send-status');
-  statusEl.textContent = 'Testing GAS connection…';
-  statusEl.className = 'send-status';
-  try {
-    const res = await fetch(GAS_URL + '?action=ping&t=' + Date.now());
-    const text = await res.text();
-    statusEl.textContent = '✓ GAS response: ' + text.substring(0, 120);
-    statusEl.className = 'send-status ok';
-  } catch(err) {
-    statusEl.textContent = '⚠ Connection error: ' + err.message;
-    statusEl.className = 'send-status err';
-  }
-}
 
 async function sendInvoice(method) {
   const o = allOrders[currentOrderIndex];
@@ -944,13 +930,6 @@ document.addEventListener('keydown', e => {
     </div>
     <div style="padding: 16px 24px 0; color: var(--muted); font-size: 13px;" id="invoice-customer-info"></div>
     <div class="invoice-options">
-      <button class="invoice-opt-btn" onclick="testGAS()" style="border-color:rgba(224,144,85,0.4)">
-        <span class="opt-icon">🔧</span>
-        <div>
-          <div class="opt-label" style="color:var(--orange)">Test GAS Connection</div>
-          <div class="opt-sub">Click this first to diagnose</div>
-        </div>
-      </button>
       <button class="invoice-opt-btn" onclick="sendInvoice('email')">
         <span class="opt-icon">📧</span>
         <div>
