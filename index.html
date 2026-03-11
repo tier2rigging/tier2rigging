@@ -178,6 +178,44 @@
 
     @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
     .section-card { animation: fadeUp 0.3s ease both; }
+  
+    /* ── COLLAPSIBLE EQUIP BLOCKS ── */
+    .equip-toggle {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+    .equip-toggle:hover { background: rgba(200,169,110,0.12); }
+    .equip-toggle span:first-child { flex: 0 0 auto; }
+    .equip-toggle-hint {
+      flex: 1;
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      text-transform: none;
+      letter-spacing: 0;
+      font-style: italic;
+      transition: opacity 0.2s;
+    }
+    .collapsible.open .equip-toggle-hint { opacity: 0; }
+    .equip-chevron {
+      margin-left: auto;
+      font-size: 9px;
+      color: var(--tan);
+      transition: transform 0.3s ease;
+      opacity: 0.7;
+    }
+    .collapsible.open .equip-chevron { transform: rotate(180deg); opacity: 1; }
+    .collapsible .equip-body {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .collapsible.open .equip-body { display: block; }
+    .collapsible.open > .equip-label { border-bottom: none; }
+
   </style>
 </head>
 <body>
@@ -875,6 +913,26 @@
       alert('Submission failed. Please try again or call us at (631) 488-0071.');
     }
   });
+
+  // ── COLLAPSIBLE BLOCKS ────────────────────────────────────
+  ['main','reserve','aad'].forEach(function(id) {
+    var toggle = document.getElementById('toggle-' + id);
+    var block  = document.getElementById('block-' + id);
+    if (toggle && block) {
+      toggle.addEventListener('click', function() {
+        block.classList.toggle('open');
+      });
+    }
+  });
+
+  function expandFilledBlocks() {
+    ['block-main','block-reserve','block-aad'].forEach(function(id) {
+      var block = document.getElementById(id);
+      if (!block) return;
+      var hasData = Array.from(block.querySelectorAll('input')).some(function(i) { return i.value; });
+      if (hasData) block.classList.add('open');
+    });
+  }
 </script>
 </body>
 </html>
