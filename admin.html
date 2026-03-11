@@ -485,13 +485,37 @@
       <!-- RIG -->
       <div class="modal-section">
         <div class="modal-section-title">Rig Information</div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:4px;">Harness &amp; Container</div>
         <div class="info-grid">
-          <div class="info-field"><label>Container Make/Model</label><input type="text" id="edit-container"></div>
-          <div class="info-field"><label>Container Serial #</label><input type="text" id="edit-serial"></div>
-          <div class="info-field"><label>Main Canopy</label><input type="text" id="edit-main"></div>
-          <div class="info-field"><label>Reserve Canopy</label><input type="text" id="edit-reserve"></div>
-          <div class="info-field"><label>AAD Type</label><input type="text" id="edit-aad"></div>
-          <div class="info-field"><label>AAD Service Date</label><input type="text" id="edit-aad-date"></div>
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="edit-container-mfr"></div>
+          <div class="info-field"><label>Model</label><input type="text" id="edit-container-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="edit-serial"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="edit-container-dom"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:16px;">Main Canopy</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="edit-main-mfr"></div>
+          <div class="info-field"><label>Model &amp; Size</label><input type="text" id="edit-main-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="edit-main-serial"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="edit-main-dom"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:16px;">Reserve Canopy</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="edit-reserve-mfr"></div>
+          <div class="info-field"><label>Model &amp; Size</label><input type="text" id="edit-reserve-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="edit-reserve-serial"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="edit-reserve-dom"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:16px;">AAD</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="edit-aad-mfr"></div>
+          <div class="info-field"><label>Model</label><input type="text" id="edit-aad-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="edit-aad-serial"></div>
+          <div class="info-field"><label>Next Service Date</label><input type="text" id="edit-aad-date"></div>
         </div>
       </div>
 
@@ -725,12 +749,22 @@ function openModal(idx) {
   document.getElementById('edit-phone').value = o.phone || '';
   document.getElementById('edit-email').value = o.email || '';
   document.getElementById('edit-address').value = o.address || '';
-  document.getElementById('edit-container').value = o.containerMakeModel || '';
-  document.getElementById('edit-serial').value = o.containerSerial || '';
-  document.getElementById('edit-main').value = o.mainCanopy || '';
-  document.getElementById('edit-reserve').value = o.reserveCanopy || '';
-  document.getElementById('edit-aad').value = o.aadType || '';
-  document.getElementById('edit-aad-date').value = o.aadServiceDate || '';
+  document.getElementById('edit-container-mfr').value   = o.containerManufacturer || '';
+  document.getElementById('edit-container-model').value = o.containerModel || o.containerMakeModel || '';
+  document.getElementById('edit-serial').value           = o.containerSerial || '';
+  document.getElementById('edit-container-dom').value   = o.containerDom || '';
+  document.getElementById('edit-main-mfr').value        = o.mainManufacturer || '';
+  document.getElementById('edit-main-model').value      = o.mainModel || o.mainCanopy || '';
+  document.getElementById('edit-main-serial').value     = o.mainSerial || '';
+  document.getElementById('edit-main-dom').value        = o.mainDom || '';
+  document.getElementById('edit-reserve-mfr').value     = o.reserveManufacturer || '';
+  document.getElementById('edit-reserve-model').value   = o.reserveModel || o.reserveCanopy || '';
+  document.getElementById('edit-reserve-serial').value  = o.reserveSerial || '';
+  document.getElementById('edit-reserve-dom').value     = o.reserveDom || '';
+  document.getElementById('edit-aad-mfr').value         = o.aadManufacturer || '';
+  document.getElementById('edit-aad-model').value       = o.aadModel || o.aadType || '';
+  document.getElementById('edit-aad-serial').value      = o.aadSerial || '';
+  document.getElementById('edit-aad-date').value        = o.aadServiceDate || '';
   document.getElementById('edit-damage').value = o.damageDescription || '';
   document.getElementById('edit-notes').value = o.notes || '';
   document.getElementById('edit-loops').value = o.closingLoops || '';
@@ -843,11 +877,25 @@ async function saveOrder() {
     phone: document.getElementById('edit-phone').value,
     email: document.getElementById('edit-email').value,
     address: document.getElementById('edit-address').value,
-    containerMakeModel: document.getElementById('edit-container').value,
+    containerManufacturer: document.getElementById('edit-container-mfr').value,
+    containerModel: document.getElementById('edit-container-model').value,
+    containerMakeModel: document.getElementById('edit-container-mfr').value + ' ' + document.getElementById('edit-container-model').value,
     containerSerial: document.getElementById('edit-serial').value,
-    mainCanopy: document.getElementById('edit-main').value,
-    reserveCanopy: document.getElementById('edit-reserve').value,
-    aadType: document.getElementById('edit-aad').value,
+    containerDom: document.getElementById('edit-container-dom').value,
+    mainManufacturer: document.getElementById('edit-main-mfr').value,
+    mainModel: document.getElementById('edit-main-model').value,
+    mainCanopy: document.getElementById('edit-main-model').value,
+    mainSerial: document.getElementById('edit-main-serial').value,
+    mainDom: document.getElementById('edit-main-dom').value,
+    reserveManufacturer: document.getElementById('edit-reserve-mfr').value,
+    reserveModel: document.getElementById('edit-reserve-model').value,
+    reserveCanopy: document.getElementById('edit-reserve-model').value,
+    reserveSerial: document.getElementById('edit-reserve-serial').value,
+    reserveDom: document.getElementById('edit-reserve-dom').value,
+    aadManufacturer: document.getElementById('edit-aad-mfr').value,
+    aadModel: document.getElementById('edit-aad-model').value,
+    aadType: document.getElementById('edit-aad-model').value,
+    aadSerial: document.getElementById('edit-aad-serial').value,
     aadServiceDate: document.getElementById('edit-aad-date').value,
     servicesSelected: checkedSvcs.join(', '),
     estimatedTotal: total,
@@ -987,8 +1035,10 @@ let selectedDZ = null;
 function openNewOrderModal() {
   selectedDZ = null;
   // Reset all fields
-  ['no-name','no-phone','no-email','no-container','no-serial','no-main',
-   'no-reserve','no-aad','no-completion','no-notes'].forEach(id => {
+  ['no-name','no-phone','no-email','no-container-mfr','no-container-model','no-serial','no-container-dom',
+   'no-main-mfr','no-main-model','no-main-serial','no-main-dom',
+   'no-reserve-mfr','no-reserve-model','no-reserve-serial','no-reserve-dom',
+   'no-aad-mfr','no-aad-model','no-aad-serial','no-aad-date','no-completion','no-notes'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -1127,11 +1177,26 @@ async function submitNewOrder() {
     name: selectedDZ === 'fun' ? document.getElementById('no-name').value : dz.name,
     phone: selectedDZ === 'fun' ? document.getElementById('no-phone').value : dz.phone,
     email: selectedDZ === 'fun' ? document.getElementById('no-email').value : dz.email,
-    containerMakeModel: document.getElementById('no-container').value,
+    containerManufacturer: document.getElementById('no-container-mfr').value,
+    containerModel: document.getElementById('no-container-model').value,
+    containerMakeModel: document.getElementById('no-container-mfr').value + ' ' + document.getElementById('no-container-model').value,
     containerSerial: document.getElementById('no-serial').value,
-    mainCanopy: document.getElementById('no-main').value,
-    reserveCanopy: document.getElementById('no-reserve').value,
-    aadType: document.getElementById('no-aad').value,
+    containerDom: document.getElementById('no-container-dom').value,
+    mainManufacturer: document.getElementById('no-main-mfr').value,
+    mainModel: document.getElementById('no-main-model').value,
+    mainCanopy: document.getElementById('no-main-model').value,
+    mainSerial: document.getElementById('no-main-serial').value,
+    mainDom: document.getElementById('no-main-dom').value,
+    reserveManufacturer: document.getElementById('no-reserve-mfr').value,
+    reserveModel: document.getElementById('no-reserve-model').value,
+    reserveCanopy: document.getElementById('no-reserve-model').value,
+    reserveSerial: document.getElementById('no-reserve-serial').value,
+    reserveDom: document.getElementById('no-reserve-dom').value,
+    aadManufacturer: document.getElementById('no-aad-mfr').value,
+    aadModel: document.getElementById('no-aad-model').value,
+    aadType: document.getElementById('no-aad-model').value,
+    aadSerial: document.getElementById('no-aad-serial').value,
+    aadServiceDate: document.getElementById('no-aad-date').value,
     requestedCompletion: document.getElementById('no-completion').value,
     servicesSelected: checkedSvcs.join(', '),
     estimatedTotal: total,
@@ -1233,11 +1298,11 @@ document.addEventListener('keydown', e => {
           </div>
           <div class="dz-btn" id="dz-btn-gojump" onclick="selectDZ('gojump')">
             <div class="dz-name">Go Jump New York</div>
-            <div class="dz-email">steve@gojump-america.com</div>
+            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe8d8a9b889bbe9991948b938ed39f939b8c979d9fd09d9193">[email&#160;protected]</a></div>
           </div>
           <div class="dz-btn" id="dz-btn-sussex" onclick="selectDZ('sussex')">
             <div class="dz-name">Skydive Sussex</div>
-            <div class="dz-email">mackenzie@skydivesussex.com</div>
+            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f8f4f6fef0fbeffcf0d5e6feecf1fce3f0e6e0e6e6f0edbbf6faf8">[email&#160;protected]</a></div>
           </div>
         </div>
         <div id="fun-jumper-fields" style="display:none">
@@ -1250,12 +1315,41 @@ document.addEventListener('keydown', e => {
       </div>
       <div class="modal-section">
         <div class="modal-section-title">Rig Information</div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Harness &amp; Container</div>
         <div class="info-grid">
-          <div class="info-field"><label>Container Make/Model</label><input type="text" id="no-container"></div>
-          <div class="info-field"><label>Container Serial #</label><input type="text" id="no-serial"></div>
-          <div class="info-field"><label>Main Canopy</label><input type="text" id="no-main"></div>
-          <div class="info-field"><label>Reserve Canopy</label><input type="text" id="no-reserve"></div>
-          <div class="info-field"><label>AAD Type</label><input type="text" id="no-aad"></div>
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-container-mfr"></div>
+          <div class="info-field"><label>Model</label><input type="text" id="no-container-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="no-serial"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-container-dom"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Main Canopy</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-main-mfr"></div>
+          <div class="info-field"><label>Model &amp; Size</label><input type="text" id="no-main-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="no-main-serial"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-main-dom"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Reserve Canopy</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-reserve-mfr"></div>
+          <div class="info-field"><label>Model &amp; Size</label><input type="text" id="no-reserve-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="no-reserve-serial"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-reserve-dom"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">AAD</div>
+        <div class="info-grid">
+          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-aad-mfr"></div>
+          <div class="info-field"><label>Model</label><input type="text" id="no-aad-model"></div>
+          <div class="info-field"><label>Serial #</label><input type="text" id="no-aad-serial"></div>
+          <div class="info-field"><label>Next Service Date</label><input type="text" id="no-aad-date"></div>
+        </div>
+
+        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Scheduling</div>
+        <div class="info-grid">
           <div class="info-field"><label>Requested Completion</label><input type="text" id="no-completion"></div>
         </div>
       </div>
@@ -1285,12 +1379,4 @@ document.addEventListener('keydown', e => {
       </div>
     </div>
     <div class="modal-footer">
-      <div class="save-msg" id="no-save-msg" style="font-size:13px;"></div>
-      <button class="btn btn-ghost" onclick="closeNewOrderModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="submitNewOrder()">Create Order</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+      <div class="save-msg" id="
