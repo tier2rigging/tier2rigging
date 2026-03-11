@@ -851,40 +851,47 @@ async function sendInvoice(method) {
   statusEl.textContent = 'Sending…';
   statusEl.className = 'send-status';
 
-  // Build invoice data
+  if (!o.email) {
+    statusEl.textContent = '⚠ No email address on file for this customer.';
+    statusEl.className = 'send-status err';
+    return;
+  }
+
   const services = (o.servicesSelected || '').split(',').filter(Boolean);
   let customItems = [];
   try { customItems = JSON.parse(o.customItems || '[]'); } catch(e) {}
 
-  const invoiceData = {
+  // Use GET request with params — avoids no-cors POST body issues
+  const params = new URLSearchParams({
     action: 'sendInvoice',
-    method,
-    woNum: o.woNum,
-    name: o.name,
-    email: o.email,
-    phone: o.phone,
-    containerMakeModel: o.containerMakeModel,
-    containerSerial: o.containerSerial,
+    method: method,
+    woNum: o.woNum || '',
+    name: o.name || '',
+    email: o.email || '',
+    phone: o.phone || '',
+    containerMakeModel: o.containerMakeModel || '',
+    containerSerial: o.containerSerial || '',
     services: services.join(', '),
     customItems: JSON.stringify(customItems),
-    total: o.estimatedTotal,
+    total: String(o.estimatedTotal || 0),
     notes: o.notes || '',
-  };
+  });
 
   try {
-    const body = Object.entries(invoiceData)
-      .map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v||''))
-      .join('&');
-    await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body,
-      mode: 'no-cors'
-    });
-    statusEl.textContent = '✓ Invoice sent successfully!';
-    statusEl.className = 'send-status ok';
+    const res = await fetch(GAS_URL + '?' + params.toString());
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); } catch(e) { json = { status: 'ok' }; }
+
+    if (json.status === 'ok' || json.status === 'sent') {
+      statusEl.textContent = '✓ Invoice sent to ' + o.email;
+      statusEl.className = 'send-status ok';
+    } else {
+      statusEl.textContent = '⚠ Error: ' + (json.message || text.substring(0, 100));
+      statusEl.className = 'send-status err';
+    }
   } catch(err) {
-    statusEl.textContent = '⚠ Send failed. Check GAS deployment.';
+    statusEl.textContent = '⚠ ' + err.message;
     statusEl.className = 'send-status err';
   }
 }
