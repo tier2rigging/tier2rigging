@@ -358,12 +358,30 @@
     // Welcome
     document.getElementById('welcomeName').textContent = name.split(' ')[0] + "'s Rig";
 
-    // Pre-fill new order link with serial
-    document.getElementById('newOrderLink').href =
-      'https://tier2rigging.com?serial=' + encodeURIComponent(serial) +
-      '&name=' + encodeURIComponent(latest.full_name || '') +
-      '&email=' + encodeURIComponent(latest.email || '') +
-      '&phone=' + encodeURIComponent(latest.phone || '');
+    // Pre-fill new order link with ALL rig fields
+    var rigParams = new URLSearchParams({
+      prefill: '1',
+      serial:              latest.containerSerial  || serial || '',
+      name:                latest.name             || latest.full_name || '',
+      email:               latest.email            || '',
+      phone:               latest.phone            || '',
+      container_manufacturer: latest.containerManufacturer || '',
+      container_model:     latest.containerModel   || latest.containerMakeModel || '',
+      container_serial:    latest.containerSerial  || serial || '',
+      container_dom:       latest.containerDom     || '',
+      main_manufacturer:   latest.mainManufacturer || '',
+      main_model:          latest.mainModel        || latest.mainCanopy || '',
+      main_serial:         latest.mainSerial       || '',
+      main_dom:            latest.mainDom          || '',
+      reserve_manufacturer: latest.reserveManufacturer || '',
+      reserve_model:       latest.reserveModel     || latest.reserveCanopy || '',
+      reserve_serial:      latest.reserveSerial    || '',
+      reserve_dom:         latest.reserveDom       || '',
+      aad_manufacturer:    latest.aadManufacturer  || '',
+      aad_model:           latest.aadModel         || latest.aadType || '',
+      aad_serial:          latest.aadSerial        || '',
+    });
+    document.getElementById('newOrderLink').href = 'https://tier2rigging.com?' + rigParams.toString();
 
     // Due date banner
     const reminderDate = latest.reminder_date ? new Date(latest.reminder_date) : null;
@@ -388,16 +406,20 @@
     }
 
     // Rig card
+    var containerName = [latest.containerManufacturer, latest.containerModel].filter(Boolean).join(' ') || latest.containerMakeModel || 'Your Container';
+    var mainName      = [latest.mainManufacturer, latest.mainModel].filter(Boolean).join(' ') || latest.mainCanopy || '—';
+    var reserveName   = [latest.reserveManufacturer, latest.reserveModel].filter(Boolean).join(' ') || latest.reserveCanopy || '—';
+    var aadName       = [latest.aadManufacturer, latest.aadModel].filter(Boolean).join(' ') || latest.aadType || '—';
     document.getElementById('rigCard').innerHTML = `
       <div class="rig-card-head">
-        <div class="rig-name">${esc(latest.container || 'Your Container')}</div>
-        <span class="rig-serial">S/N: ${esc(serial)}</span>
+        <div class="rig-name">${esc(containerName)}</div>
+        <span class="rig-serial">S/N: ${esc(latest.containerSerial || serial)}</span>
       </div>
       <div class="rig-grid">
-        <div class="rig-field"><div class="rig-field-label">Main Canopy</div><div class="rig-field-val">${esc(latest.main_canopy||'—')}</div></div>
-        <div class="rig-field"><div class="rig-field-label">Reserve Canopy</div><div class="rig-field-val">${esc(latest.reserve_canopy||'—')}</div></div>
-        <div class="rig-field"><div class="rig-field-label">AAD Type</div><div class="rig-field-val">${esc(latest.aad_type||'—')}</div></div>
-        <div class="rig-field"><div class="rig-field-label">AAD Service Date</div><div class="rig-field-val">${esc(latest.aad_service_date||'—')}</div></div>
+        <div class="rig-field"><div class="rig-field-label">Main Canopy</div><div class="rig-field-val">${esc(mainName)}</div></div>
+        <div class="rig-field"><div class="rig-field-label">Reserve Canopy</div><div class="rig-field-val">${esc(reserveName)}</div></div>
+        <div class="rig-field"><div class="rig-field-label">AAD</div><div class="rig-field-val">${esc(aadName)}</div></div>
+        <div class="rig-field"><div class="rig-field-label">AAD Serial</div><div class="rig-field-val">${esc(latest.aadSerial||'—')}</div></div>
       </div>`;
 
     // History
