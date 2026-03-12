@@ -835,16 +835,7 @@
     });
   });
 
-  // ── COLLAPSIBLE EQUIP BLOCKS ──────────────────────────────
-  ['main','reserve','aad'].forEach(function(id) {
-    var toggle = document.getElementById('toggle-' + id);
-    var block  = document.getElementById('block-' + id);
-    if (toggle && block) {
-      toggle.addEventListener('click', function() {
-        block.classList.toggle('open');
-      });
-    }
-  });
+
 
   function expandFilledBlocks() {
     ['block-main','block-reserve','block-aad'].forEach(function(id) {
@@ -904,6 +895,17 @@
         if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 400);
     }
+
+    // ── Collapsible equip blocks ──
+    ['main','reserve','aad'].forEach(function(id) {
+      var toggle = document.getElementById('toggle-' + id);
+      var block  = document.getElementById('block-' + id);
+      if (toggle && block) {
+        toggle.addEventListener('click', function() {
+          block.classList.toggle('open');
+        });
+      }
+    });
 
     // Bind serial lookup
     var btn = document.getElementById('serial-lookup-btn');
