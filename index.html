@@ -968,6 +968,16 @@
       alert('Container serial number is required before submitting.');
       return;
     }
+    var checkedServices = document.querySelectorAll('input[name="services[]"]:checked');
+    var writeInRequest = (document.querySelector('[name="other_service"]') || {}).value || '';
+    var supplyLoops = parseInt((document.getElementById('supply_loops') || {}).value || '0');
+    var supplyBands = parseInt((document.getElementById('rubber_bands') || {}).value || '0');
+    var supplyKeepers = parseInt((document.getElementById('elastic_keepers') || {}).value || '0');
+    var hasSupplies = supplyLoops > 0 || supplyBands > 0 || supplyKeepers > 0;
+    if (checkedServices.length === 0 && !writeInRequest.trim() && !hasSupplies) {
+      alert('Please select at least one service, supply, or enter a write-in request before submitting.');
+      return;
+    }
     selectRush('no', 'No', '0');
     document.getElementById('rush-overlay').classList.add('open');
   }
