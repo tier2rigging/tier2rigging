@@ -287,6 +287,77 @@
     .equip-chk:checked ~ .equip-toggle .equip-chevron { transform: rotate(180deg); }
     .equip-chk:checked ~ .equip-toggle .equip-toggle-hint { display: none; }
 
+  
+    /* ── RUSH MODAL ─────────────────────────── */
+    .rush-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.82); z-index: 999;
+      align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .rush-overlay.open { display: flex; }
+    .rush-modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      width: 100%; max-width: 480px;
+      overflow: hidden;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    }
+    .rush-modal-header {
+      background: linear-gradient(180deg, #1a1a1a, #222);
+      border-bottom: 1px solid var(--tan);
+      padding: 22px 24px;
+      text-align: center;
+    }
+    .rush-modal-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 28px; letter-spacing: 3px;
+      color: var(--tan); margin: 0;
+    }
+    .rush-modal-header p {
+      color: var(--muted); font-size: 13px; margin-top: 6px;
+    }
+    .rush-modal-body { padding: 24px; }
+    .rush-options { display: flex; flex-direction: column; gap: 12px; }
+    .rush-option {
+      display: flex; align-items: center; gap: 16px;
+      background: var(--input-bg); border: 2px solid var(--border);
+      border-radius: 10px; padding: 16px 18px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .rush-option:hover { border-color: var(--tan); }
+    .rush-option.selected {
+      border-color: var(--tan);
+      background: rgba(200,169,110,0.1);
+    }
+    .rush-option .rush-icon { font-size: 28px; line-height: 1; }
+    .rush-option .rush-info { flex: 1; }
+    .rush-option .rush-title { font-weight: 700; color: var(--parchment); font-size: 15px; }
+    .rush-option .rush-desc { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .rush-option .rush-price {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; color: var(--tan); letter-spacing: 1px;
+    }
+    .rush-modal-footer {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+      display: flex; gap: 10px; justify-content: flex-end;
+    }
+    .rush-back-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); padding: 10px 22px; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .rush-back-btn:hover { border-color: var(--tan); color: var(--tan); }
+    .rush-go-btn {
+      background: linear-gradient(135deg, var(--tan), var(--tan-light));
+      border: none; color: #1a1a1a; padding: 10px 28px; border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .rush-go-btn:hover { opacity: 0.88; }
+
   </style>
 </head>
 <body>
@@ -779,19 +850,14 @@
           </div>
 
           <!-- RUSH -->
-          <div class="rush-row">
-            <input type="checkbox" name="rush_service" id="rush-check" value="Yes">
-            <label for="rush-check" class="rush-label">
-              <strong>Rush Service</strong>
-              <span style="font-size:12px;color:var(--muted);margin-left:6px;">Priority handling — contact for availability</span>
-            </label>
-            <input type="hidden" name="rush_fee" id="rush-fee-field" value="$0">
-            <div class="rush-fee" id="rush-fee-display"></div>
+          <div class="rush-row" style="display:none">
+            <input type="hidden" name="rush_service" id="rush-service-field" value="No">
+            <input type="hidden" name="rush_fee" id="rush-fee-field" value="0">
           </div>
         </div>
       </div>
 
-      <button type="submit" class="submit-btn" id="submit-btn">Submit Service Request</button>
+      <button type="button" class="submit-btn" id="submit-btn" onclick="openRushModal()">&#x25B6;Submit Service Request</button>
 
     </form>
   </div>
@@ -1015,7 +1081,39 @@
       btn.textContent = 'Submit Service Request';
       alert('Submission failed. Please try again or call us at (631) 488-0071.');
     }
-  });
+  }
+
+  // ── RUSH MODAL ───────────────────────────────────────────────
+  var selectedRush = 'no';
+
+  function openRushModal() {
+    var serial = (document.querySelector('[name="container_serial"]') || {}).value;
+    if (!serial || !serial.trim()) {
+      alert('Container serial number is required before submitting.');
+      return;
+    }
+    selectedRush = 'no';
+    document.getElementById('rush-no').classList.add('selected');
+    document.getElementById('rush-yes').classList.remove('selected');
+    document.getElementById('rush-overlay').classList.add('open');
+  }
+
+  function closeRushModal() {
+    document.getElementById('rush-overlay').classList.remove('open');
+  }
+
+  function selectRush(choice) {
+    selectedRush = choice;
+    document.getElementById('rush-no').classList.toggle('selected', choice === 'no');
+    document.getElementById('rush-yes').classList.toggle('selected', choice === 'yes');
+  }
+
+  function confirmRushAndSubmit() {
+    document.getElementById('rush-service-field').value = selectedRush === 'yes' ? 'Yes' : 'No';
+    document.getElementById('rush-fee-field').value = selectedRush === 'yes' ? 'TBD' : '0';
+    closeRushModal();
+    doSubmit();
+  }
 
   // ── COLLAPSIBLE BLOCKS ────────────────────────────────────
   ['main','reserve','aad'].forEach(function(id) {
@@ -1047,5 +1145,40 @@
     disp.textContent = val;
   }
 </script>
+
+<!-- RUSH SERVICE MODAL -->
+<div class="rush-overlay" id="rush-overlay">
+  <div class="rush-modal">
+    <div class="rush-modal-header">
+      <h2>One Last Thing</h2>
+      <p>Do you need rush service on this order?</p>
+    </div>
+    <div class="rush-modal-body">
+      <div class="rush-options">
+        <div class="rush-option selected" id="rush-no" onclick="selectRush('no')">
+          <div class="rush-icon">&#x1F4CB;</div>
+          <div class="rush-info">
+            <div class="rush-title">Standard Service</div>
+            <div class="rush-desc">Normal turnaround &mdash; no additional charge</div>
+          </div>
+          <div class="rush-price">$0</div>
+        </div>
+        <div class="rush-option" id="rush-yes" onclick="selectRush('yes')">
+          <div class="rush-icon">&#x26A1;</div>
+          <div class="rush-info">
+            <div class="rush-title">Rush Service</div>
+            <div class="rush-desc">Priority handling &mdash; we&apos;ll contact you for details</div>
+          </div>
+          <div class="rush-price">TBD</div>
+        </div>
+      </div>
+    </div>
+    <div class="rush-modal-footer">
+      <button class="rush-back-btn" onclick="closeRushModal()">&#x2190; Back</button>
+      <button class="rush-go-btn" onclick="confirmRushAndSubmit()">Submit Order &#x25B6;</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
