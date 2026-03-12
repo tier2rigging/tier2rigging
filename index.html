@@ -898,10 +898,7 @@
   }
 
   // ── RUSH SERVICE ───────────────────────────────────────────
-  document.getElementById('rush-check').addEventListener('change', function() {
-    document.getElementById('rush-fee-display').textContent = this.checked ? '+ Call for pricing' : '';
-    document.getElementById('rush-fee-field').value = this.checked ? 'Call for pricing' : '$0';
-  });
+  // rush is handled by modal — no inline listener needed
 
   // ── DAMAGE RADIO ──────────────────────────────────────────
   document.querySelectorAll('input[name="known_damage"]').forEach(function(r) {
