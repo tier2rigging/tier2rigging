@@ -279,6 +279,14 @@
     .step-btn:hover { background: rgba(200,169,110,0.25); }
     .step-val { font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 600; min-width: 24px; text-align: center; color: var(--parchment); }
 
+  
+    /* Pure CSS checkbox toggle - no JS needed */
+    .equip-chk { display: none; }
+    .collapsible .equip-body { display: none; border-top: 1px solid var(--border); }
+    .equip-chk:checked ~ .equip-body { display: block; }
+    .equip-chk:checked ~ .equip-toggle .equip-chevron { transform: rotate(180deg); }
+    .equip-chk:checked ~ .equip-toggle .equip-toggle-hint { display: none; }
+
   </style>
 </head>
 <body>
@@ -392,11 +400,12 @@
 
           <!-- MAIN CANOPY (collapsible) -->
           <div class="equip-block collapsible" id="block-main">
-            <div class="equip-label equip-toggle" id="toggle-main">
+            <input type="checkbox" id="chk-main" class="equip-chk" hidden>
+            <label class="equip-label equip-toggle" for="chk-main">
               Main Canopy
               <span class="equip-toggle-hint">&nbsp;— click to fill in</span>
               <span class="equip-chevron">&#x25BC;</span>
-            </div>
+            </label>
             <div class="equip-body">
               <div class="field-grid col-2">
                 <div class="field">
@@ -421,11 +430,12 @@
 
           <!-- RESERVE CANOPY (collapsible) -->
           <div class="equip-block collapsible" id="block-reserve">
-            <div class="equip-label equip-toggle" id="toggle-reserve">
+            <input type="checkbox" id="chk-reserve" class="equip-chk" hidden>
+            <label class="equip-label equip-toggle" for="chk-reserve">
               Reserve Canopy
               <span class="equip-toggle-hint">&nbsp;— click to fill in</span>
               <span class="equip-chevron">&#x25BC;</span>
-            </div>
+            </label>
             <div class="equip-body">
               <div class="field-grid col-2">
                 <div class="field">
@@ -450,11 +460,12 @@
 
           <!-- AAD (collapsible) -->
           <div class="equip-block collapsible" id="block-aad">
-            <div class="equip-label equip-toggle" id="toggle-aad">
+            <input type="checkbox" id="chk-aad" class="equip-chk" hidden>
+            <label class="equip-label equip-toggle" for="chk-aad">
               AAD
               <span class="equip-toggle-hint">&nbsp;— click to fill in</span>
               <span class="equip-chevron">&#x25BC;</span>
-            </div>
+            </label>
             <div class="equip-body">
               <div class="field-grid col-2">
                 <div class="field">
@@ -901,8 +912,15 @@
       var toggle = document.getElementById('toggle-' + id);
       var block  = document.getElementById('block-' + id);
       if (toggle && block) {
-        toggle.addEventListener('click', function() {
-          block.classList.toggle('open');
+        // Force closed on load
+        var body = block.querySelector('.equip-body');
+        if (body) body.style.display = 'none';
+        block.classList.remove('open');
+
+        toggle.addEventListener('click', function(e) {
+          var isOpen = block.classList.contains('open');
+          block.classList.toggle('open', !isOpen);
+          if (body) body.style.display = isOpen ? 'none' : 'block';
         });
       }
     });
