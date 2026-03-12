@@ -623,7 +623,7 @@
             <label class="service-item" data-price="0">
               <input type="checkbox" name="services[]" value="AAD Batteries / Service - Varies">
               <div class="svc-name">AAD Batteries / Service</div>
-              <div class="svc-price varies">Varies</div>
+              <div class="svc-price">$12</div>
             </label>
             <label class="service-item" data-price="10">
               <input type="checkbox" name="services[]" value="Install AAD - $10">
@@ -634,10 +634,10 @@
 
           <div class="service-category">
             <div class="cat-label">Lines</div>
-            <label class="service-item" data-price="0">
-              <input type="checkbox" name="services[]" value="Reserve Safety Stow Replacement - Varies">
+            <label class="service-item" data-price="12">
+              <input type="checkbox" name="services[]" value="Reserve Safety Stow Replacement - $12">
               <div class="svc-name">Reserve Safety Stow Replacement</div>
-              <div class="svc-price varies">Varies</div>
+              <div class="svc-price">$12</div>
             </label>
             <label class="service-item" data-price="40">
               <input type="checkbox" name="services[]" value="Replace Lower Steering Lines - $40">
@@ -652,7 +652,7 @@
             <label class="service-item" data-price="0">
               <input type="checkbox" name="services[]" value="Full Line Set - Varies">
               <div class="svc-name">Full Line Set</div>
-              <div class="svc-price varies">Varies</div>
+              <div class="svc-price">$12</div>
             </label>
             <label class="service-item" data-price="130">
               <input type="checkbox" name="services[]" value="Re-line Sport - $130">
@@ -739,7 +739,7 @@
             <label class="service-item" data-price="0">
               <input type="checkbox" name="services[]" value="Canopy Patch - Varies">
               <div class="svc-name">Canopy Patch <span class="svc-note">(depends on size and location of damage)</span></div>
-              <div class="svc-price varies">Varies</div>
+              <div class="svc-price">$12</div>
             </label>
           </div>
 
@@ -831,6 +831,7 @@
             <div class="supply-info">
               <div class="supply-name">Elastic Keepers</div>
               <div class="supply-meta">3 per pack &bull; $2/pack</div>
+            <input type="hidden" class="supply-price" value="2">
             </div>
             <div class="supply-stepper">
               <button type="button" class="step-btn" onclick="stepSupply('elastic_keepers',-1)">&#8722;</button>
@@ -866,66 +867,46 @@
 <script>
   const GAS_URL = 'https://script.google.com/macros/s/AKfycby6L86t1oFXTLsVJhULt3q2S4o7O5HEaD_ypa0mXpe_il9caDGDWrlg4aXRiYHL2eYw/exec';
 
-  // ── TICKET NUMBER ──────────────────────────────────────────
+  // ── HELPERS ───────────────────────────────────────────────
+  var total = 0;
+
   function genTicket() {
     var d = new Date();
-    var pad = n => String(n).padStart(2,'0');
+    var pad = function(n) { return String(n).padStart(2,'0'); };
     return 'T2-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '-' + Math.floor(1000+Math.random()*9000);
   }
-  document.getElementById('ticket_number').value = genTicket();
-
-  // ── SERVICE CHECKBOXES ─────────────────────────────────────
-  var total = 0;
-  document.querySelectorAll('.service-item').forEach(function(item) {
-    var cb = item.querySelector('input[type="checkbox"]');
-    cb.addEventListener('change', function() {
-      item.classList.toggle('checked', cb.checked);
-      // Show/hide description fields
-      if (item.querySelector('#sewing-desc-field')) item.querySelector('#sewing-desc-field').style.display = cb.checked ? 'block' : 'none';
-      if (item.querySelector('#patch-desc-field'))  item.querySelector('#patch-desc-field').style.display  = cb.checked ? 'block' : 'none';
-      recalcTotal();
-    });
-  });
 
   function recalcTotal() {
     var t = 0;
     document.querySelectorAll('.service-item input:checked').forEach(function(cb) {
       t += parseFloat(cb.closest('.service-item').dataset.price) || 0;
     });
+    // Add supplies
+    Object.keys(SUPPLY_PRICES).forEach(function(id) {
+      var inp = document.getElementById(id);
+      if (inp) t += (parseInt(inp.value) || 0) * SUPPLY_PRICES[id];
+    });
     total = t;
     document.getElementById('total-display').textContent = '$' + t;
     document.getElementById('total_field').value = '$' + t;
   }
 
-  // ── RUSH SERVICE ───────────────────────────────────────────
-  // rush is handled by modal — no inline listener needed
-
-  // ── DAMAGE RADIO ──────────────────────────────────────────
-  document.querySelectorAll('input[name="known_damage"]').forEach(function(r) {
-    r.addEventListener('change', function() {
-      document.getElementById('damage-no').classList.toggle('selected', !document.querySelector('#damage-yes input').checked);
-      document.getElementById('damage-yes').classList.toggle('selected', document.querySelector('#damage-yes input').checked);
-      document.getElementById('damage-detail').style.display = this.value === 'Yes' ? 'block' : 'none';
-    });
-  });
-
-
+  function setField(name, val) {
+    if (!val) return;
+    var el = document.querySelector('[name="' + name + '"]');
+    if (el) el.value = val;
+  }
 
   function expandFilledBlocks() {
     ['block-main','block-reserve','block-aad'].forEach(function(id) {
       var block = document.getElementById(id);
       if (!block) return;
-      var hasData = false;
-      block.querySelectorAll('input').forEach(function(inp) { if (inp.value) hasData = true; });
-      if (hasData) block.classList.add('open');
+      var hasData = Array.from(block.querySelectorAll('input')).some(function(i) { return i.value; });
+      if (hasData) {
+        var chk = document.getElementById('chk-' + id.replace('block-',''));
+        if (chk) chk.checked = true;
+      }
     });
-  }
-
-  // ── FIELD FILL HELPER ─────────────────────────────────────
-  function setField(name, val) {
-    if (!val) return;
-    var el = document.querySelector('[name="' + name + '"]');
-    if (el) el.value = val;
   }
 
   function fillRigFields(d) {
@@ -956,48 +937,103 @@
     document.getElementById('returning-card').style.display = 'none';
   }
 
-  // ── QR CODE PRE-FILL (from customer portal) ───────────────
-  document.addEventListener('DOMContentLoaded', function() {
-    var params = new URLSearchParams(window.location.search);
-    if (params.get('prefill') === '1') {
-      var d = {};
-      params.forEach(function(v, k) { d[k] = v; });
-      fillRigFields(d);
-      showPrefillBanner();
-      setTimeout(function() {
-        var svc = document.querySelector('.section-card:nth-child(4)');
-        if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 400);
+  // ── SUPPLY STEPPERS ──────────────────────────────────────
+  var SUPPLY_PRICES = {
+    'supply_loops':    3,
+    'rubber_bands':    1,
+    'elastic_keepers': 2
+  };
+
+  function stepSupply(id, delta) {
+    var inp = document.getElementById(id);
+    var disp = document.getElementById(id + '_display');
+    if (!inp || !disp) return;
+    var val = Math.max(0, (parseInt(inp.value) || 0) + delta);
+    inp.value = val;
+    disp.textContent = val;
+    recalcTotal();
+  }
+
+  // ── RUSH MODAL ───────────────────────────────────────────
+  var selectedRush = 'no';
+  var selectedRushLabel = 'No';
+  var selectedRushFee = '0';
+
+  function openRushModal() {
+    var serial = (document.querySelector('[name="container_serial"]') || {}).value || '';
+    if (!serial.trim()) {
+      alert('Container serial number is required before submitting.');
+      return;
     }
+    selectRush('no', 'No', '0');
+    document.getElementById('rush-overlay').classList.add('open');
+  }
 
-    // ── Collapsible equip blocks ──
-    ['main','reserve','aad'].forEach(function(id) {
-      var toggle = document.getElementById('toggle-' + id);
-      var block  = document.getElementById('block-' + id);
-      if (toggle && block) {
-        // Force closed on load
-        var body = block.querySelector('.equip-body');
-        if (body) body.style.display = 'none';
-        block.classList.remove('open');
+  function closeRushModal() {
+    document.getElementById('rush-overlay').classList.remove('open');
+  }
 
-        toggle.addEventListener('click', function(e) {
-          var isOpen = block.classList.contains('open');
-          block.classList.toggle('open', !isOpen);
-          if (body) body.style.display = isOpen ? 'none' : 'block';
-        });
-      }
+  function selectRush(choice, label, fee) {
+    selectedRush = choice;
+    selectedRushLabel = label;
+    selectedRushFee = fee;
+    ['rush-no','rush-2to5','rush-sameday'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('selected');
+    });
+    var sel = document.getElementById('rush-' + choice);
+    if (sel) sel.classList.add('selected');
+  }
+
+  function confirmRushAndSubmit() {
+    document.getElementById('rush-service-field').value = selectedRushLabel;
+    document.getElementById('rush-fee-field').value = selectedRushFee;
+    closeRushModal();
+    doSubmit();
+  }
+
+  // ── ACTUAL FORM SUBMIT ───────────────────────────────────
+  async function doSubmit() {
+    var btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    var form = document.getElementById('order-form');
+    var payload = {};
+    new FormData(form).forEach(function(v, k) {
+      if (payload[k]) { payload[k] = payload[k] + '\n' + v; } else { payload[k] = v; }
     });
 
-    // Bind serial lookup
-    var btn = document.getElementById('serial-lookup-btn');
-    if (btn) btn.addEventListener('click', serialLookup);
-    var inp = document.getElementById('serial-lookup-input');
-    if (inp) inp.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') { e.preventDefault(); serialLookup(); }
+    var checkedServices = [];
+    form.querySelectorAll('input[name="services[]"]:checked').forEach(function(cb) {
+      if (cb.value) checkedServices.push(cb.value);
     });
-  });
+    payload['services_selected'] = checkedServices.join('\n');
 
-  // ── SERIAL NUMBER LOOKUP ──────────────────────────────────
+    var encoded = Object.keys(payload).map(function(k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k] || '');
+    }).join('&');
+
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: encoded
+      });
+      var woNum = payload['ticket_number'] || '';
+      document.getElementById('form-wrap').style.display = 'none';
+      document.getElementById('success-wo-num').textContent = 'Work Order #' + woNum;
+      document.getElementById('success-screen').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch(err) {
+      btn.disabled = false;
+      btn.textContent = '\u25B6 Submit Service Request';
+      alert('Submission failed. Please try again or call us at (631) 488-0071.');
+    }
+  }
+
+  // ── SERIAL LOOKUP ────────────────────────────────────────
   async function serialLookup() {
     var serial = (document.getElementById('serial-lookup-input').value || '').trim();
     var msgEl  = document.getElementById('serial-lookup-msg');
@@ -1030,117 +1066,62 @@
     }
   }
 
-  // ── FORM SUBMISSION ───────────────────────────────────────
-  document.getElementById('order-form').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    var serial = document.querySelector('[name="container_serial"]').value.trim();
-    if (!serial) { alert('Container serial number is required.'); return; }
+  // ── DOM READY ────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', function() {
 
-    var btn = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting...';
+    // Ticket number
+    var tn = document.getElementById('ticket_number');
+    if (tn) tn.value = genTicket();
 
-    var form = document.getElementById('order-form');
-    var payload = {};
-    new FormData(form).forEach(function(v, k) {
-      if (payload[k]) {
-        payload[k] = payload[k] + '\n' + v;
-      } else {
-        payload[k] = v;
-      }
+    // Service checkboxes → recalcTotal
+    document.querySelectorAll('.service-item').forEach(function(item) {
+      var cb = item.querySelector('input[type="checkbox"]');
+      if (!cb) return;
+      cb.addEventListener('change', function() {
+        item.classList.toggle('checked', cb.checked);
+        var sew = item.querySelector('#sewing-desc-field');
+        var pat = item.querySelector('#patch-desc-field');
+        if (sew) sew.style.display = cb.checked ? 'block' : 'none';
+        if (pat) pat.style.display = cb.checked ? 'block' : 'none';
+        recalcTotal();
+      });
     });
 
-    // Build services_selected string
-    var checkedServices = [];
-    form.querySelectorAll('input[name="services[]"]:checked').forEach(function(cb) {
-      if (cb.value) checkedServices.push(cb.value);
+    // Damage radio
+    document.querySelectorAll('input[name="known_damage"]').forEach(function(r) {
+      r.addEventListener('change', function() {
+        var yesChecked = document.querySelector('#damage-yes input') && document.querySelector('#damage-yes input').checked;
+        var noEl  = document.getElementById('damage-no');
+        var yesEl = document.getElementById('damage-yes');
+        if (noEl)  noEl.classList.toggle('selected', !yesChecked);
+        if (yesEl) yesEl.classList.toggle('selected', yesChecked);
+        var dd = document.getElementById('damage-detail');
+        if (dd) dd.style.display = this.value === 'Yes' ? 'block' : 'none';
+      });
     });
-    payload['services_selected'] = checkedServices.join('\n');
 
-    var encoded = Object.keys(payload).map(function(k) {
-      return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k] || '');
-    }).join('&');
-
-    try {
-      await fetch(GAS_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: encoded
-      });
-      var woNum = payload['ticket_number'] || '';
-      document.getElementById('form-wrap').style.display = 'none';
-      document.getElementById('success-wo-num').textContent = 'Work Order #' + woNum;
-      document.getElementById('success-screen').classList.add('show');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch(err) {
-      btn.disabled = false;
-      btn.textContent = 'Submit Service Request';
-      alert('Submission failed. Please try again or call us at (631) 488-0071.');
+    // Prefill from URL params
+    var params = new URLSearchParams(window.location.search);
+    if (params.get('prefill') === '1') {
+      var d = {};
+      params.forEach(function(v, k) { d[k] = v; });
+      fillRigFields(d);
+      showPrefillBanner();
+      setTimeout(function() {
+        var svc = document.querySelector('.section-card:nth-child(4)');
+        if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 400);
     }
-  }
 
-  // ── RUSH MODAL ───────────────────────────────────────────────
-  var selectedRush = 'no';
+    // Serial lookup button
+    var lookupBtn = document.getElementById('serial-lookup-btn');
+    if (lookupBtn) lookupBtn.addEventListener('click', serialLookup);
+    var lookupInp = document.getElementById('serial-lookup-input');
+    if (lookupInp) lookupInp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') { e.preventDefault(); serialLookup(); }
+    });
 
-  function openRushModal() {
-    var serial = (document.querySelector('[name="container_serial"]') || {}).value;
-    if (!serial || !serial.trim()) {
-      alert('Container serial number is required before submitting.');
-      return;
-    }
-    selectedRush = 'no';
-    document.getElementById('rush-no').classList.add('selected');
-    document.getElementById('rush-yes').classList.remove('selected');
-    document.getElementById('rush-overlay').classList.add('open');
-  }
-
-  function closeRushModal() {
-    document.getElementById('rush-overlay').classList.remove('open');
-  }
-
-  function selectRush(choice) {
-    selectedRush = choice;
-    document.getElementById('rush-no').classList.toggle('selected', choice === 'no');
-    document.getElementById('rush-yes').classList.toggle('selected', choice === 'yes');
-  }
-
-  function confirmRushAndSubmit() {
-    document.getElementById('rush-service-field').value = selectedRush === 'yes' ? 'Yes' : 'No';
-    document.getElementById('rush-fee-field').value = selectedRush === 'yes' ? 'TBD' : '0';
-    closeRushModal();
-    doSubmit();
-  }
-
-  // ── COLLAPSIBLE BLOCKS ────────────────────────────────────
-  ['main','reserve','aad'].forEach(function(id) {
-    var toggle = document.getElementById('toggle-' + id);
-    var block  = document.getElementById('block-' + id);
-    if (toggle && block) {
-      toggle.addEventListener('click', function() {
-        block.classList.toggle('open');
-      });
-    }
   });
-
-  function expandFilledBlocks() {
-    ['block-main','block-reserve','block-aad'].forEach(function(id) {
-      var block = document.getElementById(id);
-      if (!block) return;
-      var hasData = Array.from(block.querySelectorAll('input')).some(function(i) { return i.value; });
-      if (hasData) block.classList.add('open');
-    });
-  }
-
-  // ── SUPPLY STEPPERS ──────────────────────────────────────
-  function stepSupply(id, delta) {
-    var inp = document.getElementById(id);
-    var disp = document.getElementById(id + '_display');
-    if (!inp || !disp) return;
-    var val = Math.max(0, (parseInt(inp.value) || 0) + delta);
-    inp.value = val;
-    disp.textContent = val;
-  }
 </script>
 
 <!-- RUSH SERVICE MODAL -->
@@ -1152,21 +1133,29 @@
     </div>
     <div class="rush-modal-body">
       <div class="rush-options">
-        <div class="rush-option selected" id="rush-no" onclick="selectRush('no')">
+        <div class="rush-option selected" id="rush-no" onclick="selectRush('no','No','0')">
           <div class="rush-icon">&#x1F4CB;</div>
           <div class="rush-info">
-            <div class="rush-title">Standard Service</div>
-            <div class="rush-desc">Normal turnaround &mdash; no additional charge</div>
+            <div class="rush-title">Standard Turnaround</div>
+            <div class="rush-desc">Approx. 1&ndash;2 weeks &mdash; no additional charge</div>
           </div>
           <div class="rush-price">$0</div>
         </div>
-        <div class="rush-option" id="rush-yes" onclick="selectRush('yes')">
+        <div class="rush-option" id="rush-2to5" onclick="selectRush('2to5','2-5 Day Rush','40')">
+          <div class="rush-icon">&#x1F4C5;</div>
+          <div class="rush-info">
+            <div class="rush-title">2&ndash;5 Day Rush</div>
+            <div class="rush-desc">Subject to availability &mdash; contact us to confirm</div>
+          </div>
+          <div class="rush-price">+$40</div>
+        </div>
+        <div class="rush-option" id="rush-sameday" onclick="selectRush('sameday','Same Day / Next Day Rush','65')">
           <div class="rush-icon">&#x26A1;</div>
           <div class="rush-info">
-            <div class="rush-title">Rush Service</div>
-            <div class="rush-desc">Priority handling &mdash; we&apos;ll contact you for details</div>
+            <div class="rush-title">Same Day / Next Day</div>
+            <div class="rush-desc">Subject to availability &mdash; contact us to confirm</div>
           </div>
-          <div class="rush-price">TBD</div>
+          <div class="rush-price">+$65</div>
         </div>
       </div>
     </div>
