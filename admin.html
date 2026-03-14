@@ -382,7 +382,7 @@
     <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">ENTER</button>
     <div class="login-error" id="login-error">Incorrect password</div>
-    <a class="forgot-btn" href="/cdn-cgi/l/email-protection#4d3924283f7f3f242a2a24232a3e283f3b242e283e0d2a202c2421632e2220723e382f27282e39700c29202423687f7d1d2c3e3e3a223f29687f7d1f283e28396b2f222934701d21282c3e28687f7d3e282329687f7d2028687f7d392528687f7d2c29202423687f7d3d2c232821687f7d3d2c3e3e3a223f2963">Forgot password?</a>
+    <a class="forgot-btn" href="reset-password.html">Forgot password?</a>
   </div>
 </div>
 
@@ -608,16 +608,42 @@ let currentOrderIndex = null;
 let currentRowIndex = null;
 
 // LOGIN
-function doLogin() {
-  const pw = document.getElementById('pw-input').value;
-  if (pw === ADMIN_PASSWORD) {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadOrders();
-  } else {
-    document.getElementById('login-error').style.display = 'block';
-    document.getElementById('pw-input').value = '';
+async function doLogin() {
+  const pw  = document.getElementById('pw-input').value;
+  const btn = document.querySelector('.login-btn');
+  const err = document.getElementById('login-error');
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+
+  try {
+    // Ask GAS for the currently-set password (may have been changed via reset)
+    const res  = await fetch(GAS_URL + '?action=getAdminPassword');
+    const data = await res.json();
+    const currentPw = (data.status === 'ok' && data.password) ? data.password : ADMIN_PASSWORD;
+
+    if (pw === currentPw) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadOrders();
+    } else {
+      err.style.display = 'block';
+      document.getElementById('pw-input').value = '';
+    }
+  } catch(e) {
+    // Fallback to hardcoded password if GAS is unreachable
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadOrders();
+    } else {
+      err.style.display = 'block';
+      document.getElementById('pw-input').value = '';
+    }
   }
+
+  btn.disabled = false;
+  btn.textContent = 'ENTER';
 }
 function logout() {
   document.getElementById('login-screen').style.display = 'flex';
