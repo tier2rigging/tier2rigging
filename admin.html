@@ -329,8 +329,11 @@
     display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;
   }
   .btn { padding: 10px 22px; border-radius: 8px; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 600; transition: all 0.2s; border: none; }
-  .btn-primary { background: var(--tan); color: #1a1a1a; }
-  .btn-primary:hover { background: var(--tan-light); }
+  .btn-primary { background: var(--tan); color: #1a1a1a; transition: all 0.15s; }
+  .btn-primary:hover { background: var(--tan-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(200,169,110,0.35); }
+  .btn-primary:active { transform: translateY(1px) scale(0.97); box-shadow: none; background: #b8954a; }
+  .btn-ghost:active { transform: translateY(1px) scale(0.97); }
+  .btn-danger:active { transform: translateY(1px) scale(0.97); }
   .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
   .btn-ghost:hover { border-color: var(--tan); color: var(--tan); }
   .btn-danger { background: transparent; border: 1px solid rgba(224,85,85,0.3); color: var(--red); }
@@ -1457,37 +1460,24 @@ async function submitNewOrder() {
     rushFee: 0,
   };
 
-  try {
-    // Build params manually to avoid URLSearchParams mangling special chars
-    const params = Object.keys(orderData).map(k =>
-      encodeURIComponent(k) + '=' + encodeURIComponent(String(orderData[k] || ''))
-    ).join('&');
+  // Close modal immediately and add to local list — don't wait for GAS
+  allOrders.unshift(orderData);
+  updateStats();
+  renderTable();
+  closeNewOrderModal();
 
-    console.log('Sending createOrder to GAS...');
-    const res  = await fetch(GAS_URL + '?' + params);
-    const text = await res.text();
-    console.log('createOrder GAS response:', text);
-
-    let json;
-    try { json = JSON.parse(text); } catch(e) { json = null; }
-
-    if (json && json.status === 'error') {
-      msgEl.textContent = '⚠ Sheet error: ' + json.message;
-      msgEl.style.color = 'var(--red)';
-    } else {
-      msgEl.textContent = '✓ Order saved to sheet!';
-      msgEl.style.color = 'var(--green)';
-      // Reload from sheet so the new order appears on refresh too
-      setTimeout(() => {
-        closeNewOrderModal();
-        loadOrders();
-      }, 1200);
-    }
-  } catch(err) {
-    console.error('createOrder fetch error:', err);
-    const msgEl2 = document.getElementById('no-save-msg');
-    if (msgEl2) { msgEl2.textContent = '⚠ Failed: ' + err.message; msgEl2.style.color = 'var(--red)'; }
-  }
+  // Save to sheet in background
+  const params = Object.keys(orderData).map(k =>
+    encodeURIComponent(k) + '=' + encodeURIComponent(String(orderData[k] || ''))
+  ).join('&');
+  fetch(GAS_URL + '?' + params)
+    .then(r => r.text())
+    .then(text => {
+      console.log('createOrder GAS response:', text);
+      // Reload from sheet after save to get proper row index
+      setTimeout(() => loadOrders(), 2000);
+    })
+    .catch(err => console.error('createOrder save error:', err));
   } catch(outerErr) {
     console.error('submitNewOrder crash:', outerErr);
     msgEl.textContent = '⚠ Error: ' + outerErr.message;
