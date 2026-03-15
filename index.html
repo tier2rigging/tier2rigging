@@ -1374,9 +1374,12 @@
         '<div class="install-step"><div class="install-step-num">4</div><div class="install-step-text">Tap <strong>"Install"</strong></div></div>' +
         '<p class="install-note">The app will appear on your home screen.</p>';
     } else {
+      // Desktop
       body.innerHTML =
-        '<div class="install-step"><div class="install-step-num">1</div><div class="install-step-text"><strong>iPhone:</strong> Open in Safari, tap the Share button, then "Add to Home Screen"</div></div>' +
-        '<div class="install-step"><div class="install-step-num">2</div><div class="install-step-text"><strong>Android:</strong> Open in Chrome, tap the menu, then "Add to Home Screen"</div></div>';
+        '<div class="install-step"><div class="install-step-num">1</div><div class="install-step-text">Open this site in <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong></div></div>' +
+        '<div class="install-step"><div class="install-step-num">2</div><div class="install-step-text">Look for the <strong>install icon &#x2295;</strong> in the address bar on the right side</div></div>' +
+        '<div class="install-step"><div class="install-step-num">3</div><div class="install-step-text">Click it and select <strong>"Install"</strong></div></div>' +
+        '<p class="install-note">The app will open in its own window just like a desktop app. Works on Windows and Mac.</p>';
     }
     document.getElementById('install-overlay').classList.add('open');
   }
