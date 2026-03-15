@@ -1458,12 +1458,21 @@ async function submitNewOrder() {
 
   try {
     const params = new URLSearchParams(orderData);
-    await fetch(GAS_URL + '?' + params.toString());
-    msgEl.textContent = '✓ Order created!';
-    msgEl.style.color = 'var(--green)';
-    setTimeout(() => closeNewOrderModal(), 1200);
+    const res  = await fetch(GAS_URL + '?' + params.toString());
+    const text = await res.text();
+    console.log('createOrder response:', text);
+    let json;
+    try { json = JSON.parse(text); } catch(e) { json = null; }
+    if (json && json.status === 'error') {
+      msgEl.textContent = '⚠ Sheet error: ' + json.message;
+      msgEl.style.color = 'var(--red)';
+    } else {
+      msgEl.textContent = '✓ Order created and saved!';
+      msgEl.style.color = 'var(--green)';
+      setTimeout(() => closeNewOrderModal(), 1200);
+    }
   } catch(err) {
-    msgEl.textContent = '⚠ Saved locally. Sync to sheet may have failed.';
+    msgEl.textContent = '⚠ Failed to save: ' + err.message;
     msgEl.style.color = 'var(--red)';
   }
 }
