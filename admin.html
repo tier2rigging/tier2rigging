@@ -197,11 +197,14 @@
     background: var(--card); border: 1px solid var(--border);
     border-radius: 14px; width: 100%; max-width: 760px;
     margin: auto; overflow: hidden;
+    display: flex; flex-direction: column;
+    max-height: 90vh;
   }
   .modal-header {
     background: linear-gradient(180deg, #1a1a1a, #222);
     border-bottom: 1px solid var(--tan);
     padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
   }
   .modal-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--tan); }
   .modal-close {
@@ -210,7 +213,8 @@
     transition: color 0.2s;
   }
   .modal-close:hover { color: var(--red); }
-  .modal-body { padding: 24px; }
+  .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+  .modal-footer { flex-shrink: 0; }
 
   /* MODAL SECTIONS */
   .modal-section { margin-bottom: 24px; }
