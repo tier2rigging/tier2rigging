@@ -133,48 +133,22 @@
   .filter-btn.active, .filter-btn:hover { background: var(--tan); color: #1a1a1a; border-color: var(--tan); }
   .filter-btn.filter-acct.active { background: var(--blue); color: #fff; border-color: var(--blue); }
   .filter-btn.filter-acct:hover:not(.active) { background: rgba(90,143,173,0.2); color: #7bbcd6; border-color: rgba(90,143,173,0.4); }
-  .history-lookup-btn {
-    background: transparent; border: 1px solid rgba(200,169,110,0.3);
-    color: var(--muted); padding: 6px 14px; border-radius: 6px;
-    font-size: 12px; cursor: pointer; transition: all 0.2s;
-    font-family: 'DM Sans', sans-serif; font-weight: 500;
-  }
+  .history-lookup-btn { background: transparent; border: 1px solid rgba(200,169,110,0.3); color: var(--muted); padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; font-weight: 500; }
   .history-lookup-btn:hover { border-color: var(--tan); color: var(--tan); }
-  .history-panel {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; margin: 0 24px 16px;
-    overflow: hidden; display: none;
-  }
+  .history-panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; margin: 0 24px 16px; overflow: hidden; display: none; }
   .history-panel.open { display: block; }
-  .history-panel-head {
-    background: linear-gradient(90deg, rgba(200,169,110,0.1), transparent);
-    border-bottom: 1px solid var(--border);
-    padding: 12px 18px; display: flex; align-items: center;
-    justify-content: space-between; gap: 12px;
-  }
+  .history-panel-head { background: linear-gradient(90deg, rgba(200,169,110,0.1), transparent); border-bottom: 1px solid var(--border); padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .history-panel-title { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 1.5px; color: var(--tan-light); }
   .history-search-row { display: flex; gap: 10px; align-items: center; flex: 1; max-width: 400px; }
-  .history-search-row input {
-    flex: 1; background: var(--input-bg); border: 1px solid var(--border);
-    border-radius: 7px; color: var(--parchment); font-family: 'DM Sans', sans-serif;
-    font-size: 13px; padding: 8px 12px; outline: none; transition: border-color 0.2s;
-  }
-  .history-search-row input:focus { border-color: var(--tan); }
-  .history-search-btn {
-    background: var(--tan); color: #1a1a1a; border: none; border-radius: 7px;
-    padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px;
-    font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s;
-  }
+  .history-name-input { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 7px; color: var(--parchment); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 12px; outline: none; transition: border-color 0.2s; }
+  .history-name-input:focus { border-color: var(--tan); }
+  .history-search-btn { background: var(--tan); color: #1a1a1a; border: none; border-radius: 7px; padding: 8px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
   .history-search-btn:hover { background: var(--tan-light); }
-  .history-close { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; }
-  .history-close:hover { color: var(--red); }
+  .history-close-btn { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 4px; }
+  .history-close-btn:hover { color: var(--red); }
   .history-results { padding: 14px 18px; max-height: 340px; overflow-y: auto; }
   .history-customer-name { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1px; color: var(--parchment); margin-bottom: 10px; }
-  .history-record {
-    display: flex; align-items: center; gap: 14px; padding: 10px 14px;
-    border-radius: 8px; background: var(--input-bg); border: 1px solid var(--border);
-    margin-bottom: 6px; cursor: pointer; transition: all 0.15s;
-  }
+  .history-record { display: flex; align-items: center; gap: 14px; padding: 10px 14px; border-radius: 8px; background: var(--input-bg); border: 1px solid var(--border); margin-bottom: 6px; cursor: pointer; transition: all 0.15s; }
   .history-record:hover { border-color: var(--tan); background: rgba(200,169,110,0.07); }
   .history-wo { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan); min-width: 120px; }
   .history-date { font-size: 12px; color: var(--muted); min-width: 90px; }
@@ -432,7 +406,7 @@
     <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="login-btn" onclick="doLogin()">ENTER</button>
     <div class="login-error" id="login-error">Incorrect password</div>
-    <a class="forgot-btn" href="/cdn-cgi/l/email-protection#4d3924283f7f3f242a2a24232a3e283f3b242e283e0d2a202c2421632e2220723e382f27282e39700c29202423687f7d1d2c3e3e3a223f29687f7d1f283e28396b2f222934701d21282c3e28687f7d3e282329687f7d2028687f7d392528687f7d2c29202423687f7d3d2c232821687f7d3d2c3e3e3a223f2963">Forgot password?</a>
+    <a class="forgot-btn" href="reset-password.html">Forgot password?</a>
   </div>
 </div>
 
@@ -470,16 +444,14 @@
     <button class="history-lookup-btn" onclick="toggleHistoryPanel()">&#x1F550; Name History</button>
   </div>
 
-  <!-- HISTORY LOOKUP PANEL -->
   <div class="history-panel" id="history-panel">
     <div class="history-panel-head">
       <div class="history-panel-title">Customer History Lookup</div>
       <div class="history-search-row">
-        <input type="text" id="history-name-input" placeholder="Enter customer name…"
-          onkeydown="if(event.key==='Enter') lookupHistory()">
+        <input class="history-name-input" type="text" id="history-name-input" placeholder="Enter customer name…" onkeydown="if(event.key==='Enter') lookupHistory()">
         <button class="history-search-btn" onclick="lookupHistory()">Search</button>
       </div>
-      <button class="history-close" onclick="toggleHistoryPanel()">&#x2715;</button>
+      <button class="history-close-btn" onclick="toggleHistoryPanel()">&#x2715;</button>
     </div>
     <div class="history-results" id="history-results">
       <div class="history-none">Enter a name above to view their full service history.</div>
@@ -740,71 +712,54 @@ function setFilter(f, btn) {
   btn.classList.add('active');
   renderTable();
 }
-
 function setAccountFilter(acct, btn) {
-  if (currentAccountFilter === acct) {
-    currentAccountFilter = 'all';
-    btn.classList.remove('active');
-  } else {
-    currentAccountFilter = acct;
-    document.querySelectorAll('.filter-btn.filter-acct').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  }
+  currentAccountFilter = (currentAccountFilter === acct) ? 'all' : acct;
+  document.querySelectorAll('.filter-btn.filter-acct').forEach(b => b.classList.remove('active'));
+  if (currentAccountFilter !== 'all') btn.classList.add('active');
   renderTable();
 }
-
 function toggleHistoryPanel() {
-  const panel = document.getElementById('history-panel');
-  panel.classList.toggle('open');
-  if (panel.classList.contains('open')) {
+  document.getElementById('history-panel').classList.toggle('open');
+  if (document.getElementById('history-panel').classList.contains('open'))
     setTimeout(() => document.getElementById('history-name-input').focus(), 100);
-  }
 }
-
 function lookupHistory() {
-  const query = (document.getElementById('history-name-input').value || '').toLowerCase().trim();
-  const resultsEl = document.getElementById('history-results');
-  if (!query) { resultsEl.innerHTML = '<div class="history-none">Enter a name to search.</div>'; return; }
-  const matches = allOrders.filter(o =>
-    (o.name||'').toLowerCase().includes(query) || (o.email||'').toLowerCase().includes(query)
-  );
-  if (matches.length === 0) { resultsEl.innerHTML = '<div class="history-none">No records found for "' + query + '".</div>'; return; }
-  const grouped = {};
-  matches.forEach(o => { const k = (o.name||'Unknown').trim(); if (!grouped[k]) grouped[k] = []; grouped[k].push(o); });
-  let html = '';
-  Object.keys(grouped).forEach(cname => {
-    const orders = grouped[cname].slice().reverse();
+  var query = (document.getElementById('history-name-input').value || '').toLowerCase().trim();
+  var el = document.getElementById('history-results');
+  if (!query) { el.innerHTML = '<div class="history-none">Enter a name to search.</div>'; return; }
+  var matches = allOrders.filter(function(o) { return (o.name||'').toLowerCase().includes(query) || (o.email||'').toLowerCase().includes(query); });
+  if (!matches.length) { el.innerHTML = '<div class="history-none">No records found for "' + query + '".</div>'; return; }
+  var grouped = {};
+  matches.forEach(function(o) { var k=(o.name||'Unknown').trim(); if(!grouped[k]) grouped[k]=[]; grouped[k].push(o); });
+  var html = '';
+  Object.keys(grouped).forEach(function(cname) {
+    var orders = grouped[cname].slice().reverse();
     html += '<div class="history-customer-name">&#x1F464; ' + cname + ' <span style="font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:0;">' + orders.length + ' order' + (orders.length!==1?'s':'') + '</span></div>';
-    orders.forEach(o => {
-      const status = normalizeStatus(o.status);
-      const bc = status==='New'?'badge-new':status==='In Progress'?'badge-progress':status==='Ready for Pickup'?'badge-ready':'badge-complete';
-      const svcs = (o.servicesSelected||'').split('\n').filter(Boolean);
-      const origIdx = allOrders.indexOf(o);
-      html += '<div class="history-record" onclick="openModal('+origIdx+')">' +
+    orders.forEach(function(o) {
+      var status = normalizeStatus(o.status);
+      var bc = status==='New'?'badge-new':status==='In Progress'?'badge-progress':status==='Ready for Pickup'?'badge-ready':'badge-complete';
+      var svcs = (o.servicesSelected||'').split('
+').filter(Boolean);
+      var idx = allOrders.indexOf(o);
+      html += '<div class="history-record" onclick="openModal('+idx+')">' +
         '<div class="history-wo">'+(o.woNum||'—')+'</div>' +
         '<div class="history-date">'+formatDate(o.submissionDate)+'</div>' +
-        '<div class="history-svcs">'+(svcs.length?svcs[0]+(svcs.length>1?' +'+( svcs.length-1)+' more':''):'No services')+'</div>' +
+        '<div class="history-svcs">'+(svcs.length?svcs[0]+(svcs.length>1?' +'+(svcs.length-1)+' more':''):'No services')+'</div>' +
         '<div class="history-total">$'+parseFloat(o.estimatedTotal||0).toFixed(2)+'</div>' +
         '<span class="badge '+bc+'">'+status+'</span></div>';
     });
   });
-  resultsEl.innerHTML = html;
+  el.innerHTML = html;
 }
 
 function renderTable() {
   const search = document.getElementById('search-input').value.toLowerCase();
   let orders = allOrders;
 
-  if (currentFilter !== 'all') {
-    orders = orders.filter(o => normalizeStatus(o.status) === currentFilter);
-  }
-  if (currentAccountFilter === 'fun') {
-    orders = orders.filter(o => !(o.name||'').toLowerCase().includes('go jump') && !(o.name||'').toLowerCase().includes('sussex'));
-  } else if (currentAccountFilter === 'gojump') {
-    orders = orders.filter(o => (o.name||'').toLowerCase().includes('go jump'));
-  } else if (currentAccountFilter === 'sussex') {
-    orders = orders.filter(o => (o.name||'').toLowerCase().includes('sussex'));
-  }
+  if (currentFilter !== 'all') orders = orders.filter(o => normalizeStatus(o.status) === currentFilter);
+  if (currentAccountFilter === 'fun') orders = orders.filter(o => !(o.name||'').toLowerCase().includes('go jump') && !(o.name||'').toLowerCase().includes('sussex'));
+  else if (currentAccountFilter === 'gojump') orders = orders.filter(o => (o.name||'').toLowerCase().includes('go jump'));
+  else if (currentAccountFilter === 'sussex') orders = orders.filter(o => (o.name||'').toLowerCase().includes('sussex'));
   if (search) {
     orders = orders.filter(o =>
       (o.name||'').toLowerCase().includes(search) ||
