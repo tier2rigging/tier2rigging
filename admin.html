@@ -901,30 +901,11 @@ let currentOrderIndex = null;
 let currentRowIndex = null;
 
 // LOGIN
-async function doLogin() {
+function doLogin() {
   const pw  = document.getElementById('pw-input').value;
-  const btn = document.querySelector('.login-btn');
   const err = document.getElementById('login-error');
   err.style.display = 'none';
-  btn.disabled = true;
-  btn.textContent = 'Checking…';
-
-  // Check password — use hardcoded first for instant response, 
-  // then verify against GAS in background for reset support
-  const enteredCorrect = (pw === ADMIN_PASSWORD);
-  
-  // Also try GAS password (with 3s timeout)
-  let gasPassword = ADMIN_PASSWORD;
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
-    const res = await fetch(GAS_URL + '?action=getAdminPassword', { signal: controller.signal });
-    clearTimeout(timeout);
-    const data = await res.json();
-    if (data.status === 'ok' && data.password) gasPassword = data.password;
-  } catch(e) { /* timeout or offline — use hardcoded */ }
-
-  if (pw === gasPassword || pw === ADMIN_PASSWORD) {
+  if (pw === ADMIN_PASSWORD) {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -932,9 +913,6 @@ async function doLogin() {
     err.style.display = 'block';
     document.getElementById('pw-input').value = '';
   }
-
-  btn.disabled = false;
-  btn.textContent = 'ENTER';
 }
 function logout() {
   document.getElementById('login-screen').style.display = 'flex';
