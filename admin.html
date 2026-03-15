@@ -264,6 +264,44 @@
     cursor: pointer; font-size: 16px; padding: 0 4px; transition: color 0.2s;
   }
   .custom-item .remove-btn:hover { color: var(--red); }
+
+  .discount-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 10px 14px;
+    background: rgba(224,85,85,0.07);
+    border: 1px solid rgba(224,85,85,0.25);
+    border-radius: 8px;
+  }
+  .discount-row label {
+    font-size: 12px;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .discount-row input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid rgba(224,85,85,0.3);
+    border-radius: 6px;
+    color: var(--red);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    padding: 7px 10px;
+    outline: none;
+    max-width: 120px;
+  }
+  .discount-row input:focus { border-color: var(--red); box-shadow: 0 0 0 2px rgba(224,85,85,0.12); }
+  .discount-row .discount-note {
+    font-size: 12px;
+    color: var(--muted);
+    flex: 1;
+  }
+
   .add-item-btn {
     background: transparent; border: 1px dashed var(--border);
     color: var(--muted); width: 100%; padding: 9px;
@@ -587,6 +625,14 @@
           <button class="add-item-btn" onclick="addCustomItem()">+ Add Custom Item</button>
         </div>
 
+        <!-- DISCOUNT -->
+        <div class="discount-row">
+          <label>Discount</label>
+          <span style="color:var(--red);font-size:14px;font-family:'DM Mono',monospace;">− $</span>
+          <input type="number" id="discount-amount" placeholder="0.00" min="0" step="0.01" value="0" oninput="recalcTotal()">
+          <span class="discount-note">Enter discount amount to subtract from total</span>
+        </div>
+
         <div class="total-row">
           <span>Estimated Total</span>
           <strong id="modal-total">$0</strong>
@@ -880,9 +926,19 @@ function openModal(idx) {
 
   // Custom items (stored as JSON in a notes field or separate)
   document.getElementById('custom-items').innerHTML = '';
+  // Reset discount field
+  const discEl = document.getElementById('discount-amount');
+  if (discEl) discEl.value = 0;
+
   if (o.customItems) {
     try {
-      JSON.parse(o.customItems).forEach(ci => addCustomItem(ci.name, ci.price));
+      JSON.parse(o.customItems).forEach(ci => {
+        if (ci.name === 'Discount' && ci.price < 0) {
+          if (discEl) discEl.value = Math.abs(ci.price);
+        } else {
+          addCustomItem(ci.name, ci.price);
+        }
+      });
     } catch(e) {}
   }
 
@@ -909,6 +965,9 @@ function recalcTotal() {
     const price = parseFloat(ci.querySelector('input[type="number"]').value) || 0;
     total += price;
   });
+  const discountEl = document.getElementById('discount-amount');
+  const discount = discountEl ? parseFloat(discountEl.value) || 0 : 0;
+  total = Math.max(0, total - discount);
   document.getElementById('modal-total').textContent = '$' + total.toFixed(2);
   return total;
 }
@@ -948,6 +1007,9 @@ async function saveOrder() {
     const price = parseFloat(ci.querySelector('input[type="number"]').value) || 0;
     if (name) customItems.push({ name, price });
   });
+  // Collect discount
+  const discountAmt = parseFloat((document.getElementById('discount-amount') || {}).value) || 0;
+  if (discountAmt > 0) customItems.push({ name: 'Discount', price: -discountAmt });
 
   const total = recalcTotal();
 
