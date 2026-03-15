@@ -738,11 +738,10 @@ function lookupHistory() {
     orders.forEach(function(o) {
       var status = normalizeStatus(o.status);
       var bc = status==='New'?'badge-new':status==='In Progress'?'badge-progress':status==='Ready for Pickup'?'badge-ready':'badge-complete';
-      var svcs = (o.servicesSelected||'').split('
-').filter(Boolean);
+      var svcs = (o.servicesSelected||'').split('\n').filter(Boolean);
       var idx = allOrders.indexOf(o);
       html += '<div class="history-record" onclick="openModal('+idx+')">' +
-        '<div class="history-wo">'+(o.woNum||'—')+'</div>' +
+        '<div class="history-wo">'+(o.woNum||'-')+'</div>' +
         '<div class="history-date">'+formatDate(o.submissionDate)+'</div>' +
         '<div class="history-svcs">'+(svcs.length?svcs[0]+(svcs.length>1?' +'+(svcs.length-1)+' more':''):'No services')+'</div>' +
         '<div class="history-total">$'+parseFloat(o.estimatedTotal||0).toFixed(2)+'</div>' +
