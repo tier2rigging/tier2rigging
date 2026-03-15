@@ -447,7 +447,107 @@
       .nav-divider { display: none; }
     }
 
-  </style>
+  
+  /* ── NEW ORDER MODAL RESTYLED ── */
+  #new-order-overlay .modal { max-width: 700px; background: #1e1e20; }
+  .no-section {
+    background: #242426; border: 1px solid rgba(200,185,150,0.15);
+    border-radius: 12px; margin-bottom: 16px; overflow: hidden;
+  }
+  .no-section-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px 12px; border-bottom: 1px solid rgba(200,185,150,0.12);
+    background: linear-gradient(90deg, rgba(200,169,110,0.1) 0%, transparent 70%);
+  }
+  .no-section-num {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #c8a96e, #e0c080);
+    color: #1c1c1e; font-family: 'Bebas Neue', sans-serif; font-size: 17px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .no-section-head h3 { font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 2px; color: #e0c080; margin: 0; }
+  .no-section-sub { font-size: 12px; color: var(--muted); padding: 8px 20px 0; }
+  .no-section-body { padding: 16px 20px 20px; }
+  .no-dz-selector { display: flex; gap: 8px; flex-wrap: wrap; }
+  .no-dz-btn {
+    flex: 1; min-width: 130px; background: var(--input-bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; cursor: pointer; transition: all 0.15s;
+  }
+  .no-dz-btn:hover { border-color: rgba(200,169,110,0.4); }
+  .no-dz-btn.active { border-color: var(--tan); background: rgba(200,169,110,0.1); }
+  .no-dz-btn .dz-name { font-weight: 700; font-size: 13px; color: var(--parchment); }
+  .no-dz-btn .dz-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .no-equip-block { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 8px; overflow: hidden; }
+  .no-equip-label {
+    background: rgba(200,169,110,0.08); padding: 8px 14px;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--tan-light); font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between; user-select: none;
+  }
+  .no-equip-hint { font-size: 10px; font-weight: 400; color: var(--muted); text-transform: none; letter-spacing: 0; font-style: italic; }
+  .no-equip-chevron { font-size: 9px; color: var(--tan); transition: transform 0.25s; }
+  .no-equip-body { display: none; padding: 12px 14px; border-top: 1px solid var(--border); }
+  .no-equip-block.open .no-equip-body { display: block; }
+  .no-equip-block.open .no-equip-chevron { transform: rotate(180deg); }
+  .no-equip-block.open .no-equip-hint { display: none; }
+  .no-cat-label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+    color: var(--tan-light); font-weight: 700; margin-bottom: 6px;
+    padding-bottom: 5px; border-bottom: 1px solid rgba(200,169,110,0.25);
+  }
+  .no-svc-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; border-radius: 7px; cursor: pointer;
+    border: 1px solid var(--border); margin-bottom: 5px;
+    background: var(--input-bg); transition: all 0.12s;
+  }
+  .no-svc-item:hover { background: #1e1e20; border-color: rgba(200,169,110,0.3); }
+  .no-svc-item.checked { background: rgba(200,169,110,0.07); border-color: rgba(200,169,110,0.3); }
+  .no-svc-item input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--tan); flex-shrink: 0; cursor: pointer; }
+  .no-svc-name { flex: 1; font-size: 13px; font-weight: 500; color: var(--parchment); }
+  .no-svc-note { font-size: 11px; color: var(--muted); }
+  .no-svc-price { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--tan); white-space: nowrap; }
+  .no-svc-price.varies { color: var(--muted); }
+  .no-supply-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+    border-radius: 8px; border: 1px solid var(--border);
+    background: var(--input-bg); margin-bottom: 6px;
+  }
+  .no-supply-info { flex: 1; }
+  .no-supply-name { font-size: 13px; font-weight: 500; }
+  .no-supply-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .no-stepper { display: flex; align-items: center; gap: 8px; }
+  .no-step-btn {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: rgba(200,169,110,0.12); border: 1px solid rgba(200,169,110,0.25);
+    color: var(--tan); font-size: 16px; font-weight: 700; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.12s;
+  }
+  .no-step-btn:hover { background: rgba(200,169,110,0.25); }
+  .no-step-val { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 600; min-width: 20px; text-align: center; }
+  .no-total-row {
+    margin-top: 14px; background: rgba(200,169,110,0.07);
+    border: 1px solid rgba(200,169,110,0.25); border-radius: 8px;
+    padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .no-total-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .no-total-amount { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--tan-light); font-weight: 700; }
+  .no-discount-row {
+    display: flex; align-items: center; gap: 10px; margin-top: 10px;
+    padding: 10px 14px; background: rgba(224,85,85,0.07);
+    border: 1px solid rgba(224,85,85,0.22); border-radius: 8px;
+  }
+  .no-discount-row label { font-size: 11px; color: var(--red); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; flex-shrink: 0; }
+  .no-discount-row input {
+    max-width: 100px; background: var(--input-bg); border: 1px solid rgba(224,85,85,0.3);
+    border-radius: 6px; color: var(--red); font-family: 'DM Mono', monospace;
+    font-size: 13px; padding: 6px 10px; outline: none;
+  }
+  .no-discount-row input:focus { border-color: var(--red); }
+  .no-discount-note { font-size: 11px; color: var(--muted); }
+
+</style>
 </head>
 <body>
 
@@ -1178,48 +1278,65 @@ let selectedDZ = null;
 
 function openNewOrderModal() {
   selectedDZ = null;
-  // Reset all fields
-  ['no-name','no-phone','no-email','no-container-mfr','no-container-model','no-serial','no-container-dom',
+  // Reset customer fields
+  ['no-name','no-phone','no-email','no-completion','no-notes','no-other-service',
+   'no-container-mfr','no-container-model','no-serial','no-container-dom',
    'no-main-mfr','no-main-model','no-main-serial','no-main-dom',
    'no-reserve-mfr','no-reserve-model','no-reserve-serial','no-reserve-dom',
-   'no-aad-mfr','no-aad-model','no-aad-serial','no-aad-date','no-completion','no-notes'].forEach(id => {
+   'no-aad-mfr','no-aad-model','no-aad-serial','no-aad-date'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  ['qty-tandem-reserve','qty-sport-reserve','qty-tandem-reline','qty-pack-main'].forEach(id => {
-    document.getElementById(id).value = 0;
+  // Reset checkboxes
+  document.querySelectorAll('#new-order-overlay .no-svc-item').forEach(item => {
+    item.classList.remove('checked');
+    item.querySelector('input[type="checkbox"]').checked = false;
   });
+  // Reset supplies
+  ['no-supply-loops','no-supply-bands','no-supply-keepers'].forEach(id => {
+    const inp = document.getElementById(id);
+    const disp = document.getElementById(id + '-disp');
+    if (inp) inp.value = 0;
+    if (disp) disp.textContent = 0;
+  });
+  // Reset custom items + discount + total
   document.getElementById('no-custom-items').innerHTML = '';
+  const disc = document.getElementById('no-discount');
+  if (disc) disc.value = 0;
   document.getElementById('no-total').textContent = '$0.00';
   document.getElementById('no-save-msg').textContent = '';
-  document.getElementById('fun-jumper-fields').style.display = 'none';
+  // Reset account buttons
   ['dz-btn-fun','dz-btn-gojump','dz-btn-sussex'].forEach(id =>
     document.getElementById(id).classList.remove('active'));
-
-  // Build services checkboxes
-  const editor = document.getElementById('no-services-editor');
-  editor.innerHTML = '';
-  ALL_SERVICES.forEach((svc, i) => {
-    const row = document.createElement('div');
-    row.className = 'svc-row';
-    row.innerHTML = `
-      <input type="checkbox" id="no-svc-${i}">
-      <label for="no-svc-${i}">${svc.name}</label>
-      <span style="display:flex;align-items:center;gap:3px;">
-        <span style="color:var(--muted);font-size:12px;">$</span>
-        <input type="number" class="svc-price-input" value="${svc.price}" min="0" step="1"
-          style="width:60px;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--tan);font-family:'DM Mono',monospace;font-size:12px;padding:2px 5px;text-align:right;"
-          oninput="recalcNewTotal()">
-      </span>
-    `;
-    row.querySelector('input[type="checkbox"]').addEventListener('change', function() {
-      row.classList.toggle('checked-row', this.checked);
+  document.getElementById('fun-jumper-fields').style.display = 'none';
+  // Collapse rig blocks
+  ['no-block-main','no-block-reserve','no-block-aad'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.remove('open');
+  });
+  document.getElementById('new-order-overlay').classList.add('open');
+  // Wire checkbox toggles
+  document.querySelectorAll('#new-order-overlay .no-svc-item').forEach(item => {
+    item.addEventListener('change', function() {
+      item.classList.toggle('checked', item.querySelector('input').checked);
       recalcNewTotal();
     });
-    editor.appendChild(row);
   });
+}
 
-  document.getElementById('new-order-overlay').classList.add('open');
+function toggleNoBlock(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+const NO_SUPPLY_PRICES = { 'no-supply-loops': 3, 'no-supply-bands': 1, 'no-supply-keepers': 2 };
+function noStepSupply(id, delta) {
+  const inp  = document.getElementById(id);
+  const disp = document.getElementById(id + '-disp');
+  if (!inp || !disp) return;
+  const val = Math.max(0, (parseInt(inp.value) || 0) + delta);
+  inp.value = val;
+  disp.textContent = val;
+  recalcNewTotal();
 }
 
 function closeNewOrderModal() {
@@ -1238,21 +1355,21 @@ function selectDZ(dz) {
 
 function recalcNewTotal() {
   let total = 0;
-  // Standard services
-  document.querySelectorAll('#no-services-editor .svc-row').forEach(row => {
-    const cb = row.querySelector('input[type="checkbox"]');
-    const priceInput = row.querySelector('.svc-price-input');
-    if (cb && cb.checked && priceInput) total += parseFloat(priceInput.value) || 0;
+  // Services checkboxes
+  document.querySelectorAll('#new-order-overlay .no-svc-item input[type="checkbox"]:checked').forEach(cb => {
+    total += parseFloat(cb.closest('.no-svc-item').dataset.price) || 0;
   });
-  // Qty services
-  total += (parseInt(document.getElementById('qty-tandem-reserve').value)||0) * 150;
-  total += (parseInt(document.getElementById('qty-sport-reserve').value)||0) * 115;
-  total += (parseInt(document.getElementById('qty-tandem-reline').value)||0) * 175;
-  total += (parseInt(document.getElementById('qty-pack-main').value)||0) * 20;
+  // Supplies
+  total += (parseInt((document.getElementById('no-supply-loops') || {}).value) || 0) * 3;
+  total += (parseInt((document.getElementById('no-supply-bands') || {}).value) || 0) * 1;
+  total += (parseInt((document.getElementById('no-supply-keepers') || {}).value) || 0) * 2;
   // Custom items
   document.querySelectorAll('#no-custom-items .custom-item').forEach(ci => {
     total += parseFloat(ci.querySelector('input[type="number"]').value) || 0;
   });
+  // Discount
+  const disc = parseFloat((document.getElementById('no-discount') || {}).value) || 0;
+  total = Math.max(0, total - disc);
   document.getElementById('no-total').textContent = '$' + total.toFixed(2);
   return total;
 }
@@ -1271,44 +1388,37 @@ function addNewCustomItem(name='', price='') {
 }
 
 async function submitNewOrder() {
-  if (!selectedDZ) {
-    alert('Please select a customer type first.');
-    return;
-  }
+  if (!selectedDZ) { alert('Please select a customer type first.'); return; }
+  const serial = (document.getElementById('no-serial') || {}).value || '';
+  if (!serial.trim()) { alert('Container serial number is required.'); return; }
 
   const dz = DROPZONES[selectedDZ];
   const msgEl = document.getElementById('no-save-msg');
   msgEl.textContent = 'Creating order…';
   msgEl.style.color = 'var(--muted)';
 
-  // Build services list
+  // Services
   const checkedSvcs = [];
-  document.querySelectorAll('#no-services-editor .svc-row').forEach((row, i) => {
-    const cb = row.querySelector('input[type="checkbox"]');
-    const priceInput = row.querySelector('.svc-price-input');
-    if (cb && cb.checked) {
-      const price = priceInput ? (parseFloat(priceInput.value)||0) : ALL_SERVICES[i].price;
-      checkedSvcs.push(ALL_SERVICES[i].name + ' - $' + price);
-    }
+  document.querySelectorAll('#new-order-overlay .no-svc-item input[type="checkbox"]:checked').forEach(cb => {
+    checkedSvcs.push(cb.value);
   });
+  const otherSvc = (document.getElementById('no-other-service') || {}).value || '';
+  if (otherSvc.trim()) checkedSvcs.push(otherSvc.trim());
 
-  // Qty services
-  const qtyTR = parseInt(document.getElementById('qty-tandem-reserve').value)||0;
-  const qtySR = parseInt(document.getElementById('qty-sport-reserve').value)||0;
-  const qtyRL = parseInt(document.getElementById('qty-tandem-reline').value)||0;
-  const qtyPM = parseInt(document.getElementById('qty-pack-main').value)||0;
-  if (qtyTR > 0) checkedSvcs.push('Tandem Reserve Repack x' + qtyTR + ' - $' + (qtyTR*150));
-  if (qtySR > 0) checkedSvcs.push('Sport Reserve Repack x' + qtySR + ' - $' + (qtySR*115));
-  if (qtyRL > 0) checkedSvcs.push('Tandem Canopy Reline x' + qtyRL + ' - $' + (qtyRL*175));
-  if (qtyPM > 0) checkedSvcs.push('Pack Main Tandem x' + qtyPM + ' - $' + (qtyPM*20));
+  // Supplies
+  const supLoops   = parseInt((document.getElementById('no-supply-loops') || {}).value) || 0;
+  const supBands   = parseInt((document.getElementById('no-supply-bands') || {}).value) || 0;
+  const supKeepers = parseInt((document.getElementById('no-supply-keepers') || {}).value) || 0;
 
-  // Custom items
+  // Custom items + discount
   const customItems = [];
   document.querySelectorAll('#no-custom-items .custom-item').forEach(ci => {
     const n = ci.querySelector('input[type="text"]').value;
-    const p = parseFloat(ci.querySelector('input[type="number"]').value)||0;
+    const p = parseFloat(ci.querySelector('input[type="number"]').value) || 0;
     if (n) { customItems.push({name:n, price:p}); checkedSvcs.push(n + ' - $' + p); }
   });
+  const discAmt = parseFloat((document.getElementById('no-discount') || {}).value) || 0;
+  if (discAmt > 0) customItems.push({ name: 'Discount', price: -discAmt });
 
   const total = recalcNewTotal();
   const woNum = 'T2-' + new Date().toISOString().slice(0,10).replace(/-/g,'') + '-' + Math.floor(Math.random()*9000+1000);
@@ -1318,45 +1428,46 @@ async function submitNewOrder() {
     sheet: dz.sheet,
     woNum,
     submissionDate: new Date().toLocaleDateString('en-US'),
-    name: selectedDZ === 'fun' ? document.getElementById('no-name').value : dz.name,
-    phone: selectedDZ === 'fun' ? document.getElementById('no-phone').value : dz.phone,
-    email: selectedDZ === 'fun' ? document.getElementById('no-email').value : dz.email,
-    containerManufacturer: document.getElementById('no-container-mfr').value,
-    containerModel: document.getElementById('no-container-model').value,
-    containerMakeModel: document.getElementById('no-container-mfr').value + ' ' + document.getElementById('no-container-model').value,
-    containerSerial: document.getElementById('no-serial').value,
-    containerDom: document.getElementById('no-container-dom').value,
-    mainManufacturer: document.getElementById('no-main-mfr').value,
-    mainModel: document.getElementById('no-main-model').value,
-    mainCanopy: document.getElementById('no-main-model').value,
-    mainSerial: document.getElementById('no-main-serial').value,
-    mainDom: document.getElementById('no-main-dom').value,
-    reserveManufacturer: document.getElementById('no-reserve-mfr').value,
-    reserveModel: document.getElementById('no-reserve-model').value,
-    reserveCanopy: document.getElementById('no-reserve-model').value,
-    reserveSerial: document.getElementById('no-reserve-serial').value,
-    reserveDom: document.getElementById('no-reserve-dom').value,
-    aadManufacturer: document.getElementById('no-aad-mfr').value,
-    aadModel: document.getElementById('no-aad-model').value,
-    aadType: document.getElementById('no-aad-model').value,
-    aadSerial: document.getElementById('no-aad-serial').value,
-    aadServiceDate: document.getElementById('no-aad-date').value,
-    requestedCompletion: document.getElementById('no-completion').value,
-    servicesSelected: checkedSvcs.join(', '),
-    estimatedTotal: total,
-    notes: document.getElementById('no-notes').value,
-    customItems: JSON.stringify(customItems),
+    name:  selectedDZ === 'fun' ? (document.getElementById('no-name') || {}).value  : dz.name,
+    phone: selectedDZ === 'fun' ? (document.getElementById('no-phone') || {}).value : dz.phone,
+    email: selectedDZ === 'fun' ? (document.getElementById('no-email') || {}).value : dz.email,
+    containerManufacturer: (document.getElementById('no-container-mfr') || {}).value || '',
+    containerModel:   (document.getElementById('no-container-model') || {}).value || '',
+    containerMakeModel: ((document.getElementById('no-container-mfr') || {}).value || '') + ' ' + ((document.getElementById('no-container-model') || {}).value || ''),
+    containerSerial:  serial,
+    containerDom:     (document.getElementById('no-container-dom') || {}).value || '',
+    mainManufacturer: (document.getElementById('no-main-mfr') || {}).value || '',
+    mainModel:        (document.getElementById('no-main-model') || {}).value || '',
+    mainCanopy:       (document.getElementById('no-main-model') || {}).value || '',
+    mainSerial:       (document.getElementById('no-main-serial') || {}).value || '',
+    mainDom:          (document.getElementById('no-main-dom') || {}).value || '',
+    reserveManufacturer: (document.getElementById('no-reserve-mfr') || {}).value || '',
+    reserveModel:     (document.getElementById('no-reserve-model') || {}).value || '',
+    reserveCanopy:    (document.getElementById('no-reserve-model') || {}).value || '',
+    reserveSerial:    (document.getElementById('no-reserve-serial') || {}).value || '',
+    reserveDom:       (document.getElementById('no-reserve-dom') || {}).value || '',
+    aadManufacturer:  (document.getElementById('no-aad-mfr') || {}).value || '',
+    aadModel:         (document.getElementById('no-aad-model') || {}).value || '',
+    aadType:          (document.getElementById('no-aad-model') || {}).value || '',
+    aadSerial:        (document.getElementById('no-aad-serial') || {}).value || '',
+    aadServiceDate:   (document.getElementById('no-aad-date') || {}).value || '',
+    requestedCompletion: (document.getElementById('no-completion') || {}).value || '',
+    servicesSelected: checkedSvcs.join('\n'),
+    estimatedTotal:   total,
+    closingLoops:     supLoops,
+    rubberBands:      supBands,
+    elasticKeepers:   supKeepers,
+    notes:            (document.getElementById('no-notes') || {}).value || '',
+    customItems:      JSON.stringify(customItems),
     status: 'New',
     rushService: 'No',
     rushFee: 0,
   };
 
-  // Add to local array and re-render
   allOrders.push(orderData);
   updateStats();
   renderTable();
 
-  // Send to GAS
   try {
     const params = new URLSearchParams(orderData);
     await fetch(GAS_URL + '?' + params.toString());
@@ -1448,94 +1559,198 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="modal-close" onclick="closeNewOrderModal()">&#x2715;</button>
     </div>
     <div class="modal-body">
-      <div class="modal-section">
-        <div class="modal-section-title">Customer / Account</div>
-        <div class="dz-selector">
-          <div class="dz-btn" id="dz-btn-fun" onclick="selectDZ('fun')">
-            <div class="dz-name">Fun Jumper</div>
-            <div class="dz-email">Individual customer</div>
+
+      <!-- 1. ACCOUNT -->
+      <div class="no-section">
+        <div class="no-section-head"><div class="no-section-num">1</div><h3>Customer / Account</h3></div>
+        <div class="no-section-body">
+          <div class="no-dz-selector">
+            <div class="no-dz-btn" id="dz-btn-fun" onclick="selectDZ('fun')">
+              <div class="dz-name">Fun Jumper</div><div class="dz-sub">Individual customer</div>
+            </div>
+            <div class="no-dz-btn" id="dz-btn-gojump" onclick="selectDZ('gojump')">
+              <div class="dz-name">Go Jump New York</div><div class="dz-sub">gojump-america.com</div>
+            </div>
+            <div class="no-dz-btn" id="dz-btn-sussex" onclick="selectDZ('sussex')">
+              <div class="dz-name">Skydive Sussex</div><div class="dz-sub">skydivesussex.com</div>
+            </div>
           </div>
-          <div class="dz-btn" id="dz-btn-gojump" onclick="selectDZ('gojump')">
-            <div class="dz-name">Go Jump New York</div>
-            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="fe8d8a9b889bbe9991948b938ed39f939b8c979d9fd09d9193">[email&#160;protected]</a></div>
-          </div>
-          <div class="dz-btn" id="dz-btn-sussex" onclick="selectDZ('sussex')">
-            <div class="dz-name">Skydive Sussex</div>
-            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="95f8f4f6fef0fbeffcf0d5e6feecf1fce3f0e6e0e6e6f0edbbf6faf8">[email&#160;protected]</a></div>
-          </div>
-        </div>
-        <div id="fun-jumper-fields" style="display:none">
-          <div class="info-grid">
-            <div class="info-field"><label>Full Name</label><input type="text" id="no-name"></div>
-            <div class="info-field"><label>Phone</label><input type="text" id="no-phone"></div>
-            <div class="info-field full"><label>Email</label><input type="text" id="no-email"></div>
+          <div id="fun-jumper-fields" style="display:none;margin-top:14px;">
+            <div class="info-grid">
+              <div class="info-field"><label>Full Name <span style="color:var(--red)">*</span></label><input type="text" id="no-name" placeholder="John Smith"></div>
+              <div class="info-field"><label>Phone</label><input type="text" id="no-phone" placeholder="(631) 555-0123"></div>
+              <div class="info-field full"><label>Email</label><input type="text" id="no-email" placeholder="john@example.com"></div>
+              <div class="info-field"><label>Requested Completion <span style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label><input type="date" id="no-completion"></div>
+            </div>
           </div>
         </div>
       </div>
-      <div class="modal-section">
-        <div class="modal-section-title">Rig Information</div>
 
-        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;">Harness &amp; Container</div>
-        <div class="info-grid">
-          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-container-mfr"></div>
-          <div class="info-field"><label>Model</label><input type="text" id="no-container-model"></div>
-          <div class="info-field"><label>Serial #</label><input type="text" id="no-serial"></div>
-          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-container-dom"></div>
-        </div>
-
-        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Main Canopy</div>
-        <div class="info-grid">
-          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-main-mfr"></div>
-          <div class="info-field"><label>Model &amp; Size</label><input type="text" id="no-main-model"></div>
-          <div class="info-field"><label>Serial #</label><input type="text" id="no-main-serial"></div>
-          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-main-dom"></div>
-        </div>
-
-        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Reserve Canopy</div>
-        <div class="info-grid">
-          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-reserve-mfr"></div>
-          <div class="info-field"><label>Model &amp; Size</label><input type="text" id="no-reserve-model"></div>
-          <div class="info-field"><label>Serial #</label><input type="text" id="no-reserve-serial"></div>
-          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-reserve-dom"></div>
-        </div>
-
-        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">AAD</div>
-        <div class="info-grid">
-          <div class="info-field"><label>Manufacturer</label><input type="text" id="no-aad-mfr"></div>
-          <div class="info-field"><label>Model</label><input type="text" id="no-aad-model"></div>
-          <div class="info-field"><label>Serial #</label><input type="text" id="no-aad-serial"></div>
-          <div class="info-field"><label>Next Service Date</label><input type="text" id="no-aad-date"></div>
-        </div>
-
-        <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Scheduling</div>
-        <div class="info-grid">
-          <div class="info-field"><label>Requested Completion</label><input type="text" id="no-completion"></div>
+      <!-- 2. RIG INFORMATION -->
+      <div class="no-section">
+        <div class="no-section-head"><div class="no-section-num">2</div><h3>Rig Information</h3></div>
+        <p class="no-section-sub">Container serial # required to submit.</p>
+        <div class="no-section-body">
+          <div class="no-equip-block open">
+            <div class="no-equip-label" style="cursor:default;">Harness &amp; Container &mdash; <span style="color:var(--red);font-weight:600;font-size:10px;text-transform:none;letter-spacing:0;">serial # required</span></div>
+            <div class="no-equip-body" style="display:block;">
+              <div class="info-grid">
+                <div class="info-field"><label>Manufacturer</label><input type="text" id="no-container-mfr" placeholder="e.g. Sunpath, Javelin"></div>
+                <div class="info-field"><label>Model</label><input type="text" id="no-container-model" placeholder="e.g. Javelin Odyssey"></div>
+                <div class="info-field"><label>Serial # <span style="color:var(--red)">*</span></label><input type="text" id="no-serial" placeholder="e.g. JO-12345"></div>
+                <div class="info-field"><label>Date of Manufacture</label><input type="date" id="no-container-dom"></div>
+              </div>
+            </div>
+          </div>
+          <div class="no-equip-block" id="no-block-main">
+            <div class="no-equip-label" onclick="toggleNoBlock('no-block-main')">
+              <span>Main Canopy</span>
+              <span style="display:flex;align-items:center;gap:8px;"><span class="no-equip-hint">click to fill in</span><span class="no-equip-chevron">&#x25BC;</span></span>
+            </div>
+            <div class="no-equip-body">
+              <div class="info-grid">
+                <div class="info-field"><label>Manufacturer</label><input type="text" id="no-main-mfr" placeholder="e.g. Performance Designs"></div>
+                <div class="info-field"><label>Model &amp; Size</label><input type="text" id="no-main-model" placeholder="e.g. Pilot 188"></div>
+                <div class="info-field"><label>Serial #</label><input type="text" id="no-main-serial"></div>
+                <div class="info-field"><label>Date of Manufacture</label><input type="date" id="no-main-dom"></div>
+              </div>
+            </div>
+          </div>
+          <div class="no-equip-block" id="no-block-reserve">
+            <div class="no-equip-label" onclick="toggleNoBlock('no-block-reserve')">
+              <span>Reserve Canopy</span>
+              <span style="display:flex;align-items:center;gap:8px;"><span class="no-equip-hint">click to fill in</span><span class="no-equip-chevron">&#x25BC;</span></span>
+            </div>
+            <div class="no-equip-body">
+              <div class="info-grid">
+                <div class="info-field"><label>Manufacturer</label><input type="text" id="no-reserve-mfr" placeholder="e.g. Performance Designs"></div>
+                <div class="info-field"><label>Model &amp; Size</label><input type="text" id="no-reserve-model" placeholder="e.g. PD Reserve 218"></div>
+                <div class="info-field"><label>Serial #</label><input type="text" id="no-reserve-serial"></div>
+                <div class="info-field"><label>Date of Manufacture</label><input type="date" id="no-reserve-dom"></div>
+              </div>
+            </div>
+          </div>
+          <div class="no-equip-block" id="no-block-aad">
+            <div class="no-equip-label" onclick="toggleNoBlock('no-block-aad')">
+              <span>AAD</span>
+              <span style="display:flex;align-items:center;gap:8px;"><span class="no-equip-hint">click to fill in</span><span class="no-equip-chevron">&#x25BC;</span></span>
+            </div>
+            <div class="no-equip-body">
+              <div class="info-grid">
+                <div class="info-field"><label>Manufacturer</label><input type="text" id="no-aad-mfr" placeholder="e.g. Airtec, Vigil"></div>
+                <div class="info-field"><label>Model</label><input type="text" id="no-aad-model" placeholder="e.g. Cypres 2"></div>
+                <div class="info-field"><label>Serial #</label><input type="text" id="no-aad-serial"></div>
+                <div class="info-field"><label>Next Service Date</label><input type="date" id="no-aad-date"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="modal-section">
-        <div class="modal-section-title">Services and Invoice</div>
-        <div class="services-editor" id="no-services-editor"></div>
-        <div style="margin-top:12px">
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Quantity-Based Services</div>
-          <div class="qty-row"><input type="number" id="qty-tandem-reserve" min="0" value="0" oninput="recalcNewTotal()"><label>Tandem Reserve Repack</label><span class="svc-price">$150 each</span></div>
-          <div class="qty-row"><input type="number" id="qty-sport-reserve" min="0" value="0" oninput="recalcNewTotal()"><label>Sport Reserve Repack</label><span class="svc-price">$115 each</span></div>
-          <div class="qty-row"><input type="number" id="qty-tandem-reline" min="0" value="0" oninput="recalcNewTotal()"><label>Tandem Canopy Reline</label><span class="svc-price">$175 each</span></div>
-          <div class="qty-row"><input type="number" id="qty-pack-main" min="0" value="0" oninput="recalcNewTotal()"><label>Pack Main Tandem</label><span class="svc-price">$20 each</span></div>
+
+      <!-- 3. SERVICES -->
+      <div class="no-section">
+        <div class="no-section-head"><div class="no-section-num">3</div><h3>Requested Services</h3></div>
+        <p class="no-section-sub">Select all services needed.</p>
+        <div class="no-section-body">
+          <div class="no-cat-label" style="margin-bottom:8px;">Reserve</div>
+          <label class="no-svc-item" data-price="115"><input type="checkbox" name="no-svc" value="Reserve Inspection &amp; Repack (Sport) - $115"><span class="no-svc-name">Reserve Inspection &amp; Repack (Sport)</span><span class="no-svc-price">$115</span></label>
+          <label class="no-svc-item" data-price="150"><input type="checkbox" name="no-svc" value="Reserve Inspection &amp; Repack (Tandem) - $150"><span class="no-svc-name">Reserve Inspection &amp; Repack (Tandem)</span><span class="no-svc-price">$150</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">Inspection</div>
+          <label class="no-svc-item" data-price="25"><input type="checkbox" name="no-svc" value="Inspect Main or Reserve - $25"><span class="no-svc-name">Inspect Main or Reserve</span><span class="no-svc-price">$25</span></label>
+          <label class="no-svc-item" data-price="20"><input type="checkbox" name="no-svc" value="Inspect Harness / Container - $20"><span class="no-svc-name">Inspect Harness / Container</span><span class="no-svc-price">$20</span></label>
+          <label class="no-svc-item" data-price="120"><input type="checkbox" name="no-svc" value="Inspect &amp; Pack Pilot's Emergency Rig - $120"><span class="no-svc-name">Inspect &amp; Pack Pilot's Emergency Rig</span><span class="no-svc-price">$120</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">Packing</div>
+          <label class="no-svc-item" data-price="15"><input type="checkbox" name="no-svc" value="Pack Main Sport - $15"><span class="no-svc-name">Pack Main Sport <span class="no-svc-note">&mdash; <em>Included with Sport Reserve Repack</em></span></span><span class="no-svc-price">$15</span></label>
+          <label class="no-svc-item" data-price="20"><input type="checkbox" name="no-svc" value="Pack Main Tandem - $20"><span class="no-svc-name">Pack Main Tandem</span><span class="no-svc-price">$20</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">AAD</div>
+          <label class="no-svc-item" data-price="0"><input type="checkbox" name="no-svc" value="AAD Batteries / Service - Varies"><span class="no-svc-name">AAD Batteries / Service</span><span class="no-svc-price varies">Varies</span></label>
+          <label class="no-svc-item" data-price="10"><input type="checkbox" name="no-svc" value="Install AAD - $10"><span class="no-svc-name">Install AAD</span><span class="no-svc-price">$10</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">Lines</div>
+          <label class="no-svc-item" data-price="12"><input type="checkbox" name="no-svc" value="Reserve Safety Stow Replacement - $12"><span class="no-svc-name">Reserve Safety Stow Replacement</span><span class="no-svc-price">$12</span></label>
+          <label class="no-svc-item" data-price="40"><input type="checkbox" name="no-svc" value="Replace Lower Steering Lines - $40"><span class="no-svc-name">Replace Lower Steering Lines</span><span class="no-svc-price">$40</span></label>
+          <label class="no-svc-item" data-price="65"><input type="checkbox" name="no-svc" value="Replace Steering Lines Toggles to Cascades - $65"><span class="no-svc-name">Replace Steering Lines Toggles to Cascades</span><span class="no-svc-price">$65</span></label>
+          <label class="no-svc-item" data-price="0"><input type="checkbox" name="no-svc" value="Full Line Set - Varies"><span class="no-svc-name">Full Line Set</span><span class="no-svc-price varies">Varies</span></label>
+          <label class="no-svc-item" data-price="130"><input type="checkbox" name="no-svc" value="Re-line Sport - $130"><span class="no-svc-name">Re-line Sport <span class="no-svc-note">(lines not included)</span></span><span class="no-svc-price">$130</span></label>
+          <label class="no-svc-item" data-price="175"><input type="checkbox" name="no-svc" value="Re-line Tandem - $175"><span class="no-svc-name">Re-line Tandem <span class="no-svc-note">(lines not included)</span></span><span class="no-svc-price">$175</span></label>
+          <label class="no-svc-item" data-price="35"><input type="checkbox" name="no-svc" value="Slinks - $35"><span class="no-svc-name">Slinks</span><span class="no-svc-price">$35</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">Assembly</div>
+          <label class="no-svc-item" data-price="140"><input type="checkbox" name="no-svc" value="Assembly, Inspection &amp; Pack Reserve (Sport) - $140"><span class="no-svc-name">Assembly, Inspection &amp; Pack Reserve (Sport)</span><span class="no-svc-price">$140</span></label>
+          <label class="no-svc-item" data-price="175"><input type="checkbox" name="no-svc" value="Assembly, Inspection &amp; Repack Reserve (Tandem) - $175"><span class="no-svc-name">Assembly, Inspection &amp; Repack Reserve (Tandem)</span><span class="no-svc-price">$175</span></label>
+          <label class="no-svc-item" data-price="75"><input type="checkbox" name="no-svc" value="Assembly, Inspection &amp; Pack Main - $75"><span class="no-svc-name">Assembly, Inspection &amp; Pack Main</span><span class="no-svc-price">$75</span></label>
+          <label class="no-svc-item" data-price="10"><input type="checkbox" name="no-svc" value="Disassemble Main or Reserve - $10"><span class="no-svc-name">Disassemble Main or Reserve</span><span class="no-svc-price">$10</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">Additional Services</div>
+          <label class="no-svc-item" data-price="25"><input type="checkbox" name="no-svc" value="Install Slider Bumpers - $25"><span class="no-svc-name">Install Slider Bumpers</span><span class="no-svc-price">$25</span></label>
+          <label class="no-svc-item" data-price="20"><input type="checkbox" name="no-svc" value="Fabric Tensile Test - $20"><span class="no-svc-name">Fabric Tensile Test</span><span class="no-svc-price">$20</span></label>
+          <label class="no-svc-item" data-price="25"><input type="checkbox" name="no-svc" value="Kill Line Replacement - $25"><span class="no-svc-name">Kill Line Replacement</span><span class="no-svc-price">$25</span></label>
+          <label class="no-svc-item" data-price="100"><input type="checkbox" name="no-svc" value="BOC Replacement - $100"><span class="no-svc-name">BOC Replacement</span><span class="no-svc-price">$100</span></label>
+          <label class="no-svc-item" data-price="5"><input type="checkbox" name="no-svc" value="Tack Slinks / Links - $5"><span class="no-svc-name">Tack Slinks / Links</span><span class="no-svc-price">$5</span></label>
+          <label class="no-svc-item" data-price="65"><input type="checkbox" name="no-svc" value="Wash Rig - $65"><span class="no-svc-name">Wash Rig</span><span class="no-svc-price">$65</span></label>
+          <div class="no-cat-label" style="margin-top:12px;margin-bottom:8px;">Repair</div>
+          <label class="no-svc-item" data-price="0"><input type="checkbox" name="no-svc" value="Sewing - $85/hr"><span class="no-svc-name">Sewing <span class="no-svc-note">&mdash; <em>Velcro replacement, repairs, etc.</em></span></span><span class="no-svc-price">$85/hr</span></label>
+          <label class="no-svc-item" data-price="0"><input type="checkbox" name="no-svc" value="Canopy Patch - Varies"><span class="no-svc-name">Canopy Patch</span><span class="no-svc-price varies">Varies</span></label>
         </div>
-        <div style="margin-top:14px">
-          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Custom Line Items</div>
+      </div>
+
+      <!-- 4. ADDITIONAL / NOTES -->
+      <div class="no-section">
+        <div class="no-section-head"><div class="no-section-num">4</div><h3>Additional Work &amp; Notes</h3></div>
+        <div class="no-section-body">
+          <div class="info-field" style="margin-bottom:14px;"><label>Additional Services or Special Requests <span style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label><textarea id="no-other-service" placeholder="Describe any additional work not listed above..." rows="2"></textarea></div>
+          <div class="info-field"><label>Notes / Instructions <span style="color:var(--muted);font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></label><textarea id="no-notes" placeholder="e.g. soft reserve handle, slider grommet wear..." rows="3"></textarea></div>
+        </div>
+      </div>
+
+      <!-- 5. EXTRAS / SUPPLIES + TOTAL -->
+      <div class="no-section">
+        <div class="no-section-head"><div class="no-section-num">5</div><h3>Extras &amp; Invoice</h3></div>
+        <div class="no-section-body">
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Supplies</div>
+          <div class="no-supply-item">
+            <div class="no-supply-info"><div class="no-supply-name">Main Closing Loops</div><div class="no-supply-meta">5 per pack &bull; $3/pack</div></div>
+            <div class="no-stepper">
+              <button type="button" class="no-step-btn" onclick="noStepSupply('no-supply-loops',-1)">&#8722;</button>
+              <span class="no-step-val" id="no-supply-loops-disp">0</span>
+              <button type="button" class="no-step-btn" onclick="noStepSupply('no-supply-loops',1)">+</button>
+              <input type="hidden" id="no-supply-loops" value="0">
+            </div>
+          </div>
+          <div class="no-supply-item">
+            <div class="no-supply-info"><div class="no-supply-name">Rubber Bands</div><div class="no-supply-meta">5 per pack &bull; $1/pack</div></div>
+            <div class="no-stepper">
+              <button type="button" class="no-step-btn" onclick="noStepSupply('no-supply-bands',-1)">&#8722;</button>
+              <span class="no-step-val" id="no-supply-bands-disp">0</span>
+              <button type="button" class="no-step-btn" onclick="noStepSupply('no-supply-bands',1)">+</button>
+              <input type="hidden" id="no-supply-bands" value="0">
+            </div>
+          </div>
+          <div class="no-supply-item">
+            <div class="no-supply-info"><div class="no-supply-name">Elastic Keepers</div><div class="no-supply-meta">3 per pack &bull; $2/pack</div></div>
+            <div class="no-stepper">
+              <button type="button" class="no-step-btn" onclick="noStepSupply('no-supply-keepers',-1)">&#8722;</button>
+              <span class="no-step-val" id="no-supply-keepers-disp">0</span>
+              <button type="button" class="no-step-btn" onclick="noStepSupply('no-supply-keepers',1)">+</button>
+              <input type="hidden" id="no-supply-keepers" value="0">
+            </div>
+          </div>
+
+          <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:16px 0 8px;">Custom Line Items</div>
           <div id="no-custom-items"></div>
           <button class="add-item-btn" onclick="addNewCustomItem()">+ Add Custom Item</button>
-        </div>
-        <div class="total-row" style="margin-top:16px">
-          <span>Total</span>
-          <strong id="no-total">$0.00</strong>
+
+          <div class="no-discount-row">
+            <label>Discount</label>
+            <span style="color:var(--red);font-family:'DM Mono',monospace;font-size:13px;">&#8722; $</span>
+            <input type="number" id="no-discount" placeholder="0.00" min="0" step="0.01" value="0" oninput="recalcNewTotal()">
+            <span class="no-discount-note">Subtract discount from total</span>
+          </div>
+
+          <div class="no-total-row">
+            <div><div class="no-total-label">Estimated Total</div></div>
+            <div class="no-total-amount" id="no-total">$0.00</div>
+          </div>
         </div>
       </div>
-      <div class="modal-section">
-        <div class="modal-section-title">Notes</div>
-        <div class="info-field"><textarea id="no-notes" placeholder="Any additional notes..."></textarea></div>
-      </div>
+
     </div>
     <div class="modal-footer">
       <div class="save-msg" id="no-save-msg" style="font-size:13px;"></div>
