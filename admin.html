@@ -611,7 +611,7 @@
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const GAS_URL = 'https://script.google.com/macros/s/AKfycby6L86t1oFXTLsVJhULt3q2S4o7O5HEaD_ypa0mXpe_il9caDGDWrlg4aXRiYHL2eYw/exec';
 const ADMIN_PASSWORD = 'tier2admin'; // Change this to your preferred password
 
@@ -734,7 +734,7 @@ function lookupHistory() {
   var html = '';
   Object.keys(grouped).forEach(function(cname) {
     var orders = grouped[cname].slice().reverse();
-    html += '<div class="history-customer-name">&#x1F464; ' + cname + ' <span style="font-size:12px;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:400;letter-spacing:0;">' + orders.length + ' order' + (orders.length!==1?'s':'') + '</span></div>';
+    html += '<div class="history-customer-name">&#x1F464; ' + cname + ' <span style="font-size:12px;color:var(--muted);font-family:sans-serif;font-weight:400;letter-spacing:0;">' + orders.length + ' order' + (orders.length!==1?'s':'') + '</span></div>';
     orders.forEach(function(o) {
       var status = normalizeStatus(o.status);
       var bc = status==='New'?'badge-new':status==='In Progress'?'badge-progress':status==='Ready for Pickup'?'badge-ready':'badge-complete';
