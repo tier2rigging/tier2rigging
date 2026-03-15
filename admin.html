@@ -1222,41 +1222,32 @@ async function sendInvoice(method) {
 
   statusEl.textContent = 'Sending invoice…';
 
-  // Split on newline (not comma — service names contain commas)
+  // Split on newline (service names contain commas so we can't split on comma)
   const services = (o.servicesSelected || '').split('\n').map(s => s.trim()).filter(Boolean);
   let customItems = [];
   try { customItems = JSON.parse(o.customItems || '[]'); } catch(e) {}
 
-  // Build total — use stored total, strip $ if present
+  // Strip $ from total if present
   const totalNum = parseFloat(String(o.estimatedTotal || '0').replace(/[^0-9.]/g, '')) || 0;
 
-  // Use POST to avoid URL length limits and encoding issues with service names
-  const payload = {
-    action: 'sendInvoice',
-    method: 'email',
-    woNum: o.woNum || '',
-    name: o.name || '',
-    email: o.email.trim(),
-    containerMakeModel: (o.containerMakeModel || o.containerManufacturer || '') + ' ' + (o.containerModel || ''),
-    containerSerial: o.containerSerial || '',
-    services: services.join('||'),
-    customItems: JSON.stringify(customItems),
-    total: String(totalNum),
-    notes: o.notes || '',
-  };
-
-  const encoded = Object.keys(payload).map(k =>
-    encodeURIComponent(k) + '=' + encodeURIComponent(payload[k] || '')
-  ).join('&');
+  // Build GET URL — same pattern as all other working GAS calls
+  const params = new URLSearchParams();
+  params.set('action',            'sendInvoice');
+  params.set('method',            'email');
+  params.set('woNum',             o.woNum || '');
+  params.set('name',              o.name || '');
+  params.set('email',             o.email.trim());
+  params.set('containerMakeModel', (o.containerMakeModel || (o.containerManufacturer||'') + ' ' + (o.containerModel||'')).trim());
+  params.set('containerSerial',   o.containerSerial || '');
+  params.set('services',          services.join('||'));
+  params.set('customItems',       JSON.stringify(customItems));
+  params.set('total',             String(totalNum));
+  params.set('notes',             o.notes || '');
 
   try {
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: encoded
-    });
-    // no-cors means we can't read the response, but if we got here it was sent
+    const res  = await fetch(GAS_URL + '?' + params.toString());
+    const text = await res.text();
+    console.log('Invoice GAS response:', text);
     statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
     statusEl.className = 'send-status ok';
   } catch(err) {
