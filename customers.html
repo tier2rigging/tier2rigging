@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Manager — Tier2 Rigging Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #1a1a1c;
+    --card:     #252527;
+    --card-mid: #2c2c2f;
+    --input-bg: #161618;
+    --border:   rgba(200,185,150,0.18);
+    --tan:      #c8a96e;
+    --tan-light:#e0c080;
+    --parchment:#f2ede4;
+    --muted:    #9a9890;
+    --blue:     #5a8fad;
+    --green:    #6dcc96;
+    --red:      #e05555;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--parchment);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin   { to { transform: rotate(360deg); } }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    position: fixed; inset: 0;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+  }
+  .login-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 40px 36px;
+    width: 100%; max-width: 360px;
+    text-align: center;
+  }
+  .login-box h1 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--tan); margin-bottom: 6px; }
+  .login-box p  { color: var(--muted); font-size: 13px; margin-bottom: 28px; }
+  .login-box input {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--parchment); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; padding: 11px 14px; outline: none; text-align: center;
+    transition: border-color 0.2s; margin-bottom: 14px;
+  }
+  .login-box input:focus { border-color: var(--tan); }
+  .login-btn {
+    width: 100%; padding: 12px;
+    background: var(--tan); color: #1a1a1a;
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px;
+    border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s;
+  }
+  .login-btn:hover { background: var(--tan-light); }
+  .login-error { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+  .login-back { display: inline-block; margin-top: 14px; color: var(--muted); font-size: 12px; text-decoration: none; transition: color 0.15s; }
+  .login-back:hover { color: var(--tan); }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 52px; position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--parchment); }
+  .topbar-brand span { color: var(--tan); margin-left: 8px; font-size: 14px; letter-spacing: 1px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+  .tb-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .tb-btn:hover { border-color: var(--tan); color: var(--tan); }
+  .tb-btn.back { border-color: rgba(200,169,110,0.3); color: var(--tan); }
+
+  /* ── MAIN LAYOUT ── */
+  #app { display: none; }
+  .page-wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* ── SEARCH BAR ── */
+  .search-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px 22px; margin-bottom: 24px;
+    animation: fadeUp 0.3s ease both;
+  }
+  .search-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1.5px; color: var(--parchment); margin-bottom: 14px; }
+  .search-row { display: flex; gap: 10px; }
+  .search-input {
+    flex: 1; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--parchment); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 10px 14px; outline: none; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--tan); }
+  .search-input::placeholder { color: rgba(154,152,144,0.45); }
+  .search-btn {
+    background: var(--tan); color: #1a1a1a; border: none; border-radius: 8px;
+    padding: 10px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px;
+    font-weight: 600; cursor: pointer; transition: background 0.15s; white-space: nowrap;
+  }
+  .search-btn:hover { background: var(--tan-light); }
+  .search-hint { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+  /* ── RESULTS LIST ── */
+  .results-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .results-count { font-size: 13px; color: var(--muted); }
+  .result-row {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 18px; margin-bottom: 10px; display: flex; align-items: center;
+    justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    cursor: pointer; transition: all 0.15s; animation: fadeUp 0.25s ease both;
+  }
+  .result-row:hover { border-color: var(--tan); background: rgba(200,169,110,0.05); }
+  .result-name { font-weight: 600; font-size: 15px; color: var(--parchment); }
+  .result-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .result-serial { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan); background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.2); padding: 3px 10px; border-radius: 20px; }
+  .result-edit-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    font-size: 12px; padding: 5px 12px; border-radius: 6px; cursor: pointer;
+    transition: all 0.15s; font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  }
+  .result-edit-btn:hover { border-color: var(--tan); color: var(--tan); }
+
+  /* ── LOADING / EMPTY ── */
+  .spinner { width: 32px; height: 32px; border: 3px solid rgba(200,169,110,0.2); border-top-color: var(--tan); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+  .state-box { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; }
+  .state-box .icon { font-size: 36px; margin-bottom: 10px; }
+
+  /* ── EDIT PANEL ── */
+  #editPanel { display: none; animation: fadeUp 0.3s ease both; }
+  .edit-header {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 18px 22px; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .edit-header-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 1.5px; color: var(--parchment); }
+  .edit-header-serial { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--tan); background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.2); padding: 4px 14px; border-radius: 20px; }
+  .edit-header-actions { display: flex; gap: 10px; align-items: center; }
+
+  .section-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; margin-bottom: 18px;
+  }
+  .section-head {
+    background: linear-gradient(90deg, rgba(200,169,110,0.1), transparent);
+    border-bottom: 1px solid var(--border);
+    padding: 13px 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-head-title { font-family: 'Bebas Neue', sans-serif; font-size: 17px; letter-spacing: 1.5px; color: var(--tan-light); }
+  .section-body { padding: 20px; }
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 560px) { .field-grid { grid-template-columns: 1fr; } .search-row { flex-direction: column; } }
+
+  .field { }
+  .field label {
+    display: block; font-size: 10px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--tan); margin-bottom: 6px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 7px; color: var(--parchment); font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 9px 12px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(154,152,144,0.4); }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--tan); box-shadow: 0 0 0 3px rgba(200,169,110,0.12); }
+  .field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .field-full { grid-column: 1 / -1; }
+
+  /* History records (read-only) */
+  .history-record {
+    background: var(--card-mid); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 10px;
+  }
+  .history-record-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+  .history-wo { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan); }
+  .history-date { font-size: 12px; color: var(--muted); }
+  .history-services { font-size: 13px; color: var(--parchment); line-height: 1.6; }
+  .history-status { padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; }
+  .history-status.complete  { background: rgba(109,204,150,0.15); color: var(--green); }
+  .history-status.received  { background: rgba(200,169,110,0.15); color: var(--tan-light); }
+  .no-history { font-size: 13px; color: var(--muted); padding: 10px 0; }
+
+  /* Save bar */
+  .save-bar {
+    position: sticky; bottom: 0; background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px; display: flex; align-items: center;
+    justify-content: space-between; gap: 14px; flex-wrap: wrap;
+    margin: 0 -20px; z-index: 40;
+  }
+  .save-status { font-size: 13px; color: var(--muted); }
+  .save-status.saved  { color: var(--green); }
+  .save-status.saving { color: var(--tan); }
+  .save-status.error  { color: var(--red); }
+  .save-actions { display: flex; gap: 10px; }
+  .btn { padding: 9px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; border: none; transition: all 0.2s; }
+  .btn-primary { background: var(--tan); color: #1a1a1a; }
+  .btn-primary:hover { background: var(--tan-light); }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--tan); color: var(--tan); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: #2a2a2c; border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 20px; font-size: 13px; color: var(--parchment);
+    opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 200; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+  .toast.success { border-color: rgba(109,204,150,0.4); color: var(--green); }
+  .toast.error   { border-color: rgba(224,85,85,0.4);  color: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <h1>TIER2 ADMIN</h1>
+    <p>Customer Manager — enter admin password to continue</p>
+    <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">ENTER</button>
+    <div class="login-error" id="login-error">Incorrect password</div>
+    <a class="login-back" href="admin.html">← Back to Admin Panel</a>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-brand">TIER2 RIGGING <span>Customer Manager</span></div>
+    <div class="topbar-right">
+      <button class="tb-btn back" onclick="showSearch()">← All Customers</button>
+      <button class="tb-btn" onclick="window.location.href='admin.html'">Admin Panel</button>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- SEARCH VIEW -->
+    <div id="searchView">
+      <div class="search-card">
+        <div class="search-label">Customer Lookup</div>
+        <div class="search-row">
+          <input class="search-input" type="text" id="searchInput"
+            placeholder="Search by name, email, or container serial #"
+            onkeydown="if(event.key==='Enter')doSearch()">
+          <button class="search-btn" onclick="doSearch()">Search</button>
+        </div>
+        <div class="search-hint">Enter a full or partial name, email address, or container serial number</div>
+      </div>
+
+      <div id="searchResults"></div>
+    </div>
+
+    <!-- EDIT VIEW -->
+    <div id="editPanel">
+      <div class="edit-header">
+        <div>
+          <div class="edit-header-name" id="editHeaderName">Customer Name</div>
+          <div style="margin-top:5px;">
+            <span class="edit-header-serial" id="editHeaderSerial"></span>
+          </div>
+        </div>
+        <div class="edit-header-actions">
+          <button class="btn btn-ghost" onclick="showSearch()">← Back to Results</button>
+        </div>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>👤</span>
+          <div class="section-head-title">Contact Info</div>
+        </div>
+        <div class="section-body">
+          <div class="field-grid">
+            <div class="field">
+              <label>Full Name</label>
+              <input type="text" id="e_name" placeholder="Full name">
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="e_email" placeholder="Email address">
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input type="tel" id="e_phone" placeholder="Phone number">
+            </div>
+            <div class="field">
+              <label>Home DZ</label>
+              <input type="text" id="e_dz" placeholder="Home dropzone">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Container -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>🎒</span>
+          <div class="section-head-title">Container</div>
+        </div>
+        <div class="section-body">
+          <div class="field-grid">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" id="e_container_mfr" placeholder="e.g. Javelin, Mirage">
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input type="text" id="e_container_model" placeholder="e.g. Odyssey, G4">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" id="e_container_serial" placeholder="e.g. JO-12345">
+            </div>
+            <div class="field">
+              <label>DOM</label>
+              <input type="text" id="e_container_dom" placeholder="Date of manufacture">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Canopy -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>🪂</span>
+          <div class="section-head-title">Main Canopy</div>
+        </div>
+        <div class="section-body">
+          <div class="field-grid">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" id="e_main_mfr" placeholder="e.g. Performance Designs">
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input type="text" id="e_main_model" placeholder="e.g. Sabre2">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" id="e_main_serial" placeholder="">
+            </div>
+            <div class="field">
+              <label>DOM</label>
+              <input type="text" id="e_main_dom" placeholder="Date of manufacture">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reserve Canopy -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>🔒</span>
+          <div class="section-head-title">Reserve Canopy</div>
+        </div>
+        <div class="section-body">
+          <div class="field-grid">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" id="e_reserve_mfr" placeholder="e.g. Performance Designs">
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input type="text" id="e_reserve_model" placeholder="e.g. PDR 176">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" id="e_reserve_serial" placeholder="">
+            </div>
+            <div class="field">
+              <label>DOM</label>
+              <input type="text" id="e_reserve_dom" placeholder="Date of manufacture">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AAD -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>⚡</span>
+          <div class="section-head-title">AAD</div>
+        </div>
+        <div class="section-body">
+          <div class="field-grid">
+            <div class="field">
+              <label>Manufacturer</label>
+              <input type="text" id="e_aad_mfr" placeholder="e.g. Cypres, MARS">
+            </div>
+            <div class="field">
+              <label>Model</label>
+              <input type="text" id="e_aad_model" placeholder="e.g. Expert Cypres 2">
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" id="e_aad_serial" placeholder="">
+            </div>
+            <div class="field">
+              <label>Service Due</label>
+              <input type="text" id="e_aad_service_due" placeholder="Next service date">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>📝</span>
+          <div class="section-head-title">Internal Notes</div>
+        </div>
+        <div class="section-body">
+          <div class="field">
+            <label>Notes</label>
+            <textarea id="e_notes" placeholder="Any internal notes about this customer or their gear..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service History (read-only) -->
+      <div class="section-card">
+        <div class="section-head">
+          <span>📋</span>
+          <div class="section-head-title">Service History</div>
+        </div>
+        <div class="section-body" id="historyBody">
+          <div class="no-history">Loading history...</div>
+        </div>
+      </div>
+
+      <!-- Save Bar -->
+      <div class="save-bar">
+        <div class="save-status" id="saveStatus">Unsaved changes</div>
+        <div class="save-actions">
+          <button class="btn btn-ghost" onclick="showSearch()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveCustomer()">💾 Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const GAS_URL       = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
+  const ADMIN_PASSWORD = 'tier2admin';
+
+  let allRecords   = [];   // flat array of all sheet rows as objects
+  let editingRecord = null; // the record currently being edited (original object)
+  let editRowIndex  = -1;   // 1-based row index in the sheet
+
+  // ── AUTH ──────────────────────────────────────────────────
+  function doLogin() {
+    const pw = document.getElementById('pw-input').value;
+    if (pw === ADMIN_PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      loadAllCustomers();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  // ── LOAD ALL ──────────────────────────────────────────────
+  async function loadAllCustomers() {
+    showResultState('loading');
+    try {
+      const res  = await fetch(GAS_URL + '?action=getAll&t=' + Date.now());
+      const data = await res.json();
+      if (data.rows) {
+        allRecords = data.rows;
+      }
+      showResultState('idle');
+    } catch(err) {
+      showResultState('error', 'Failed to load records: ' + err.message);
+    }
+  }
+
+  // ── SEARCH ────────────────────────────────────────────────
+  function doSearch() {
+    const q = document.getElementById('searchInput').value.trim().toLowerCase();
+    if (!q) { showResultState('idle'); return; }
+
+    const matches = allRecords.filter(r => {
+      const name   = String(r.name   || r.full_name || '').toLowerCase();
+      const email  = String(r.email  || '').toLowerCase();
+      const serial = String(r.containerSerial || r['container serial'] || '').toLowerCase();
+      return name.includes(q) || email.includes(q) || serial.includes(q);
+    });
+
+    renderResults(matches, q);
+  }
+
+  function renderResults(records, query) {
+    const container = document.getElementById('searchResults');
+    if (records.length === 0) {
+      container.innerHTML = `<div class="state-box"><div class="icon">🔍</div>No customers found matching "<strong>${esc(query)}</strong>"</div>`;
+      return;
+    }
+
+    // De-duplicate by serial (show most recent record per customer)
+    const seen = new Map();
+    records.forEach(r => {
+      const serial = String(r.containerSerial || r['container serial'] || r.email || Math.random());
+      if (!seen.has(serial)) seen.set(serial, r);
+    });
+    const unique = [...seen.values()];
+
+    container.innerHTML = `
+      <div class="results-header">
+        <div class="results-count">${unique.length} customer${unique.length !== 1 ? 's' : ''} found</div>
+      </div>
+      ${unique.map((r, i) => {
+        const name   = esc(r.name || r.full_name || 'Unknown');
+        const email  = esc(r.email || '—');
+        const serial = esc(r.containerSerial || r['container serial'] || '—');
+        const phone  = esc(r.phone || '');
+        return `
+        <div class="result-row" style="animation-delay:${i*0.04}s" onclick="openEdit(${allRecords.indexOf(r)})">
+          <div>
+            <div class="result-name">${name}</div>
+            <div class="result-meta">${email}${phone ? ' · ' + phone : ''}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span class="result-serial">S/N: ${serial}</span>
+            <button class="result-edit-btn" onclick="event.stopPropagation();openEdit(${allRecords.indexOf(r)})">Edit →</button>
+          </div>
+        </div>`;
+      }).join('')}`;
+  }
+
+  function showResultState(state, msg) {
+    const container = document.getElementById('searchResults');
+    if (state === 'loading') {
+      container.innerHTML = `<div class="state-box"><div class="spinner"></div>Loading customers...</div>`;
+    } else if (state === 'idle') {
+      container.innerHTML = `<div class="state-box"><div class="icon">🔍</div>Enter a name, email, or serial number above to search</div>`;
+    } else if (state === 'error') {
+      container.innerHTML = `<div class="state-box"><div class="icon">⚠️</div>${esc(msg || 'An error occurred')}</div>`;
+    }
+  }
+
+  // ── EDIT ──────────────────────────────────────────────────
+  function openEdit(index) {
+    const r = allRecords[index];
+    if (!r) return;
+    editingRecord = r;
+    editRowIndex  = r._rowIndex || -1;
+
+    // Header
+    document.getElementById('editHeaderName').textContent   = r.name || r.full_name || 'Customer';
+    document.getElementById('editHeaderSerial').textContent = 'S/N: ' + (r.containerSerial || r['container serial'] || '—');
+
+    // Contact
+    setVal('e_name',  r.name || r.full_name || '');
+    setVal('e_email', r.email || '');
+    setVal('e_phone', r.phone || '');
+    setVal('e_dz',    r.homeDz || r.home_dz || r.dz || '');
+
+    // Container
+    setVal('e_container_mfr',    r.containerManufacturer || r['container manufacturer'] || '');
+    setVal('e_container_model',  r.containerModel || r['container model'] || r.containerMakeModel || '');
+    setVal('e_container_serial', r.containerSerial || r['container serial'] || '');
+    setVal('e_container_dom',    r.containerDom || r['container dom'] || '');
+
+    // Main
+    setVal('e_main_mfr',    r.mainManufacturer || r['main manufacturer'] || '');
+    setVal('e_main_model',  r.mainModel || r['main model'] || r.mainCanopy || '');
+    setVal('e_main_serial', r.mainSerial || r['main serial'] || '');
+    setVal('e_main_dom',    r.mainDom || r['main dom'] || '');
+
+    // Reserve
+    setVal('e_reserve_mfr',    r.reserveManufacturer || r['reserve manufacturer'] || '');
+    setVal('e_reserve_model',  r.reserveModel || r['reserve model'] || r.reserveCanopy || '');
+    setVal('e_reserve_serial', r.reserveSerial || r['reserve serial'] || '');
+    setVal('e_reserve_dom',    r.reserveDom || r['reserve dom'] || '');
+
+    // AAD
+    setVal('e_aad_mfr',         r.aadManufacturer || r['aad manufacturer'] || '');
+    setVal('e_aad_model',       r.aadModel || r['aad model'] || r.aadType || '');
+    setVal('e_aad_serial',      r.aadSerial || r['aad serial'] || '');
+    setVal('e_aad_service_due', r.aadServiceDue || r['aad service due'] || '');
+
+    // Notes
+    setVal('e_notes', r.notes || r.internalNotes || '');
+
+    // Service history — show all records for same serial
+    renderHistory(r.containerSerial || r['container serial'] || '');
+
+    // Reset save status
+    setSaveStatus('ready');
+
+    // Show edit panel
+    document.getElementById('searchView').style.display = 'none';
+    document.getElementById('editPanel').style.display  = 'block';
+    document.querySelector('.tb-btn.back').style.display = 'inline-block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderHistory(serial) {
+    const body = document.getElementById('historyBody');
+    if (!serial) { body.innerHTML = '<div class="no-history">No serial number on record.</div>'; return; }
+
+    const records = allRecords.filter(r =>
+      (r.containerSerial || r['container serial'] || '').toUpperCase() === serial.toUpperCase()
+    ).sort((a,b) => new Date(b.date || b.timestamp || 0) - new Date(a.date || a.timestamp || 0));
+
+    if (records.length === 0) {
+      body.innerHTML = '<div class="no-history">No service records found for this serial.</div>';
+      return;
+    }
+
+    body.innerHTML = records.map(rec => {
+      const svcs = (rec.services || rec.servicesRequested || '').split('\n').filter(s => s.trim());
+      const statusClass = (rec.status || '').toLowerCase().includes('complete') ? 'complete' : 'received';
+      return `
+      <div class="history-record">
+        <div class="history-record-head">
+          <span class="history-wo">📋 ${esc(rec.ticket || rec['work order'] || '—')}</span>
+          <span class="history-date">${esc(rec.date || rec.timestamp || '—')}</span>
+          <span class="history-status ${statusClass}">${esc(rec.status || 'Received')}</span>
+        </div>
+        <div class="history-services">${svcs.length ? svcs.map(s => '▸ ' + esc(s)).join('<br>') : '<span style="color:var(--muted);font-size:12px;">No services recorded</span>'}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── SAVE ──────────────────────────────────────────────────
+  async function saveCustomer() {
+    setSaveStatus('saving');
+
+    const payload = {
+      action:               'updateCustomer',
+      rowIndex:             editRowIndex,
+      originalSerial:       editingRecord.containerSerial || editingRecord['container serial'] || '',
+      originalEmail:        editingRecord.email || '',
+      // Contact
+      name:                 getVal('e_name'),
+      email:                getVal('e_email'),
+      phone:                getVal('e_phone'),
+      homeDz:               getVal('e_dz'),
+      // Container
+      containerManufacturer: getVal('e_container_mfr'),
+      containerModel:       getVal('e_container_model'),
+      containerSerial:      getVal('e_container_serial'),
+      containerDom:         getVal('e_container_dom'),
+      // Main
+      mainManufacturer:     getVal('e_main_mfr'),
+      mainModel:            getVal('e_main_model'),
+      mainSerial:           getVal('e_main_serial'),
+      mainDom:              getVal('e_main_dom'),
+      // Reserve
+      reserveManufacturer:  getVal('e_reserve_mfr'),
+      reserveModel:         getVal('e_reserve_model'),
+      reserveSerial:        getVal('e_reserve_serial'),
+      reserveDom:           getVal('e_reserve_dom'),
+      // AAD
+      aadManufacturer:      getVal('e_aad_mfr'),
+      aadModel:             getVal('e_aad_model'),
+      aadSerial:            getVal('e_aad_serial'),
+      aadServiceDue:        getVal('e_aad_service_due'),
+      // Notes
+      notes:                getVal('e_notes'),
+    };
+
+    try {
+      const res  = await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.status === 'ok' || data.status === 'success') {
+        setSaveStatus('saved');
+        showToast('✓ Customer record saved', 'success');
+        // Update local record
+        Object.assign(editingRecord, payload);
+        document.getElementById('editHeaderName').textContent   = payload.name || 'Customer';
+        document.getElementById('editHeaderSerial').textContent = 'S/N: ' + (payload.containerSerial || '—');
+      } else {
+        throw new Error(data.message || 'Save failed');
+      }
+    } catch(err) {
+      setSaveStatus('error');
+      showToast('⚠ Save failed: ' + err.message, 'error');
+    }
+  }
+
+  // ── NAV ───────────────────────────────────────────────────
+  function showSearch() {
+    document.getElementById('editPanel').style.display  = 'none';
+    document.getElementById('searchView').style.display = 'block';
+    document.querySelector('.tb-btn.back').style.display = 'none';
+  }
+
+  // ── HELPERS ───────────────────────────────────────────────
+  function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val || ''; }
+  function getVal(id)      { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  function setSaveStatus(state) {
+    const el = document.getElementById('saveStatus');
+    el.className = 'save-status';
+    if (state === 'saving') { el.classList.add('saving'); el.textContent = 'Saving...'; }
+    else if (state === 'saved')  { el.classList.add('saved');  el.textContent = '✓ Saved'; }
+    else if (state === 'error')  { el.classList.add('error');  el.textContent = '⚠ Save failed'; }
+    else { el.textContent = 'Unsaved changes'; }
+  }
+
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show' + (type ? ' ' + type : '');
+    setTimeout(() => { t.className = 'toast'; }, 3000);
+  }
+
+  // Hide back button initially
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelector('.tb-btn.back').style.display = 'none';
+  });
+</script>
+</body>
+</html>
