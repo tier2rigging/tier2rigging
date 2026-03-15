@@ -1025,6 +1025,19 @@
       document.querySelector('[name="full_name"]').focus();
       return;
     }
+    // Validate phone
+    var phone = (document.querySelector('[name="phone"]') || {}).value || '';
+    var phoneClean = phone.replace(/[\s\-().+]/g, '');
+    if (!phone.trim()) {
+      alert('A phone number is required before submitting.');
+      document.querySelector('[name="phone"]').focus();
+      return;
+    }
+    if (!/^\d{10,15}$/.test(phoneClean)) {
+      alert('Please enter a valid phone number (e.g. (631) 555-0123).');
+      document.querySelector('[name="phone"]').focus();
+      return;
+    }
     // Validate email
     var email = (document.querySelector('[name="email"]') || {}).value || '';
     var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
