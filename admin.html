@@ -1206,21 +1206,8 @@ async function sendInvoice(method) {
     return;
   }
 
-  statusEl.textContent = 'Connecting to server…';
-  statusEl.className = 'send-status';
-
-  // First ping to confirm GAS is alive
-  try {
-    const ping = await fetch(GAS_URL + '?action=ping&t=' + Date.now());
-    const pt = await ping.text();
-    console.log('Ping response:', pt);
-  } catch(err) {
-    statusEl.textContent = '⚠ Cannot reach server: ' + err.message;
-    statusEl.className = 'send-status err';
-    return;
-  }
-
   statusEl.textContent = 'Sending invoice…';
+  statusEl.className = 'send-status';
 
   // Split on newline (service names contain commas so we can't split on comma)
   const services = (o.servicesSelected || '').split('\n').map(s => s.trim()).filter(Boolean);
@@ -1244,13 +1231,23 @@ async function sendInvoice(method) {
   params.set('total',             String(totalNum));
   params.set('notes',             o.notes || '');
 
+  const fullUrl = GAS_URL + '?' + params.toString();
+  console.log('Sending invoice to URL:', fullUrl);
   try {
-    const res  = await fetch(GAS_URL + '?' + params.toString());
+    const res  = await fetch(fullUrl);
     const text = await res.text();
     console.log('Invoice GAS response:', text);
-    statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
-    statusEl.className = 'send-status ok';
+    let json;
+    try { json = JSON.parse(text); } catch(e) { json = null; }
+    if (json && json.status === 'error') {
+      statusEl.textContent = '⚠ Server error: ' + json.message;
+      statusEl.className = 'send-status err';
+    } else {
+      statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
+      statusEl.className = 'send-status ok';
+    }
   } catch(err) {
+    console.error('Invoice fetch error:', err);
     statusEl.textContent = '⚠ Failed: ' + err.message;
     statusEl.className = 'send-status err';
   }
