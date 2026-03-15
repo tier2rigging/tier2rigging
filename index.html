@@ -1348,6 +1348,24 @@
     deferredPrompt = e;
   });
 
+  // Hide install button if already running as installed app
+  window.addEventListener('DOMContentLoaded', function() {
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+    if (isStandalone) {
+      var btn = document.getElementById('nav-install-btn');
+      if (btn) btn.style.display = 'none';
+      var divider = btn && btn.previousElementSibling;
+      if (divider && divider.classList && !divider.classList.length) divider.style.display = 'none';
+    }
+  });
+
+  // Also hide when user installs
+  window.addEventListener('appinstalled', function() {
+    var btn = document.getElementById('nav-install-btn');
+    if (btn) btn.style.display = 'none';
+    deferredPrompt = null;
+  });
+
   function showInstallHelp() {
     var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     var isAndroid = /android/i.test(navigator.userAgent);
