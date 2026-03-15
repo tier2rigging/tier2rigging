@@ -1451,7 +1451,7 @@ async function submitNewOrder() {
     rubberBands:      supBands,
     elasticKeepers:   supKeepers,
     notes:            (document.getElementById('no-notes') || {}).value || '',
-    customItems:      JSON.stringify(customItems),
+    customItems:      JSON.stringify(customItems || []),
     status: 'New',
     rushService: 'No',
     rushFee: 0,
