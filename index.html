@@ -1018,6 +1018,27 @@
   var selectedRushFee = '0';
 
   function openRushModal() {
+    // Validate name
+    var fullName = (document.querySelector('[name="full_name"]') || {}).value || '';
+    if (!fullName.trim()) {
+      alert('Please enter your full name before submitting.');
+      document.querySelector('[name="full_name"]').focus();
+      return;
+    }
+    // Validate email
+    var email = (document.querySelector('[name="email"]') || {}).value || '';
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      alert('An email address is required before submitting.');
+      document.querySelector('[name="email"]').focus();
+      return;
+    }
+    if (!emailRegex.test(email.trim())) {
+      alert('Please enter a valid email address (e.g. john@example.com).');
+      document.querySelector('[name="email"]').focus();
+      return;
+    }
+    // Validate serial
     var serial = (document.querySelector('[name="container_serial"]') || {}).value || '';
     if (!serial.trim()) {
       alert('Container serial number is required before submitting.');
