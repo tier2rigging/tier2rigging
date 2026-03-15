@@ -1380,13 +1380,13 @@ function addNewCustomItem(name='', price='') {
 }
 
 async function submitNewOrder() {
+  const msgEl = document.getElementById('no-save-msg');
   try {
   if (!selectedDZ) { alert('Please select a customer type first.'); return; }
   const serial = (document.getElementById('no-serial') || {}).value || '';
   if (!serial.trim()) { alert('Container serial number is required.'); return; }
 
   const dz = DROPZONES[selectedDZ];
-  const msgEl = document.getElementById('no-save-msg');
   msgEl.textContent = 'Creating order…';
   msgEl.style.color = 'var(--muted)';
 
@@ -1490,7 +1490,9 @@ async function submitNewOrder() {
   }
   } catch(outerErr) {
     console.error('submitNewOrder crash:', outerErr);
-    alert('Error creating order: ' + outerErr.message);
+    msgEl.textContent = '⚠ Error: ' + outerErr.message;
+    msgEl.style.color = 'var(--red)';
+    alert('Create order error: ' + outerErr.message);
   }
 }
 
