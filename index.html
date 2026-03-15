@@ -105,6 +105,55 @@
 
     
 
+
+  /* ── INSTALL MODAL ── */
+  .install-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.82); z-index: 999;
+    align-items: flex-end; justify-content: center;
+    padding: 20px;
+  }
+  .install-overlay.open { display: flex; }
+  .install-modal {
+    background: #1e1e1c;
+    border: 1px solid rgba(200,169,110,0.4);
+    border-radius: 16px 16px 16px 16px;
+    width: 100%; max-width: 420px;
+    overflow: hidden;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.5);
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(40px); opacity:0; } to { transform: translateY(0); opacity:1; } }
+  .install-modal-header {
+    background: linear-gradient(180deg, #1a1a1a, #1e1e1c);
+    border-bottom: 2px solid #c8a96e;
+    padding: 20px 24px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .install-modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 2px; color: #c8a96e;
+  }
+  .install-modal-close {
+    background: none; border: none; color: #9a9890;
+    font-size: 22px; cursor: pointer; padding: 4px;
+  }
+  .install-modal-body { padding: 20px 24px 28px; }
+  .install-step {
+    display: flex; align-items: flex-start; gap: 16px;
+    margin-bottom: 18px;
+  }
+  .install-step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #c8a96e, #e0c080);
+    color: #1a1a1a; font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0;
+  }
+  .install-step-text { font-size: 14px; color: #f2ede4; line-height: 1.6; padding-top: 4px; }
+  .install-step-text strong { color: #e0c080; }
+  .install-note { font-size: 12px; color: #9a9890; text-align: center; margin-top: 8px; line-height: 1.5; }
+
   /* ── PWA INSTALL BANNER ── */
   .pwa-banner {
     display: none;
@@ -1290,6 +1339,57 @@
     });
 
   });
+
+  // ── PWA INSTALL ──────────────────────────────────────────
+  var deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+
+  function showInstallHelp() {
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var isAndroid = /android/i.test(navigator.userAgent);
+
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function() { deferredPrompt = null; });
+      return;
+    }
+
+    var body = document.getElementById('install-modal-body');
+    if (isIOS) {
+      body.innerHTML =
+        '<div class="install-step"><div class="install-step-num">1</div><div class="install-step-text">Make sure you are using <strong>Safari</strong> (not Chrome or another browser)</div></div>' +
+        '<div class="install-step"><div class="install-step-num">2</div><div class="install-step-text">Tap the <strong>Share button</strong> at the bottom of the screen (box with arrow pointing up)</div></div>' +
+        '<div class="install-step"><div class="install-step-num">3</div><div class="install-step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div></div>' +
+        '<div class="install-step"><div class="install-step-num">4</div><div class="install-step-text">Tap <strong>"Add"</strong> in the top right corner</div></div>' +
+        '<p class="install-note">The Tier2 Rigging app will appear on your home screen.</p>';
+    } else if (isAndroid) {
+      body.innerHTML =
+        '<div class="install-step"><div class="install-step-num">1</div><div class="install-step-text">Make sure you are using <strong>Chrome</strong></div></div>' +
+        '<div class="install-step"><div class="install-step-num">2</div><div class="install-step-text">Tap the <strong>three-dot menu</strong> in the top right corner</div></div>' +
+        '<div class="install-step"><div class="install-step-num">3</div><div class="install-step-text">Tap <strong>"Add to Home Screen"</strong> or <strong>"Install App"</strong></div></div>' +
+        '<div class="install-step"><div class="install-step-num">4</div><div class="install-step-text">Tap <strong>"Install"</strong></div></div>' +
+        '<p class="install-note">The app will appear on your home screen.</p>';
+    } else {
+      body.innerHTML =
+        '<div class="install-step"><div class="install-step-num">1</div><div class="install-step-text"><strong>iPhone:</strong> Open in Safari, tap the Share button, then "Add to Home Screen"</div></div>' +
+        '<div class="install-step"><div class="install-step-num">2</div><div class="install-step-text"><strong>Android:</strong> Open in Chrome, tap the menu, then "Add to Home Screen"</div></div>';
+    }
+    document.getElementById('install-overlay').classList.add('open');
+  }
+
+  function closeInstallModal() {
+    document.getElementById('install-overlay').classList.remove('open');
+  }
+
+  function dismissPWA() {
+    var b = document.getElementById('pwa-banner');
+    if (b) b.classList.remove('show');
+  }
+
 </script>
 
 <!-- RUSH SERVICE MODAL -->
@@ -1330,6 +1430,18 @@
     <div class="rush-modal-footer">
       <button class="rush-back-btn" onclick="closeRushModal()">&#x2190; Back</button>
       <button class="rush-go-btn" onclick="confirmRushAndSubmit()">Submit Order &#x25B6;</button>
+    </div>
+  </div>
+</div>
+
+<!-- INSTALL MODAL -->
+<div class="install-overlay" id="install-overlay" onclick="if(event.target===this)closeInstallModal()">
+  <div class="install-modal">
+    <div class="install-modal-header">
+      <div class="install-modal-title">&#x1F4F2; Install App</div>
+      <button class="install-modal-close" onclick="closeInstallModal()">&#x2715;</button>
+    </div>
+    <div class="install-modal-body" id="install-modal-body">
     </div>
   </div>
 </div>
