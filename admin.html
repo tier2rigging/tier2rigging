@@ -1376,6 +1376,7 @@ function addNewCustomItem(name='', price='') {
 }
 
 async function submitNewOrder() {
+  try {
   if (!selectedDZ) { alert('Please select a customer type first.'); return; }
   const serial = (document.getElementById('no-serial') || {}).value || '';
   if (!serial.trim()) { alert('Container serial number is required.'); return; }
@@ -1479,9 +1480,13 @@ async function submitNewOrder() {
       }, 1200);
     }
   } catch(err) {
-    console.error('createOrder error:', err);
-    msgEl.textContent = '⚠ Failed to save: ' + err.message;
-    msgEl.style.color = 'var(--red)';
+    console.error('createOrder fetch error:', err);
+    const msgEl2 = document.getElementById('no-save-msg');
+    if (msgEl2) { msgEl2.textContent = '⚠ Failed: ' + err.message; msgEl2.style.color = 'var(--red)'; }
+  }
+  } catch(outerErr) {
+    console.error('submitNewOrder crash:', outerErr);
+    alert('Error creating order: ' + outerErr.message);
   }
 }
 
