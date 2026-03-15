@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rigger Service Update — Tier2 Rigging LLC</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@400;600;700&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #1c1c1e;
+    --card:      #252527;
+    --card-mid:  #2c2c2f;
+    --input-bg:  #161618;
+    --border:    rgba(200,185,150,0.2);
+    --tan:       #c8a96e;
+    --tan-light: #e0c080;
+    --parchment: #f2ede4;
+    --muted:     #9a9890;
+    --blue:      #6a9fd8;
+    --blue-light: #8ab8e8;
+    --blue-bg:   rgba(100,150,210,0.08);
+    --blue-border: rgba(100,140,200,0.3);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--parchment);
+    font-family: 'Barlow', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 80% 40% at 50% 0%, rgba(100,150,210,0.06) 0%, transparent 60%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(200,185,150,0.025) 39px, rgba(200,185,150,0.025) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(200,185,150,0.025) 39px, rgba(200,185,150,0.025) 40px);
+  }
+
+  /* HEADER */
+  .site-header { background: #b5934a; overflow: hidden; padding: 0; line-height: 0; }
+  .site-header img { display: block; width: 100%; max-width: 100%; height: auto; }
+  .header-divider { height: 3px; background: linear-gradient(90deg, transparent 0%, var(--tan) 30%, var(--tan-light) 50%, var(--tan) 70%, transparent 100%); opacity: 0.9; }
+
+  /* NAV */
+  .site-nav { background: #111; border-bottom: 1px solid rgba(200,169,110,0.2); display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; gap: 0; }
+  .nav-link { display: flex; align-items: center; gap: 6px; padding: 9px 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: #9a9890; text-decoration: none; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: #e0c080; border-bottom-color: rgba(200,169,110,0.4); }
+  .nav-link.active { color: var(--blue-light); border-bottom-color: var(--blue); }
+  .nav-link svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.75; }
+  .nav-divider { width: 1px; height: 20px; background: rgba(200,169,110,0.15); flex-shrink: 0; }
+
+  .wrap { max-width: 620px; margin: 0 auto; padding: 28px 16px 60px; }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* PAGE TITLE */
+  .page-title-block { margin-bottom: 24px; animation: fadeUp 0.3s ease both; }
+  .page-title-block .pt-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--blue); margin-bottom: 6px; }
+  .page-title-block .pt-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--parchment); }
+  .page-title-block .pt-sub { font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+  /* SERIAL LOOKUP */
+  .lookup-card { background: var(--card); border: 1px solid var(--blue-border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.35s ease both; }
+  .lookup-head { background: linear-gradient(90deg, var(--blue-bg), transparent); border-bottom: 1px solid var(--blue-border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
+  .lookup-head-icon { font-size: 20px; }
+  .lookup-head-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--blue-light); }
+  .lookup-body { padding: 20px; }
+
+  /* FIELDS */
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); margin-bottom: 7px; }
+  .field label.blue { color: var(--blue); }
+  .field input, .field textarea, .field select {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 7px; color: var(--parchment); font-family: 'Barlow', sans-serif;
+    font-size: 15px; padding: 11px 14px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(154,152,144,0.45); }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--tan); box-shadow: 0 0 0 3px rgba(200,169,110,0.15); }
+  .field input[readonly] { opacity: 0.65; cursor: default; }
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+  .field select { cursor: pointer; }
+  .field select option { background: var(--card); }
+
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 480px) { .field-row { grid-template-columns: 1fr; } }
+
+  /* SECTION CARD */
+  .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.4s ease both; }
+  .section-head { background: linear-gradient(90deg, rgba(200,169,110,0.1), transparent); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
+  .section-head-icon { font-size: 18px; }
+  .section-head-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--tan-light); }
+  .section-body { padding: 20px; }
+
+  /* SERVICE CHECKBOXES */
+  .svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  @media (max-width: 480px) { .svc-grid { grid-template-columns: 1fr; } }
+  .svc-check { display: flex; align-items: center; gap: 10px; background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px; padding: 11px 14px; cursor: pointer; transition: all 0.15s; user-select: none; }
+  .svc-check:hover { border-color: var(--tan); background: rgba(200,169,110,0.05); }
+  .svc-check input[type="checkbox"] { display: none; }
+  .svc-check .check-box { width: 18px; height: 18px; border: 1.5px solid rgba(200,169,110,0.4); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; background: transparent; }
+  .svc-check input:checked ~ .check-box { background: var(--tan); border-color: var(--tan); }
+  .svc-check input:checked ~ .check-box::after { content: '✓'; font-size: 11px; color: #1c1c1e; font-weight: 700; }
+  .svc-check .check-label { font-size: 13.5px; color: var(--parchment); line-height: 1.3; }
+  .svc-check.checked { border-color: rgba(200,169,110,0.45); background: rgba(200,169,110,0.07); }
+
+  /* RIGGER INFO */
+  .rigger-section { background: var(--blue-bg); border: 1px solid var(--blue-border); border-radius: 12px; overflow: hidden; margin-bottom: 20px; animation: fadeUp 0.45s ease both; }
+  .rigger-section .section-head { background: linear-gradient(90deg, rgba(100,150,210,0.15), transparent); border-bottom: 1px solid var(--blue-border); }
+  .rigger-section .section-head-title { color: var(--blue-light); }
+  .rigger-section .section-body { padding: 20px; }
+  .rigger-section .field label { color: var(--blue); }
+  .rigger-section .field input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(100,150,210,0.15); }
+
+  /* SUBMIT BTN */
+  .btn-submit {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: #1c1c1e; font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 3px; border: none; border-radius: 8px;
+    cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 20px rgba(100,150,210,0.3);
+    margin-top: 4px;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(100,150,210,0.4); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ERROR / LOADING */
+  .error-box { display: none; background: rgba(192,82,42,0.1); border: 1px solid rgba(192,82,42,0.35); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: #e07a5a; margin-top: 12px; line-height: 1.5; }
+  .error-box.show { display: block; }
+  .loading-box { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+  .loading-box.show { display: block; }
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(100,150,210,0.2); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+
+  /* SUCCESS */
+  .success-screen { display: none; text-align: center; padding: 60px 20px; animation: fadeUp 0.4s ease both; }
+  .success-screen.show { display: block; }
+  .success-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #6fcf97; letter-spacing: 2px; margin-bottom: 8px; }
+  .success-wo { font-family: 'DM Mono', monospace; font-size: 18px; color: var(--tan); margin: 14px 0; }
+  .success-sub { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 380px; margin: 0 auto; }
+  .success-back { display: inline-block; margin-top: 28px; padding: 13px 32px; background: rgba(200,169,110,0.12); border: 1px solid rgba(200,169,110,0.4); color: var(--tan); font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; border-radius: 8px; text-decoration: none; transition: all 0.2s; }
+  .success-back:hover { background: rgba(200,169,110,0.22); }
+
+  /* BACK LINK */
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); text-decoration: none; margin-bottom: 20px; transition: color 0.15s; letter-spacing: 0.5px; }
+  .back-link:hover { color: var(--tan); }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <img src="image1.png" alt="Tier2 Rigging">
+  <div class="header-divider"></div>
+</header>
+
+<nav class="site-nav">
+  <a class="nav-link" href="index.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6M5 20h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+    Service Request
+  </a>
+  <div class="nav-divider"></div>
+  <a class="nav-link" href="customer.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    My Rig Portal
+  </a>
+  <div class="nav-divider"></div>
+  <a class="nav-link active" href="rigger-update.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    Rigger Update
+  </a>
+  <div class="nav-divider"></div>
+  <a class="nav-link" href="admin.html" style="color:#7a7a7a;font-size:13px;letter-spacing:1.5px;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    Admin
+  </a>
+</nav>
+
+<div class="wrap">
+
+  <a class="back-link" id="backLink" href="customer.html">← Back to Portal Selection</a>
+
+  <div class="page-title-block">
+    <div class="pt-label">Tier2 Rigging LLC</div>
+    <div class="pt-title">Rigger Service Update</div>
+    <div class="pt-sub">Log service performed on a customer's rig. This record will be added to the owner's service history.</div>
+  </div>
+
+  <!-- MAIN FORM -->
+  <div id="mainForm">
+
+    <!-- Serial Lookup -->
+    <div class="lookup-card">
+      <div class="lookup-head">
+        <div class="lookup-head-icon">🔍</div>
+        <div class="lookup-head-title">Container Identification</div>
+      </div>
+      <div class="lookup-body">
+        <div class="field">
+          <label class="blue">Container Serial Number</label>
+          <input type="text" id="inputSerial" placeholder="e.g. JO-12345" autocomplete="off">
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Performed -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">✅</div>
+        <div class="section-head-title">Services Performed</div>
+      </div>
+      <div class="section-body">
+        <div class="svc-grid" id="svcGrid">
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Reserve Repack">
+            <span class="check-box"></span>
+            <span class="check-label">Reserve Repack</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Reserve Inspection">
+            <span class="check-box"></span>
+            <span class="check-label">Reserve Inspection</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Reserve Swap / Install">
+            <span class="check-box"></span>
+            <span class="check-label">Reserve Swap / Install</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Reserve Patch">
+            <span class="check-box"></span>
+            <span class="check-label">Reserve Patch</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="AAD Service">
+            <span class="check-box"></span>
+            <span class="check-label">AAD Service</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="AAD Swap">
+            <span class="check-box"></span>
+            <span class="check-label">AAD Swap</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="AAD Install">
+            <span class="check-box"></span>
+            <span class="check-label">AAD Install</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Other">
+            <span class="check-box"></span>
+            <span class="check-label">Other (describe below)</span>
+          </label>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label>Other / Additional Work Performed</label>
+          <textarea id="otherWork" placeholder="Describe any additional work, repairs, or notes..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rigger Info -->
+    <div class="rigger-section">
+      <div class="section-head">
+        <div class="section-head-icon">🪪</div>
+        <div class="section-head-title">Rigger Information</div>
+      </div>
+      <div class="section-body">
+        <div class="field">
+          <label class="blue">DZ / Facility Name</label>
+          <input type="text" id="inputDZ" placeholder="e.g. Skydive Long Island">
+        </div>
+        <div class="field">
+          <label class="blue">Rigger Name</label>
+          <input type="text" id="inputRiggerName" placeholder="Full name">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="blue">FAA Cert #</label>
+            <input type="text" id="inputFAA" placeholder="e.g. 3755728" autocomplete="off">
+          </div>
+          <div class="field">
+            <label class="blue">Seal / Stamp #</label>
+            <input type="text" id="inputSeal" placeholder="e.g. WFQ" autocomplete="off">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+    <button class="btn-submit" id="submitBtn" onclick="submitUpdate()">🔧 SUBMIT SERVICE RECORD</button>
+
+  </div><!-- /mainForm -->
+
+  <!-- LOADING -->
+  <div class="loading-box" id="loadingBox">
+    <div class="spinner"></div>
+    Submitting service record...
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-title">Record Submitted</div>
+    <div class="success-wo" id="successRef"></div>
+    <p class="success-sub">The service record has been logged and added to the owner's history at Tier2 Rigging.</p>
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:28px;">
+      <a href="#" onclick="resetForm(); return false;" class="success-back">+ Log Another Service</a>
+      <a id="successBackLink" href="customer.html" style="font-size:12px;color:var(--muted);text-decoration:none;transition:color 0.15s;" onmouseover="this.style.color='var(--tan)'" onmouseout="this.style.color='var(--muted)'">← Back to Portal Selection</a>
+    </div>
+  </div>
+
+</div><!-- /wrap -->
+
+<script>
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec";
+  const OWNER_FAA  = "3755728";
+  const OWNER_SEAL = "WFQ";
+
+  window.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const serial = params.get('serial') || params.get('s') || '';
+    if (serial) {
+      const inp = document.getElementById('inputSerial');
+      inp.value = serial.toUpperCase();
+      inp.setAttribute('readonly', true);
+      const backUrl = 'customer.html?serial=' + encodeURIComponent(serial);
+      document.getElementById('backLink').href = backUrl;
+      document.getElementById('successBackLink').href = backUrl;
+    }
+  });
+
+  function toggleCheck(label) {
+    const cb = label.querySelector('input[type="checkbox"]');
+    // Let browser handle the toggle naturally; just update styling
+    setTimeout(() => {
+      if (cb.checked) { label.classList.add('checked'); }
+      else { label.classList.remove('checked'); }
+    }, 0);
+  }
+
+  async function submitUpdate() {
+    const serial      = document.getElementById('inputSerial').value.trim().toUpperCase();
+    const dz          = document.getElementById('inputDZ').value.trim();
+    const riggerName  = document.getElementById('inputRiggerName').value.trim();
+    const faa         = document.getElementById('inputFAA').value.trim();
+    const seal        = document.getElementById('inputSeal').value.trim().toUpperCase();
+    const otherWork   = document.getElementById('otherWork').value.trim();
+    const errBox      = document.getElementById('errorBox');
+
+    // Get checked services
+    const checked = [...document.querySelectorAll('input[name="svc"]:checked')].map(c => c.value);
+
+    errBox.classList.remove('show');
+
+    if (!serial)     { errBox.textContent = 'Please enter the container serial number.'; errBox.classList.add('show'); return; }
+    if (!checked.length && !otherWork) { errBox.textContent = 'Please select at least one service or describe the work performed.'; errBox.classList.add('show'); return; }
+    if (!dz)         { errBox.textContent = 'Please enter the DZ / facility name.'; errBox.classList.add('show'); return; }
+    if (!riggerName) { errBox.textContent = 'Please enter the rigger name.'; errBox.classList.add('show'); return; }
+    if (!faa)        { errBox.textContent = 'Please enter your FAA cert number.'; errBox.classList.add('show'); return; }
+    if (!seal)       { errBox.textContent = 'Please enter your seal / stamp number.'; errBox.classList.add('show'); return; }
+
+    const services = [...checked];
+    if (otherWork) services.push('Other: ' + otherWork);
+
+    const isOwner = (faa === OWNER_FAA && seal === OWNER_SEAL);
+    const now     = new Date();
+    const dateStr = (now.getMonth()+1) + '/' + now.getDate() + '/' + now.getFullYear();
+
+    const payload = {
+      action:           'riggerUpdate',
+      containerSerial:  serial,
+      serviceDate:      dateStr,
+      servicesPerformed: services.join('; '),
+      dzName:           dz,
+      riggerName:       riggerName,
+      riggerFAA:        faa,
+      riggerSeal:       seal,
+      isOwnerRigger:    isOwner ? 'YES' : 'NO',
+      flagForReview:    isOwner ? '' : 'FLAG — Non-owner rigger'
+    };
+
+    document.getElementById('mainForm').style.display = 'none';
+    document.getElementById('loadingBox').classList.add('show');
+
+    try {
+      const resp = await fetch(GAS_URL, {
+        method: 'POST',
+        mode: 'cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await resp.json();
+      document.getElementById('loadingBox').classList.remove('show');
+
+      if (data.status === 'ok' || data.status === 'success') {
+        document.getElementById('successRef').textContent = 'S/N: ' + serial + ' — ' + dateStr;
+        document.getElementById('successScreen').classList.add('show');
+      } else {
+        throw new Error(data.message || 'Submission failed');
+      }
+    } catch(err) {
+      document.getElementById('loadingBox').classList.remove('show');
+      document.getElementById('mainForm').style.display = 'block';
+      errBox.innerHTML = '⚠️ Submission failed. Please try again or contact Tier2 Rigging directly.<br><small style="opacity:0.6">' + err.message + '</small>';
+      errBox.classList.add('show');
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('mainForm').style.display = 'block';
+    // Clear services
+    document.querySelectorAll('input[name="svc"]').forEach(cb => { cb.checked = false; cb.closest('.svc-check').classList.remove('checked'); });
+    document.getElementById('otherWork').value = '';
+    document.getElementById('inputDZ').value = '';
+    document.getElementById('inputRiggerName').value = '';
+    document.getElementById('inputFAA').value = '';
+    document.getElementById('inputSeal').value = '';
+    // Keep serial if it was from QR
+    const params = new URLSearchParams(window.location.search);
+    if (!params.get('serial') && !params.get('s')) {
+      document.getElementById('inputSerial').value = '';
+    }
+  }
+</script>
+</body>
+</html>

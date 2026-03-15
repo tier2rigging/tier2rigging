@@ -245,6 +245,31 @@
     }
 
   
+  /* ── PORTAL SELECTOR ── */
+  .portal-selector { animation: fadeUp 0.4s ease both; }
+  .portal-selector.hide { display: none; }
+  .portal-header { text-align: center; padding: 32px 20px 24px; }
+  .portal-header .ph-icon { font-size: 48px; margin-bottom: 12px; }
+  .portal-header .ph-title { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 2px; color: var(--parchment); }
+  .portal-header .ph-serial { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--tan); background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.2); padding: 4px 14px; border-radius: 20px; display: inline-block; margin-top: 8px; }
+  .portal-header .ph-sub { font-size: 13px; color: var(--muted); margin-top: 8px; }
+  .portal-choices { display: flex; flex-direction: column; gap: 14px; padding: 0 0 40px; }
+  .portal-btn { display: flex; align-items: center; gap: 18px; background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 22px; cursor: pointer; text-decoration: none; transition: all 0.2s; width: 100%; text-align: left; }
+  .portal-btn:hover { border-color: var(--tan); background: rgba(200,169,110,0.07); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,169,110,0.15); }
+  .portal-btn .pb-icon { font-size: 32px; flex-shrink: 0; width: 56px; height: 56px; background: rgba(200,169,110,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+  .portal-btn .pb-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: var(--tan-light); }
+  .portal-btn .pb-sub { font-size: 12.5px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+  .portal-btn .pb-arrow { margin-left: auto; font-size: 22px; color: var(--tan); flex-shrink: 0; }
+  .portal-btn.rigger-btn { border-color: rgba(100,140,200,0.25); }
+  .portal-btn.rigger-btn:hover { border-color: #6a9fd8; background: rgba(100,150,210,0.07); box-shadow: 0 8px 28px rgba(100,150,210,0.12); }
+  .portal-btn.rigger-btn .pb-icon { background: rgba(100,150,210,0.1); }
+  .portal-btn.rigger-btn .pb-title { color: #8ab8e8; }
+  .portal-btn.rigger-btn .pb-arrow { color: #6a9fd8; }
+  .portal-divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; margin: 4px 0; }
+  .portal-divider::before, .portal-divider::after { content:''; flex:1; height:1px; background: var(--border); }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); background: none; border: none; cursor: pointer; padding: 0 0 16px; transition: color 0.15s; letter-spacing: 0.5px; font-family: 'Barlow', sans-serif; text-decoration: none; }
+  .back-link:hover { color: var(--tan); }
+
   /* ── BOTTOM RETURN CTA ── */
   .bottom-cta {
     margin-top: 32px;
@@ -324,7 +349,37 @@
 
 <div class="wrap">
 
+  <!-- ── PORTAL SELECTOR ── -->
+  <div class="portal-selector" id="portalSelector">
+    <div class="portal-header">
+      <div class="ph-icon">🪂</div>
+      <div class="ph-title">TIER2 RIGGING</div>
+      <div class="ph-serial" id="selectorSerial" style="display:none;"></div>
+      <div class="ph-sub">Select a portal to continue</div>
+    </div>
+    <div class="portal-choices">
+      <button class="portal-btn" onclick="goOwner()">
+        <div class="pb-icon">🙋</div>
+        <div>
+          <div class="pb-title">Owner Rig Info Portal</div>
+          <div class="pb-sub">View your service history, due dates &amp; submit new work orders</div>
+        </div>
+        <div class="pb-arrow">→</div>
+      </button>
+      <div class="portal-divider">or</div>
+      <button class="portal-btn rigger-btn" onclick="goRigger()">
+        <div class="pb-icon">🔧</div>
+        <div>
+          <div class="pb-title">Rigger Service Update</div>
+          <div class="pb-sub">Log service performed on this rig at your DZ</div>
+        </div>
+        <div class="pb-arrow">→</div>
+      </button>
+    </div>
+  </div>
+
   <!-- ── VERIFY GATE ── -->
+  <button class="back-link" id="gateBackLink" onclick="showSelector()" style="display:none;">← Back to Portal Selection</button>
   <div class="gate-card" id="gateCard">
     <div class="gate-head">
       <div class="gate-icon">🪂</div>
@@ -370,7 +425,7 @@
         <div class="welcome-name" id="welcomeName">Welcome Back</div>
         <div class="welcome-sub">Tier2 Rigging LLC — Rig Portal</div>
       </div>
-      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+      <button class="btn-signout" onclick="signOut()">← Portal Home</button>
     </div>
 
     <!-- CTA: New Work Order -->
@@ -417,20 +472,69 @@
   window.addEventListener('DOMContentLoaded', function() {
     const params = new URLSearchParams(window.location.search);
     const serial = params.get('serial') || params.get('s') || '';
+    const mode   = params.get('mode') || '';
+
+    // Store serial globally for routing
+    window._t2Serial = serial.toUpperCase();
+
     if (serial) {
-      document.getElementById('inputSerial').value = serial.toUpperCase();
-      document.getElementById('inputSerial').setAttribute('readonly', true);
-      document.getElementById('qrGreeting').classList.add('show');
+      // Show serial badge on selector
+      const badge = document.getElementById('selectorSerial');
+      badge.textContent = 'S/N: ' + serial.toUpperCase();
+      badge.style.display = 'inline-block';
     }
+
+    // If mode is specified (coming back from selector), skip selector
+    if (mode === 'owner') {
+      showOwnerGate(serial);
+      return;
+    }
+
     // Restore session if saved
     const saved = sessionStorage.getItem('t2_session');
     if (saved) {
       try {
         const session = JSON.parse(saved);
+        document.getElementById('portalSelector').classList.add('hide');
+        document.getElementById('gateCard').style.display = 'none';
         renderDashboard(session.records, session.serial);
+        return;
       } catch(e) { sessionStorage.removeItem('t2_session'); }
     }
+
+    // Default: show portal selector; hide gate
+    document.getElementById('gateCard').style.display = 'none';
   });
+
+  function goOwner() {
+    showOwnerGate(window._t2Serial);
+  }
+
+  function showOwnerGate(serial) {
+    document.getElementById('portalSelector').classList.add('hide');
+    document.getElementById('gateCard').style.display = 'block';
+    document.getElementById('gateBackLink').style.display = 'inline-flex';
+    if (serial) {
+      document.getElementById('inputSerial').value = serial;
+      document.getElementById('inputSerial').setAttribute('readonly', true);
+      document.getElementById('qrGreeting').classList.add('show');
+    }
+  }
+
+  function showSelector() {
+    document.getElementById('gateCard').style.display = 'none';
+    document.getElementById('gateBackLink').style.display = 'none';
+    document.getElementById('dashboard').classList.remove('show');
+    document.getElementById('portalSelector').classList.remove('hide');
+    document.getElementById('inputEmail').value = '';
+    document.getElementById('errorBox').classList.remove('show');
+  }
+
+  function goRigger() {
+    const serial = window._t2Serial || '';
+    const url = 'rigger-update.html' + (serial ? '?serial=' + encodeURIComponent(serial) : '');
+    window.location.href = url;
+  }
 
   document.addEventListener('keydown', e => { if (e.key === 'Enter') doVerify(); });
 
@@ -470,9 +574,7 @@
 
   function signOut() {
     sessionStorage.removeItem('t2_session');
-    document.getElementById('dashboard').classList.remove('show');
-    document.getElementById('gateCard').style.display = 'block';
-    document.getElementById('inputEmail').value = '';
+    showSelector();
     const params = new URLSearchParams(window.location.search);
     if (!params.get('serial') && !params.get('s')) {
       document.getElementById('inputSerial').value = '';
