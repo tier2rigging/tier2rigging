@@ -1303,15 +1303,30 @@ function openNewOrderModal() {
   document.getElementById('new-order-overlay').classList.add('open');
 }
 
+function resetNewOrderForm() {
+  ['no-name','no-phone','no-email','no-container-mfr','no-container-model','no-serial','no-container-dom',
+   'no-main-mfr','no-main-model','no-main-serial','no-main-dom',
+   'no-reserve-mfr','no-reserve-model','no-reserve-serial','no-reserve-dom',
+   'no-aad-mfr','no-aad-model','no-aad-serial','no-aad-date','no-completion','no-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  ['qty-tandem-reserve','qty-sport-reserve','qty-tandem-reline','qty-pack-main'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = 0;
+  });
+  const ci = document.getElementById('no-custom-items');
+  if (ci) ci.innerHTML = '';
+  const nt = document.getElementById('no-total');
+  if (nt) nt.textContent = '$0.00';
+}
+
 function closeNewOrderModal() {
   document.getElementById('new-order-overlay').classList.remove('open');
-  // Reset button state
   const btnEl = document.querySelector('#new-order-overlay .btn-primary');
   if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Create Order'; }
-  // Reset message
   const msgEl = document.getElementById('no-save-msg');
   if (msgEl) { msgEl.textContent = ''; }
-  // Reset form fields
   resetNewOrderForm();
 }
 function closeNewOrderOutside(e) {
