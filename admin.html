@@ -451,7 +451,7 @@
     <button class="filter-btn" onclick="setFilter('New', this)">New</button>
     <button class="filter-btn" onclick="setFilter('In Progress', this)">In Progress</button>
     <button class="filter-btn" onclick="setFilter('Ready for Pickup', this)">Ready</button>
-    <button class="filter-btn" onclick="setFilter('Complete', this)">Complete</button>
+    <button class="filter-btn" onclick="setFilter('Picked Up', this)">Picked Up</button>
     <div style="width:1px;height:20px;background:rgba(200,185,150,0.2);flex-shrink:0;margin:0 4px;"></div>
     <button class="filter-btn filter-acct" onclick="setAccountFilter('fun', this)">Fun Jumpers</button>
     <button class="filter-btn filter-acct" onclick="setAccountFilter('gojump', this)">Go Jump NY</button>
@@ -523,7 +523,7 @@
               <option>New</option>
               <option>In Progress</option>
               <option>Ready for Pickup</option>
-              <option>Complete</option>
+              <option>Picked Up</option>
             </select>
           </div>
           <div class="info-field">
@@ -1035,8 +1035,8 @@ function openInvoiceModal() {
   const o = allOrders[currentOrderIndex];
   const status = normalizeStatus(o.status);
 
-  if (status !== 'Ready for Pickup' && status !== 'Complete') {
-    alert('Invoice can only be sent when the status is "Ready for Pickup" or "Complete".\n\nCurrent status: ' + status);
+  if (status !== 'Ready for Pickup' && status !== 'Picked Up') {
+    alert('Invoice can only be sent when the status is "Ready for Pickup" or "Picked Up".\n\nCurrent status: ' + status);
     return;
   }
 
