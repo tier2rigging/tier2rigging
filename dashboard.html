@@ -388,6 +388,15 @@
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
 const ADMIN_PASSWORD = 'tier2admin';
 
+// Auto-restore admin session
+window.addEventListener('DOMContentLoaded', function() {
+  if (sessionStorage.getItem('t2_admin_session') === '1') {
+    document.getElementById('login-gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadOrders();
+  }
+});
+
 const STATUSES = ['Intake','Waiting','In Progress','Gear Ready','Picked Up'];
 const STATUS_ICONS = { 'Intake':'📥','Waiting':'⏳','In Progress':'🔧','Gear Ready':'✅','Picked Up':'🏁' };
 
@@ -401,6 +410,7 @@ let editingIdx = -1;
 function doLogin() {
   var pw = document.getElementById('pw-in').value;
   if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('t2_admin_session', '1');
     document.getElementById('login-gate').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -410,6 +420,7 @@ function doLogin() {
   }
 }
 function logout() {
+  sessionStorage.removeItem('t2_admin_session');
   document.getElementById('login-gate').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pw-in').value = '';

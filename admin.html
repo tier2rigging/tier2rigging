@@ -192,7 +192,7 @@
   }
   .badge-new { background: rgba(90,143,173,0.2); color: #7bbcd6; border: 1px solid rgba(90,143,173,0.3); }
   .badge-progress { background: rgba(224,144,85,0.2); color: #e0a060; border: 1px solid rgba(224,144,85,0.3); }
-  .badge-gearready { background: rgba(90,173,122,0.2); color: #6dcc96; border: 1px solid rgba(90,173,122,0.3); }
+  .badge-ready { background: rgba(90,173,122,0.2); color: #6dcc96; border: 1px solid rgba(90,173,122,0.3); }
   .badge-complete { background: rgba(150,150,150,0.15); color: #aaa; border: 1px solid rgba(150,150,150,0.2); }
   .badge-rush { background: rgba(224,85,85,0.2); color: #e07070; border: 1px solid rgba(224,85,85,0.3); font-size: 10px; margin-left: 4px; }
 
@@ -488,28 +488,24 @@
     <div class="topbar-right">
       <button class="refresh-btn" onclick="loadOrders()">↻ Refresh</button>
       <button class="refresh-btn" id="new-order-btn" style="border-color:rgba(90,173,122,0.4);color:#6dcc96;">+ New Order</button>
-      <button class="refresh-btn" onclick="window.location.href='intake.html'" style="border-color:rgba(109,204,150,0.3);color:#6dcc96;">📥 Intake</button>
-      <button class="refresh-btn" onclick="window.location.href='dashboard.html'" style="border-color:rgba(106,159,216,0.3);color:#6a9fd8;">📊 Dashboard</button>
       <button class="refresh-btn" onclick="window.location.href='customers.html'" style="border-color:rgba(200,169,110,0.4);color:var(--tan);">👤 Customers</button>
-      <a class="refresh-btn" href="https://docs.google.com/spreadsheets/d/19j5I6gLBiBS4f6O1Ws0cIRu3TA9ycQRpkTdjk3kBWS8/edit" target="_blank" style="border-color:rgba(100,200,100,0.4);color:#6dcc96;text-decoration:none;">📊 Sheet</a>
       <button class="logout-btn" onclick="logout()">Log Out</button>
     </div>
   </div>
 
   <div class="stats-bar" id="stats-bar">
     <div class="stat-pill"><div class="num" id="stat-total">—</div><div class="label">Total Orders</div></div>
-    <div class="stat-pill"><div class="num" id="stat-new" style="color:#6a9fd8">—</div><div class="label">Intake</div></div>
+    <div class="stat-pill"><div class="num" id="stat-new" style="color:#7bbcd6">—</div><div class="label">New</div></div>
     <div class="stat-pill"><div class="num" id="stat-progress" style="color:#e0a060">—</div><div class="label">In Progress</div></div>
-    <div class="stat-pill"><div class="num" id="stat-gearready" style="color:#6dcc96">—</div><div class="label">Gear Ready</div></div>
+    <div class="stat-pill"><div class="num" id="stat-ready" style="color:#6dcc96">—</div><div class="label">Ready</div></div>
     <div class="stat-pill"><div class="num" id="stat-revenue" style="color:var(--tan)">—</div><div class="label">Est. Revenue</div></div>
   </div>
 
   <div class="filters">
-    <button class="filter-btn" onclick="setFilter('Intake', this)">📥 Intake</button>
-    <button class="filter-btn" onclick="setFilter('Waiting', this)">⏳ Waiting</button>
-    <button class="filter-btn" onclick="setFilter('In Progress', this)">🔧 In Progress</button>
-    <button class="filter-btn" onclick="setFilter('Gear Ready', this)">✅ Gear Ready</button>
-    <button class="filter-btn" onclick="setFilter('Picked Up', this)">🏁 Picked Up</button>
+    <button class="filter-btn" onclick="setFilter('New', this)">New</button>
+    <button class="filter-btn" onclick="setFilter('In Progress', this)">In Progress</button>
+    <button class="filter-btn" onclick="setFilter('Ready for Pickup', this)">Ready</button>
+    <button class="filter-btn" onclick="setFilter('Picked Up', this)">Picked Up</button>
     <div style="width:1px;height:20px;background:rgba(200,185,150,0.2);flex-shrink:0;margin:0 4px;"></div>
     <button class="filter-btn filter-acct" onclick="setAccountFilter('fun', this)">Fun Jumpers</button>
     <button class="filter-btn filter-acct" onclick="setAccountFilter('gojump', this)">Go Jump NY</button>
@@ -578,11 +574,10 @@
           <div class="info-field">
             <label>Status</label>
             <select class="status-select" id="edit-status" style="width:100%">
-              <option value="Intake">📥 Intake</option>
-              <option value="Waiting">⏳ Waiting</option>
-              <option value="In Progress">🔧 In Progress</option>
-              <option value="Gear Ready">✅ Gear Ready</option>
-              <option value="Picked Up">🏁 Picked Up</option>
+              <option>New</option>
+              <option>In Progress</option>
+              <option>Ready for Pickup</option>
+              <option>Picked Up</option>
             </select>
           </div>
           <div class="info-field">
@@ -692,6 +687,15 @@
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
 const ADMIN_PASSWORD = 'tier2admin'; // Change this to your preferred password
 
+// Auto-restore admin session
+window.addEventListener('DOMContentLoaded', function() {
+  if (sessionStorage.getItem('t2_admin_session') === '1') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadOrders();
+  }
+});
+
 const ALL_SERVICES = [
   { name: 'Reserve Inspection & Repack (Sport)', price: 115 },
   { name: 'Reserve Inspection & Repack (Tandem)', price: 150 },
@@ -733,6 +737,7 @@ let currentRowIndex = null;
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
   if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('t2_admin_session', '1');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -742,6 +747,7 @@ function doLogin() {
   }
 }
 function logout() {
+  sessionStorage.removeItem('t2_admin_session');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pw-input').value = '';
@@ -769,17 +775,16 @@ async function loadOrders() {
 }
 
 function normalizeStatus(s) {
-  if (!s || s === 'Received' || s === 'New') return 'Intake';
-  if (s === 'Gear Ready' || s === 'Ready') return 'Gear Ready';
+  if (!s || s === 'Received') return 'New';
   return s;
 }
 
 function updateStats() {
   const orders = allOrders;
   document.getElementById('stat-total').textContent = orders.length;
-  document.getElementById('stat-new').textContent = orders.filter(o => normalizeStatus(o.status) === 'Intake').length;
+  document.getElementById('stat-new').textContent = orders.filter(o => normalizeStatus(o.status) === 'New').length;
   document.getElementById('stat-progress').textContent = orders.filter(o => normalizeStatus(o.status) === 'In Progress').length;
-  document.getElementById('stat-gearready').textContent = orders.filter(o => normalizeStatus(o.status) === 'Gear Ready').length;
+  document.getElementById('stat-ready').textContent = orders.filter(o => normalizeStatus(o.status) === 'Ready for Pickup').length;
   const revenue = orders.reduce((s, o) => s + (parseFloat(o.estimatedTotal)||0), 0);
   document.getElementById('stat-revenue').textContent = '$' + revenue.toLocaleString();
 }
@@ -815,7 +820,7 @@ function lookupHistory() {
     html += '<div class="history-customer-name">&#x1F464; ' + cname + ' <span style="font-size:12px;color:var(--muted);font-family:sans-serif;font-weight:400;letter-spacing:0;">' + orders.length + ' order' + (orders.length!==1?'s':'') + '</span></div>';
     orders.forEach(function(o) {
       var status = normalizeStatus(o.status);
-      var bc = status==='Intake'||status==='Waiting'?'badge-new':status==='In Progress'?'badge-progress':status==='Gear Ready'?'badge-gearready':'badge-complete';
+      var bc = status==='New'?'badge-new':status==='In Progress'?'badge-progress':status==='Ready for Pickup'?'badge-ready':'badge-complete';
       var svcs = (o.servicesSelected||'').split('\n').filter(Boolean);
       var idx = allOrders.indexOf(o);
       html += '<div class="history-record" onclick="openModal('+idx+')">' +
@@ -866,9 +871,9 @@ function renderTable() {
 
   sorted.forEach((o, i) => {
     const status = normalizeStatus(o.status);
-    const badgeClass = status === 'Intake' || status === 'Waiting' ? 'badge-new' :
+    const badgeClass = status === 'New' ? 'badge-new' :
                        status === 'In Progress' ? 'badge-progress' :
-                       status === 'Gear Ready' ? 'badge-gearready' : 'badge-complete';
+                       status === 'Ready for Pickup' ? 'badge-ready' : 'badge-complete';
     const rush = (o.rushService||'').toLowerCase() === 'yes';
     const services = (o.servicesSelected||'').split(',').filter(Boolean);
     const svcCount = services.length;
@@ -1095,8 +1100,8 @@ function openInvoiceModal() {
   const o = allOrders[currentOrderIndex];
   const status = normalizeStatus(o.status);
 
-  if (status !== 'Gear Ready' && status !== 'Picked Up') {
-    alert('Invoice can only be sent when the status is "Gear Ready" or "Picked Up".\n\nCurrent status: ' + status);
+  if (status !== 'Ready for Pickup' && status !== 'Picked Up') {
+    alert('Invoice can only be sent when the status is "Ready for Pickup" or "Picked Up".\n\nCurrent status: ' + status);
     return;
   }
 
@@ -1441,7 +1446,7 @@ async function submitNewOrder() {
     estimatedTotal: total,
     notes: document.getElementById('no-notes').value,
     customItems: JSON.stringify(customItems),
-    status: 'Intake',
+    status: 'New',
     rushService: 'No',
     rushFee: 0,
   };
@@ -1569,11 +1574,11 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
           <div class="dz-btn" id="dz-btn-gojump" onclick="selectDZ('gojump')">
             <div class="dz-name">Go Jump New York</div>
-            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="87f4f3e2f1e2c7e0e8edf2eaf7aae6eae2f5eee4e6a9e4e8ea">[email&#160;protected]</a></div>
+            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="cfbcbbaab9aa8fa8a0a5baa2bfe2aea2aabda6acaee1aca0a2">[email&#160;protected]</a></div>
           </div>
           <div class="dz-btn" id="dz-btn-sussex" onclick="selectDZ('sussex')">
             <div class="dz-name">Skydive Sussex</div>
-            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="dcb1bdbfb7b9b2a6b5b99cafb7a5b8b5aab9afa9afafb9a4f2bfb3b1">[email&#160;protected]</a></div>
+            <div class="dz-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8fe2eeece4eae1f5e6eacffce4f6ebe6f9eafcfafcfceaf7a1ece0e2">[email&#160;protected]</a></div>
           </div>
         </div>
         <div id="fun-jumper-fields" style="display:none">

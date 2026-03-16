@@ -465,7 +465,17 @@
 
 <script>
   const GAS_URL       = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
-  const ADMIN_PASSWORD = 'tier2admin';
+  // Auto-restore admin session
+window.addEventListener('DOMContentLoaded', function() {
+  if (sessionStorage.getItem('t2_admin_session') === '1') {
+    sessionStorage.setItem('t2_admin_session', '1');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadCustomers();
+  }
+});
+
+const ADMIN_PASSWORD = 'tier2admin';
 
   let allRecords   = [];   // flat array of all sheet rows as objects
   let editingRecord = null; // the record currently being edited (original object)
