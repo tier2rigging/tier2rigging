@@ -1235,9 +1235,14 @@ async function submitNewOrder() {
     return;
   }
 
-  const dz = DROPZONES[selectedDZ];
-  const msgEl = document.getElementById('no-save-msg');
-  msgEl.textContent = 'Creating order…';
+  const dz     = DROPZONES[selectedDZ];
+  const msgEl  = document.getElementById('no-save-msg');
+  const btnEl  = document.querySelector('#new-order-overlay .btn-primary');
+
+  // Show loading state
+  btnEl.disabled = true;
+  btnEl.textContent = '⏳ Creating…';
+  msgEl.textContent = 'Saving to sheet…';
   msgEl.style.color = 'var(--muted)';
 
   // Build services list
@@ -1315,16 +1320,23 @@ async function submitNewOrder() {
   updateStats();
   renderTable();
 
-  // Send to GAS
+  // Send to GAS via POST
   try {
-    const params = new URLSearchParams(orderData);
-    await fetch(GAS_URL + '?' + params.toString());
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
     msgEl.textContent = '✓ Order created!';
     msgEl.style.color = 'var(--green)';
+    btnEl.textContent = '✓ Done';
     setTimeout(() => closeNewOrderModal(), 1200);
   } catch(err) {
     msgEl.textContent = '⚠ Saved locally. Sync to sheet may have failed.';
     msgEl.style.color = 'var(--red)';
+    btnEl.disabled = false;
+    btnEl.textContent = 'Create Order';
   }
 }
 
