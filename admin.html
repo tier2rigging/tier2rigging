@@ -1272,7 +1272,7 @@ function openNewOrderModal() {
   });
   document.getElementById('no-custom-items').innerHTML = '';
   document.getElementById('no-total').textContent = '$0.00';
-  document.getElementById('no-save-msg').textContent = '';
+  const noSaveMsg = document.getElementById('no-save-msg'); if (noSaveMsg) noSaveMsg.textContent = '';
   document.getElementById('fun-jumper-fields').style.display = 'none';
   ['dz-btn-fun','dz-btn-gojump','dz-btn-sussex'].forEach(id =>
     document.getElementById(id).classList.remove('active'));
@@ -1657,4 +1657,12 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     </div>
     <div class="modal-footer">
-      <div class="save-msg" id="
+      <div class="save-msg" id="no-save-msg"></div>
+      <button class="btn btn-ghost" onclick="closeNewOrderModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewOrder()">Create Order</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
