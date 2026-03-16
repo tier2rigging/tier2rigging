@@ -442,21 +442,16 @@
     document.getElementById('loadingBox').classList.add('show');
 
     try {
-      const resp = await fetch(GAS_URL, {
+      await fetch(GAS_URL, {
         method: 'POST',
-        mode: 'cors',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
       });
-      const data = await resp.json();
+      // no-cors means we can't read the response — assume success
       document.getElementById('loadingBox').classList.remove('show');
-
-      if (data.status === 'ok' || data.status === 'success') {
-        document.getElementById('successRef').textContent = 'S/N: ' + serial + ' — ' + dateStr;
-        document.getElementById('successScreen').classList.add('show');
-      } else {
-        throw new Error(data.message || 'Submission failed');
-      }
+      document.getElementById('successRef').textContent = 'S/N: ' + serial + ' — ' + dateStr;
+      document.getElementById('successScreen').classList.add('show');
     } catch(err) {
       document.getElementById('loadingBox').classList.remove('show');
       document.getElementById('mainForm').style.display = 'block';
