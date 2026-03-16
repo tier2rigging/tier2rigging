@@ -1183,6 +1183,14 @@ function openNewOrderModal() {
 
 function closeNewOrderModal() {
   document.getElementById('new-order-overlay').classList.remove('open');
+  // Reset button state
+  const btnEl = document.querySelector('#new-order-overlay .btn-primary');
+  if (btnEl) { btnEl.disabled = false; btnEl.textContent = 'Create Order'; }
+  // Reset message
+  const msgEl = document.getElementById('no-save-msg');
+  if (msgEl) { msgEl.textContent = ''; }
+  // Reset form fields
+  resetNewOrderForm();
 }
 function closeNewOrderOutside(e) {
   if (e.target === document.getElementById('new-order-overlay')) closeNewOrderModal();
