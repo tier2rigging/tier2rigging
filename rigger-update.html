@@ -226,7 +226,9 @@
         <div class="section-head-title">Services Performed</div>
       </div>
       <div class="section-body">
-        <div class="svc-grid" id="svcGrid">
+        <!-- Reserve Services -->
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tan);margin-bottom:8px;">Reserve</div>
+        <div class="svc-grid" id="svcGrid" style="margin-bottom:16px;">
           <label class="svc-check" onclick="toggleCheck(this)">
             <input type="checkbox" name="svc" value="Reserve Repack">
             <span class="check-box"></span>
@@ -243,10 +245,15 @@
             <span class="check-label">Reserve Swap / Install</span>
           </label>
           <label class="svc-check" onclick="toggleCheck(this)">
-            <input type="checkbox" name="svc" value="Reserve Patch">
+            <input type="checkbox" name="svc" value="Reserve Line Replacement">
             <span class="check-box"></span>
-            <span class="check-label">Reserve Patch</span>
+            <span class="check-label">Reserve Line Replacement</span>
           </label>
+        </div>
+
+        <!-- AAD Services -->
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tan);margin-bottom:8px;">AAD</div>
+        <div class="svc-grid" style="margin-bottom:16px;">
           <label class="svc-check" onclick="toggleCheck(this)">
             <input type="checkbox" name="svc" value="AAD Service">
             <span class="check-box"></span>
@@ -261,6 +268,41 @@
             <input type="checkbox" name="svc" value="AAD Install">
             <span class="check-box"></span>
             <span class="check-label">AAD Install</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="AAD Battery Replacement">
+            <span class="check-box"></span>
+            <span class="check-label">AAD Battery Replacement</span>
+          </label>
+        </div>
+
+        <!-- Container / General -->
+        <div style="font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tan);margin-bottom:8px;">Container / General</div>
+        <div class="svc-grid" style="margin-bottom:4px;">
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Container Wash">
+            <span class="check-box"></span>
+            <span class="check-label">Container Wash</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Hardware Inspection">
+            <span class="check-box"></span>
+            <span class="check-label">Hardware Inspection</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Closing Loop Replacement">
+            <span class="check-box"></span>
+            <span class="check-label">Closing Loop Replacement</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Sewing / Repair">
+            <span class="check-box"></span>
+            <span class="check-label">Sewing / Repair</span>
+          </label>
+          <label class="svc-check" onclick="toggleCheck(this)">
+            <input type="checkbox" name="svc" value="Full Rig Inspection">
+            <span class="check-box"></span>
+            <span class="check-label">Full Rig Inspection</span>
           </label>
           <label class="svc-check" onclick="toggleCheck(this)">
             <input type="checkbox" name="svc" value="Other">
@@ -392,7 +434,8 @@
       riggerFAA:        faa,
       riggerSeal:       seal,
       isOwnerRigger:    isOwner ? 'YES' : 'NO',
-      flagForReview:    isOwner ? '' : 'FLAG — Non-owner rigger'
+      flagForReview:    isOwner ? '' : 'FLAG — Non-owner rigger',
+      notifyOwner:      'YES'
     };
 
     document.getElementById('mainForm').style.display = 'none';
