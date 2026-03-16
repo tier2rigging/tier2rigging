@@ -309,6 +309,95 @@
     line-height: 1.5;
   }
 
+
+  /* ── MULTI-RIG DASHBOARD ── */
+  .rigs-grid { display: flex; flex-direction: column; gap: 18px; margin-bottom: 24px; }
+
+  .rig-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    animation: fadeUp 0.35s ease both;
+    transition: border-color 0.2s;
+  }
+  .rig-block:hover { border-color: rgba(200,169,110,0.35); }
+  .rig-block-head {
+    background: linear-gradient(90deg, rgba(200,169,110,0.12), transparent);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; cursor: pointer;
+  }
+  .rig-block-head-left { display: flex; align-items: center; gap: 12px; }
+  .rig-block-icon { font-size: 22px; }
+  .rig-block-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; }
+  .rig-block-serial { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--tan); background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.2); padding: 3px 10px; border-radius: 20px; }
+  .rig-block-due { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+  .rig-block-due.ok       { background: rgba(74,158,106,0.12); color: #6fcf97; }
+  .rig-block-due.warn     { background: rgba(200,169,110,0.12); color: var(--tan-light); }
+  .rig-block-due.overdue  { background: rgba(192,82,42,0.12); color: #e07a5a; }
+  .rig-block-toggle { font-size: 18px; color: var(--muted); transition: transform 0.2s; }
+  .rig-block.open .rig-block-toggle { transform: rotate(180deg); }
+
+  .rig-block-body { display: none; }
+  .rig-block.open .rig-block-body { display: block; }
+
+  .rig-block-gear {
+    display: grid; grid-template-columns: 1fr 1fr;
+    border-bottom: 1px solid var(--border);
+  }
+  @media (max-width: 440px) { .rig-block-gear { grid-template-columns: 1fr; } }
+  .rig-gear-cell {
+    padding: 11px 18px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .rig-gear-cell:nth-child(even) { border-right: none; }
+  .rig-gear-cell:nth-last-child(-n+2) { border-bottom: none; }
+  .rig-gear-label { font-family: 'Barlow Condensed', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .rig-gear-val { font-size: 13.5px; color: var(--parchment); }
+
+  .rig-block-actions {
+    display: flex; gap: 10px; padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .rig-action-btn {
+    display: flex; align-items: center; gap: 7px;
+    padding: 9px 16px; border-radius: 8px; font-size: 13px;
+    font-weight: 600; cursor: pointer; border: none;
+    font-family: 'Barlow', sans-serif; transition: all 0.15s;
+    text-decoration: none;
+  }
+  .rig-action-primary { background: linear-gradient(135deg, var(--tan), var(--tan-light)); color: #1a1a1a; }
+  .rig-action-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .rig-action-ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .rig-action-ghost:hover { border-color: var(--tan); color: var(--tan); }
+
+  /* Timeline history */
+  .rig-history { padding: 16px 18px; }
+  .rig-history-label { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before { content: ''; position: absolute; left: 9px; top: 4px; bottom: 4px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-entry { position: relative; margin-bottom: 16px; animation: fadeUp 0.3s ease both; }
+  .tl-entry:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -23px; top: 4px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--tan); background: var(--bg); flex-shrink: 0; }
+  .tl-dot.complete { background: var(--tan); }
+  .tl-card { background: var(--card-mid); border: 1px solid var(--border); border-radius: 9px; overflow: hidden; }
+  .tl-head { padding: 9px 13px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid var(--border); }
+  .tl-wo { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--tan); }
+  .tl-date { font-size: 11px; color: var(--muted); }
+  .tl-body { padding: 10px 13px; }
+  .tl-svc { font-size: 12.5px; color: var(--parchment); padding: 2px 0; line-height: 1.4; }
+  .tl-svc::before { content: '▸ '; color: var(--tan); font-size: 9px; }
+  .tl-foot { display: flex; align-items: center; justify-content: space-between; padding: 7px 13px; border-top: 1px solid var(--border); background: rgba(200,169,110,0.03); flex-wrap: wrap; gap: 6px; }
+  .tl-total { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--tan-light); }
+  .tl-status { padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+  .tl-status.received { background: rgba(200,169,110,0.15); color: var(--tan-light); }
+  .tl-status.complete { background: rgba(74,158,106,0.15); color: #6fcf97; }
+  .tl-no-history { text-align: center; padding: 20px; color: var(--muted); font-size: 13px; }
+
 </style>
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -398,10 +487,10 @@
         <input type="email" id="inputEmail" placeholder="Email used on your work order" autocomplete="email">
       </div>
       <div class="field" id="serialField">
-        <label>Container Serial Number</label>
-        <input type="text" id="inputSerial" placeholder="e.g. JO-12345" autocomplete="off">
+        <label>Container Serial Number <span style="color:var(--muted);font-weight:400;font-size:10px;letter-spacing:0;text-transform:none;">(optional — leave blank to see all your rigs)</span></label>
+        <input type="text" id="inputSerial" placeholder="e.g. JO-12345 — or leave blank" autocomplete="off">
       </div>
-      <button class="btn-verify" onclick="doVerify()">🔓 ACCESS MY RIG</button>
+      <button class="btn-verify" onclick="doVerify()">🔓 ACCESS MY RIGS</button>
       <div class="privacy-note">
         <span>🔒</span>
         <span>Your email and serial number are used together to verify ownership. Records are private.</span>
@@ -428,39 +517,18 @@
       <button class="btn-signout" onclick="signOut()">← Portal Home</button>
     </div>
 
-    <!-- CTA: New Work Order -->
-    <a class="cta-new-order" id="newOrderLink" href="index.html">
-      <div class="cta-left">
-        <div class="cta-icon">📋</div>
-        <div>
-          <div class="cta-text-title">Submit a New Work Order</div>
-          <div class="cta-text-sub">Select your services — Drop off your Rig with us.</div>
-        </div>
-      </div>
-      <div class="cta-arrow">→</div>
-    </a>
+    <!-- Multi-rig grid -->
+    <div class="rigs-grid" id="rigsGrid"></div>
 
-    <!-- Due Banner -->
-    <div id="dueBanner"></div>
-
-    <!-- Rig Info -->
-    <div class="section-label">Your Gear</div>
-    <div class="rig-card" id="rigCard"></div>
-
-    <!-- Service History -->
-    <div class="section-label" id="historyLabel">Service History</div>
-    <div id="historyList"></div>
-
-    <!-- ── BOTTOM: Return to Service Request ── -->
+    <!-- Bottom CTA -->
     <div class="bottom-cta" id="bottomCta" style="display:none;">
-      <div class="bottom-cta-label">Ready to Book Another Service?</div>
+      <div class="bottom-cta-label">Need service on a different rig?</div>
       <a class="bottom-cta-btn" id="bottomCtaLink" href="index.html">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6M5 20h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12h6M9 16h6M9 8h6M5 20h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2V6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z"/></svg>
         Submit a New Service Request
       </a>
       <div class="bottom-cta-sub">Your rig info will be pre-filled from your records.</div>
     </div>
-
 
   </div>
 </div>
@@ -497,7 +565,7 @@
         const session = JSON.parse(saved);
         document.getElementById('portalSelector').classList.add('hide');
         document.getElementById('gateCard').style.display = 'none';
-        renderDashboard(session.records, session.serial);
+        renderDashboard(session.records, session.serial, session.email);
         return;
       } catch(e) { sessionStorage.removeItem('t2_session'); }
     }
@@ -545,23 +613,26 @@
     errBox.classList.remove('show');
 
     if (!email) { errBox.textContent = 'Please enter your email address.'; errBox.classList.add('show'); return; }
-    if (!serial) { errBox.textContent = 'Please enter your container serial number.'; errBox.classList.add('show'); return; }
 
     document.getElementById('gateCard').style.display = 'none';
     document.getElementById('loadingBox').classList.add('show');
 
     try {
-      const url  = GAS_URL + '?action=lookup&email=' + encodeURIComponent(email) + '&serial=' + encodeURIComponent(serial);
+      // If serial provided, filter by both; otherwise return all rigs for this email
+      const url = serial
+        ? GAS_URL + '?action=lookup&email=' + encodeURIComponent(email) + '&serial=' + encodeURIComponent(serial)
+        : GAS_URL + '?action=lookupByEmail&email=' + encodeURIComponent(email);
+
       const resp = await fetch(url, { method: 'GET', mode: 'cors' });
       const data = await resp.json();
       document.getElementById('loadingBox').classList.remove('show');
 
       if (data.status === 'ok' && data.records && data.records.length > 0) {
-        sessionStorage.setItem('t2_session', JSON.stringify({ records: data.records, serial }));
-        renderDashboard(data.records, serial);
+        sessionStorage.setItem('t2_session', JSON.stringify({ records: data.records, serial, email }));
+        renderDashboard(data.records, serial, email);
       } else if (data.status === 'not_found') {
         document.getElementById('gateCard').style.display = 'block';
-        errBox.innerHTML = '❌ No records found. Double-check your email and serial number match what was on your work order.';
+        errBox.innerHTML = '❌ No records found for that email' + (serial ? ' and serial number' : '') + '. Make sure it matches your work order.';
         errBox.classList.add('show');
       } else { throw new Error('Unknown error'); }
     } catch(err) {
@@ -572,6 +643,154 @@
     }
   }
 
+  // signOut defined above in renderDashboard block
+
+  function renderDashboard(records, focusSerial, email) {
+    if (!records || records.length === 0) return;
+
+    const firstName = (records[0].full_name || records[0].name || 'Customer').split(' ')[0];
+    document.getElementById('welcomeName').textContent = firstName + "'s Rigs";
+
+    // Group records by container serial
+    const rigMap = {};
+    records.forEach(function(rec) {
+      const sn = rec.containerSerial || rec['container serial'] || 'UNKNOWN';
+      if (!rigMap[sn]) rigMap[sn] = { info: rec, history: [] };
+      rigMap[sn].history.push(rec);
+    });
+
+    const serials = Object.keys(rigMap);
+    document.getElementById('welcomeSub').textContent =
+      serials.length === 1
+        ? 'Tier2 Rigging LLC — 1 rig on file'
+        : 'Tier2 Rigging LLC — ' + serials.length + ' rigs on file';
+
+    const grid = document.getElementById('rigsGrid');
+    grid.innerHTML = '';
+
+    serials.forEach(function(sn, idx) {
+      const rig     = rigMap[sn];
+      const latest  = rig.info;
+      const history = rig.history.sort(function(a,b){ return new Date(b.date||0) - new Date(a.date||0); });
+
+      const contName    = [latest.containerManufacturer, latest.containerModel].filter(Boolean).join(' ') || latest.containerMakeModel || 'Your Container';
+      const mainName    = [latest.mainManufacturer, latest.mainModel].filter(Boolean).join(' ') || latest.mainCanopy || '—';
+      const reserveName = [latest.reserveManufacturer, latest.reserveModel].filter(Boolean).join(' ') || latest.reserveCanopy || '—';
+      const aadName     = [latest.aadManufacturer, latest.aadModel].filter(Boolean).join(' ') || latest.aadType || '—';
+
+      // Due date
+      let dueCls = '', dueText = '';
+      if (latest.reminder_date) {
+        const days = Math.ceil((new Date(latest.reminder_date) - new Date()) / (1000*60*60*24));
+        if (days < 0)      { dueCls = 'overdue'; dueText = '🚨 Overdue ' + Math.abs(days) + 'd'; }
+        else if (days <= 30){ dueCls = 'warn';    dueText = '⚠️ Due in ' + days + 'd'; }
+        else                { dueCls = 'ok';      dueText = '✅ Service Current'; }
+      }
+
+      // Prefill params for new order
+      const rigParams = new URLSearchParams({
+        prefill: '1',
+        serial:               latest.containerSerial || sn,
+        name:                 latest.name || latest.full_name || '',
+        email:                latest.email || email || '',
+        phone:                latest.phone || '',
+        container_manufacturer: latest.containerManufacturer || '',
+        container_model:      latest.containerModel || '',
+        container_serial:     latest.containerSerial || sn,
+        container_dom:        latest.containerDom || '',
+        main_manufacturer:    latest.mainManufacturer || '',
+        main_model:           latest.mainModel || '',
+        main_serial:          latest.mainSerial || '',
+        main_dom:             latest.mainDom || '',
+        reserve_manufacturer: latest.reserveManufacturer || '',
+        reserve_model:        latest.reserveModel || '',
+        reserve_serial:       latest.reserveSerial || '',
+        reserve_dom:          latest.reserveDom || '',
+        aad_manufacturer:     latest.aadManufacturer || '',
+        aad_model:            latest.aadModel || '',
+        aad_serial:           latest.aadSerial || '',
+      });
+
+      // Timeline HTML
+      let timelineHtml = '';
+      if (history.length === 0) {
+        timelineHtml = '<div class="tl-no-history">No service records yet.</div>';
+      } else {
+        timelineHtml = '<div class="timeline">' +
+          history.map(function(rec) {
+            const svcs = (rec.services || rec.servicesSelected || '').split(/[,
+]/).map(function(s){return s.trim();}).filter(Boolean);
+            const isComplete = (rec.status||'').toLowerCase().includes('complete') ||
+                               (rec.status||'').toLowerCase().includes('picked') ||
+                               (rec.status||'').toLowerCase() === 'gear ready';
+            return '<div class="tl-entry">' +
+              '<div class="tl-dot' + (isComplete ? ' complete' : '') + '"></div>' +
+              '<div class="tl-card">' +
+                '<div class="tl-head">' +
+                  '<span class="tl-wo">📋 ' + esc(rec.ticket || rec.woNum || '—') + '</span>' +
+                  '<span class="tl-date">' + esc(formatDate(rec.date || rec.submissionDate)) + '</span>' +
+                '</div>' +
+                (svcs.length ? '<div class="tl-body">' + svcs.map(function(s){ return '<div class="tl-svc">' + esc(s) + '</div>'; }).join('') + '</div>' : '') +
+                '<div class="tl-foot">' +
+                  '<span class="tl-total">' + (rec.total || rec.estimatedTotal ? '$' + parseFloat(rec.total || rec.estimatedTotal || 0).toFixed(2) : '') + '</span>' +
+                  '<span class="tl-status ' + (isComplete ? 'complete' : 'received') + '">' + esc(rec.status || 'Received') + '</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+          }).join('') +
+        '</div>';
+      }
+
+      // Auto-open the focused rig (from QR) or just the first one
+      const isOpen = focusSerial ? sn === focusSerial : idx === 0;
+
+      const block = document.createElement('div');
+      block.className = 'rig-block' + (isOpen ? ' open' : '');
+      block.innerHTML =
+        '<div class="rig-block-head" onclick="toggleRig(this.parentElement)">' +
+          '<div class="rig-block-head-left">' +
+            '<div class="rig-block-icon">🎒</div>' +
+            '<div>' +
+              '<div class="rig-block-name">' + esc(contName) + '</div>' +
+              '<span class="rig-block-serial">' + esc(sn) + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div style="display:flex;align-items:center;gap:10px;">' +
+            (dueText ? '<span class="rig-block-due ' + dueCls + '">' + dueText + '</span>' : '') +
+            '<span class="rig-block-toggle">⌄</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="rig-block-body">' +
+          '<div class="rig-block-gear">' +
+            '<div class="rig-gear-cell"><div class="rig-gear-label">Main Canopy</div><div class="rig-gear-val">' + esc(mainName) + '</div></div>' +
+            '<div class="rig-gear-cell"><div class="rig-gear-label">Reserve Canopy</div><div class="rig-gear-val">' + esc(reserveName) + '</div></div>' +
+            '<div class="rig-gear-cell"><div class="rig-gear-label">AAD</div><div class="rig-gear-val">' + esc(aadName) + '</div></div>' +
+            '<div class="rig-gear-cell"><div class="rig-gear-label">AAD Serial</div><div class="rig-gear-val">' + esc(latest.aadSerial || '—') + '</div></div>' +
+          '</div>' +
+          '<div class="rig-block-actions">' +
+            '<a class="rig-action-btn rig-action-primary" href="index.html?' + rigParams.toString() + '">📋 Request Service</a>' +
+            '<a class="rig-action-btn rig-action-ghost" href="rigger-update.html?serial=' + encodeURIComponent(sn) + '">🔧 Log Service Entry</a>' +
+          '</div>' +
+          '<div class="rig-history">' +
+            '<div class="rig-history-label">Service History — ' + history.length + ' record' + (history.length !== 1 ? 's' : '') + '</div>' +
+            timelineHtml +
+          '</div>' +
+        '</div>';
+
+      grid.appendChild(block);
+    });
+
+    // Bottom CTA
+    const bottomCta = document.getElementById('bottomCta');
+    if (bottomCta) bottomCta.style.display = 'block';
+
+    document.getElementById('dashboard').classList.add('show');
+  }
+
+  function toggleRig(block) {
+    block.classList.toggle('open');
+  }
+
   function signOut() {
     sessionStorage.removeItem('t2_session');
     showSelector();
@@ -579,111 +798,7 @@
     if (!params.get('serial') && !params.get('s')) {
       document.getElementById('inputSerial').value = '';
     }
-  }
-
-  function renderDashboard(records, serial) {
-    const latest = records[0];
-    const name   = latest.full_name || 'Customer';
-
-    // Welcome
-    document.getElementById('welcomeName').textContent = name.split(' ')[0] + "'s Rig";
-
-    // Pre-fill new order link with ALL rig fields
-    var rigParams = new URLSearchParams({
-      prefill: '1',
-      serial:              latest.containerSerial  || serial || '',
-      name:                latest.name             || latest.full_name || '',
-      email:               latest.email            || '',
-      phone:               latest.phone            || '',
-      container_manufacturer: latest.containerManufacturer || '',
-      container_model:     latest.containerModel   || latest.containerMakeModel || '',
-      container_serial:    latest.containerSerial  || serial || '',
-      container_dom:       latest.containerDom     || '',
-      main_manufacturer:   latest.mainManufacturer || '',
-      main_model:          latest.mainModel        || latest.mainCanopy || '',
-      main_serial:         latest.mainSerial       || '',
-      main_dom:            latest.mainDom          || '',
-      reserve_manufacturer: latest.reserveManufacturer || '',
-      reserve_model:       latest.reserveModel     || latest.reserveCanopy || '',
-      reserve_serial:      latest.reserveSerial    || '',
-      reserve_dom:         latest.reserveDom       || '',
-      aad_manufacturer:    latest.aadManufacturer  || '',
-      aad_model:           latest.aadModel         || latest.aadType || '',
-      aad_serial:          latest.aadSerial        || '',
-    });
-    document.getElementById('newOrderLink').href = 'index.html?' + rigParams.toString();
-    const bottomCta = document.getElementById('bottomCta');
-    if (bottomCta) {
-      bottomCta.style.display = 'block';
-      document.getElementById('bottomCtaLink').href = 'index.html?' + rigParams.toString();
-    }
-
-    // Due date banner
-    const reminderDate = latest.reminder_date ? new Date(latest.reminder_date) : null;
-    const now = new Date();
-    if (reminderDate) {
-      const days = Math.ceil((reminderDate - now) / (1000*60*60*24));
-      let cls = 'ok', icon = '✅', title = 'Service Current', msg = '';
-      if (days < 0) {
-        cls = 'overdue'; icon = '🚨'; title = 'Service OVERDUE';
-        msg = 'Overdue by ' + Math.abs(days) + ' days. <strong>Contact Tier2 Rigging immediately to schedule your reserve repack.</strong>';
-      } else if (days <= 30) {
-        cls = 'warn'; icon = '⚠️'; title = 'Service Due Soon';
-        msg = 'Due in ' + days + ' days (' + formatDate(reminderDate) + '). Schedule your repack soon.';
-      } else {
-        msg = 'Next service due ' + formatDate(reminderDate) + ' — ' + days + ' days away.';
-      }
-      document.getElementById('dueBanner').innerHTML = `
-        <div class="due-banner ${cls}">
-          <div class="due-banner-icon">${icon}</div>
-          <div><strong>${title}</strong>${msg}</div>
-        </div>`;
-    }
-
-    // Rig card
-    var containerName = [latest.containerManufacturer, latest.containerModel].filter(Boolean).join(' ') || latest.containerMakeModel || 'Your Container';
-    var mainName      = [latest.mainManufacturer, latest.mainModel].filter(Boolean).join(' ') || latest.mainCanopy || '—';
-    var reserveName   = [latest.reserveManufacturer, latest.reserveModel].filter(Boolean).join(' ') || latest.reserveCanopy || '—';
-    var aadName       = [latest.aadManufacturer, latest.aadModel].filter(Boolean).join(' ') || latest.aadType || '—';
-    document.getElementById('rigCard').innerHTML = `
-      <div class="rig-card-head">
-        <div class="rig-name">${esc(containerName)}</div>
-        <span class="rig-serial">S/N: ${esc(latest.containerSerial || serial)}</span>
-      </div>
-      <div class="rig-grid">
-        <div class="rig-field"><div class="rig-field-label">Main Canopy</div><div class="rig-field-val">${esc(mainName)}</div></div>
-        <div class="rig-field"><div class="rig-field-label">Reserve Canopy</div><div class="rig-field-val">${esc(reserveName)}</div></div>
-        <div class="rig-field"><div class="rig-field-label">AAD</div><div class="rig-field-val">${esc(aadName)}</div></div>
-        <div class="rig-field"><div class="rig-field-label">AAD Serial</div><div class="rig-field-val">${esc(latest.aadSerial||'—')}</div></div>
-      </div>`;
-
-    // History
-    document.getElementById('historyLabel').textContent = 'Service History — ' + records.length + ' record' + (records.length !== 1 ? 's' : '');
-    if (records.length === 0) {
-      document.getElementById('historyList').innerHTML = `<div class="no-records"><div class="icon">📋</div>No service records yet.</div>`;
-    } else {
-      document.getElementById('historyList').innerHTML = records.map((rec, i) => {
-        const svcs = (rec.services||'').split('\n').filter(s=>s.trim());
-        const statusClass = (rec.status||'').toLowerCase().includes('complete') ? 'complete' : 'received';
-        return `
-        <div class="service-record" style="animation-delay:${i*0.06}s">
-          <div class="record-head">
-            <span class="record-wo">📋 ${esc(rec.ticket||'—')}</span>
-            <span class="record-date">${esc(rec.date||'—')}</span>
-          </div>
-          <div class="record-body">
-            ${svcs.length ? svcs.map(s=>`<div class="svc-line">${esc(s)}</div>`).join('') : '<span style="color:var(--muted);font-size:13px;">No services recorded</span>'}
-          </div>
-          <div class="record-footer">
-            <span class="record-meta">Total: <strong>${esc(rec.total||'—')}</strong></span>
-            ${rec.rush && rec.rush !== 'No rush service needed' && rec.rush !== 'No rush' ? `<span class="record-meta">Rush: <strong>${esc(rec.rush)}</strong></span>` : ''}
-            <span class="record-status ${statusClass}">${esc(rec.status||'Received')}</span>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    document.getElementById('dashboard').classList.add('show');
+    document.getElementById('inputEmail').value = '';
   }
 
   function esc(s) {
