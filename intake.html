@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rig Intake — Tier2 Rigging LLC</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tier2 Rigging">
+<meta name="theme-color" content="#c8a96e">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #1a1a18;
+    --card:      #242420;
+    --card-mid:  #2a2a26;
+    --input-bg:  #141414;
+    --tan:       #c8a96e;
+    --tan-light: #e0c080;
+    --parchment: #f2ede4;
+    --muted:     #9a9890;
+    --border:    rgba(200,185,150,0.2);
+    --green:     #6dcc96;
+    --red:       #e07070;
+    --blue:      #6a9fd8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--parchment);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse 90% 40% at 50% 0%, rgba(200,169,110,0.05) 0%, transparent 60%),
+      repeating-linear-gradient(0deg,  transparent, transparent 39px, rgba(200,185,150,0.03) 39px, rgba(200,185,150,0.03) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(200,185,150,0.03) 39px, rgba(200,185,150,0.03) 40px);
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    padding: 0;
+    background: linear-gradient(180deg, #111 0%, #181818 60%, #202020 100%);
+    box-shadow: 0 2px 24px rgba(0,0,0,0.5);
+  }
+  .header-inner { display: flex; flex-direction: column; align-items: center; padding: 0 0 16px; }
+  .site-header img { max-width: 900px; width: 100%; height: auto; display: block; margin: 0 auto;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%), linear-gradient(to bottom, black 55%, transparent 100%);
+    -webkit-mask-composite: destination-in;
+    mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%), linear-gradient(to bottom, black 55%, transparent 100%);
+    mask-composite: intersect;
+  }
+  .header-tagline { text-align: center; font-size: 14px; color: var(--muted); margin-top: 4px; }
+  .header-divider { height: 2px; background: linear-gradient(90deg, transparent 0%, var(--tan) 30%, var(--tan-light) 50%, var(--tan) 70%, transparent 100%); opacity: 0.7; }
+
+  /* ── NAV ── */
+  .site-nav { background: #111; border-bottom: 1px solid rgba(200,169,110,0.2); display: flex; align-items: center; justify-content: flex-end; padding: 0 20px; gap: 0; }
+  .nav-link { display: flex; align-items: center; gap: 6px; padding: 9px 14px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; color: #9a9890; text-decoration: none; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; white-space: nowrap; }
+  .nav-link:hover { color: #e0c080; border-bottom-color: rgba(200,169,110,0.4); }
+  .nav-link.active { color: #e0c080; border-bottom-color: #c8a96e; }
+  .nav-divider { width: 1px; height: 16px; background: rgba(200,169,110,0.15); flex-shrink: 0; margin: 0 2px; }
+  @media (max-width: 480px) { .site-nav { justify-content: center; } .nav-link { padding: 8px 9px; font-size: 11px; } }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes spin   { to { transform: rotate(360deg); } }
+
+  .wrap { max-width: 680px; margin: 0 auto; padding: 28px 16px 80px; }
+
+  /* ── PAGE HEADER ── */
+  .page-header { margin-bottom: 24px; animation: fadeUp 0.3s ease both; }
+  .page-header-label { font-size: 10px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--tan); margin-bottom: 6px; }
+  .page-header-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--parchment); line-height: 1; }
+  .page-header-sub { font-size: 13px; color: var(--muted); margin-top: 6px; line-height: 1.6; }
+
+  /* ── STEPS PROGRESS ── */
+  .steps { display: flex; gap: 0; margin-bottom: 28px; animation: fadeUp 0.35s ease both; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .step { flex: 1; padding: 12px 10px; text-align: center; background: var(--card); position: relative; transition: background 0.2s; }
+  .step + .step { border-left: 1px solid var(--border); }
+  .step.active { background: rgba(200,169,110,0.12); }
+  .step.done { background: rgba(109,204,150,0.08); }
+  .step-num { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--muted); line-height: 1; transition: color 0.2s; }
+  .step.active .step-num { color: var(--tan); }
+  .step.done .step-num { color: var(--green); }
+  .step-label { font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-top: 3px; transition: color 0.2s; }
+  .step.active .step-label { color: var(--tan-light); }
+  .step.done .step-label { color: var(--green); }
+
+  /* ── SECTION CARD ── */
+  .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 18px; animation: fadeUp 0.4s ease both; }
+  .section-head { background: linear-gradient(90deg, rgba(200,169,110,0.1), transparent); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; align-items: center; gap: 10px; }
+  .section-head-icon { font-size: 18px; }
+  .section-head-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--tan-light); }
+  .section-body { padding: 20px; }
+
+  /* ── FIELDS ── */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); margin-bottom: 6px; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 7px; color: var(--parchment); font-family: 'DM Sans', sans-serif;
+    font-size: 15px; padding: 11px 14px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s; -webkit-appearance: none;
+  }
+  .field input::placeholder, .field textarea::placeholder { color: rgba(154,152,144,0.4); }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--tan); box-shadow: 0 0 0 3px rgba(200,169,110,0.12); }
+  .field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .field select { cursor: pointer; }
+  .field select option { background: var(--card); }
+  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  @media (max-width: 500px) { .field-grid { grid-template-columns: 1fr; } .field-grid-3 { grid-template-columns: 1fr 1fr; } }
+
+  /* ── SCREEN MANAGEMENT ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── WO PREVIEW BANNER ── */
+  .wo-preview {
+    background: rgba(200,169,110,0.08);
+    border: 1px solid rgba(200,169,110,0.25);
+    border-radius: 10px; padding: 14px 18px;
+    margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px; animation: fadeUp 0.3s ease both;
+  }
+  .wo-num-display { font-family: 'DM Mono', monospace; font-size: 20px; color: var(--tan); letter-spacing: 2px; }
+  .wo-status-badge { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #1a1a1a; background: var(--tan); border-radius: 20px; padding: 4px 12px; }
+
+  /* ── SERVICE CHECKBOXES ── */
+  .svc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 500px) { .svc-grid { grid-template-columns: 1fr; } }
+  .svc-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 13px; cursor: pointer;
+    transition: all 0.15s; user-select: none;
+  }
+  .svc-item:hover { border-color: rgba(200,169,110,0.4); }
+  .svc-item.checked { border-color: rgba(200,169,110,0.5); background: rgba(200,169,110,0.08); }
+  .svc-item input[type="checkbox"] { display: none; }
+  .svc-box { width: 18px; height: 18px; border: 1.5px solid rgba(200,169,110,0.35); border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .svc-item.checked .svc-box { background: var(--tan); border-color: var(--tan); }
+  .svc-item.checked .svc-box::after { content: '✓'; font-size: 11px; color: #1a1a1a; font-weight: 700; }
+  .svc-label { font-size: 13px; color: var(--parchment); line-height: 1.3; flex: 1; }
+  .svc-price { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* ── STATUS SELECTOR ── */
+  .status-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  @media (max-width: 500px) { .status-grid { grid-template-columns: 1fr 1fr; } }
+  .status-opt {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; padding: 14px 8px; border-radius: 9px; cursor: pointer;
+    border: 2px solid var(--border); background: var(--input-bg);
+    transition: all 0.15s; text-align: center; user-select: none;
+  }
+  .status-opt:hover { border-color: rgba(200,169,110,0.4); }
+  .status-opt.selected { border-color: var(--tan); background: rgba(200,169,110,0.1); }
+  .status-opt-icon { font-size: 20px; }
+  .status-opt-label { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; color: var(--muted); }
+  .status-opt.selected .status-opt-label { color: var(--tan-light); }
+
+  /* Status colors */
+  .status-opt[data-status="Intake"].selected     { border-color: #6a9fd8; background: rgba(106,159,216,0.1); }
+  .status-opt[data-status="Intake"].selected .status-opt-label { color: #6a9fd8; }
+  .status-opt[data-status="Waiting"].selected    { border-color: #e0c080; background: rgba(224,192,128,0.1); }
+  .status-opt[data-status="Waiting"].selected .status-opt-label { color: #e0c080; }
+  .status-opt[data-status="In Progress"].selected { border-color: #e0a060; background: rgba(224,160,96,0.1); }
+  .status-opt[data-status="In Progress"].selected .status-opt-label { color: #e0a060; }
+  .status-opt[data-status="Gear Ready"].selected      { border-color: #6dcc96; background: rgba(109,204,150,0.1); }
+  .status-opt[data-status="Gear Ready"].selected .status-opt-label { color: #6dcc96; }
+  .status-opt[data-status="Picked Up"].selected  { border-color: #9a9890; background: rgba(154,152,144,0.1); }
+  .status-opt[data-status="Picked Up"].selected .status-opt-label { color: #9a9890; }
+
+  /* ── BUTTONS ── */
+  .btn-row { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+  .btn-primary {
+    flex: 1; padding: 15px 24px; background: linear-gradient(135deg, var(--tan), var(--tan-light));
+    color: #1a1a18; font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+    letter-spacing: 2px; border: none; border-radius: 8px; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 20px rgba(200,169,110,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(200,169,110,0.35); }
+  .btn-ghost { padding: 14px 20px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+  .btn-ghost:hover { border-color: var(--tan); color: var(--tan); }
+
+  /* ── ERROR / LOADING ── */
+  .error-box { display: none; background: rgba(224,112,112,0.1); border: 1px solid rgba(224,112,112,0.3); border-radius: 8px; padding: 11px 14px; font-size: 13px; color: #e07a5a; margin-top: 12px; }
+  .error-box.show { display: block; }
+  .loading-box { display: none; text-align: center; padding: 40px; color: var(--muted); font-size: 14px; }
+  .loading-box.show { display: block; }
+  .spinner { width: 36px; height: 36px; border: 3px solid rgba(200,169,110,0.2); border-top-color: var(--tan); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
+
+  /* ── TAG SCREEN ── */
+  .tag-screen { animation: fadeUp 0.4s ease both; }
+  .tag-success-banner { display: flex; align-items: center; gap: 16px; background: rgba(109,204,150,0.1); border: 1px solid rgba(109,204,150,0.3); border-radius: 12px; padding: 18px 20px; margin-bottom: 24px; }
+  .tag-success-icon { font-size: 32px; flex-shrink: 0; }
+  .tag-success-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: var(--green); }
+  .tag-success-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  .tag-actions { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; }
+  .tag-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 13px 20px; border-radius: 8px; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    transition: all 0.15s; border: none;
+  }
+  .tag-btn-print { background: var(--tan); color: #1a1a18; }
+  .tag-btn-print:hover { background: var(--tan-light); }
+  .tag-btn-dash { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .tag-btn-dash:hover { border-color: var(--tan); color: var(--tan); }
+  .tag-btn-new { background: rgba(109,204,150,0.15); border: 1px solid rgba(109,204,150,0.3); color: var(--green); }
+  .tag-btn-new:hover { background: rgba(109,204,150,0.25); }
+
+  /* ── PRINTABLE TAG ── */
+  .tag-preview-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 18px; }
+  .tag-preview-head { background: linear-gradient(90deg, rgba(200,169,110,0.1), transparent); border-bottom: 1px solid var(--border); padding: 12px 18px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1.5px; color: var(--muted); }
+  .tag-preview-body { padding: 20px; }
+
+  /* The actual printable tag */
+  #printable-tag {
+    background: #fff;
+    border: 2px solid #1a1a1a;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 420px;
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    color: #1a1a1a;
+  }
+  .tag-brand { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #c8a96e; padding-bottom: 12px; margin-bottom: 12px; }
+  .tag-brand-name { font-family: 'Bebas Neue', Arial, sans-serif; font-size: 22px; letter-spacing: 3px; color: #1a1a1a; line-height: 1; }
+  .tag-brand-sub { font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: #888; margin-top: 2px; }
+  .tag-wo { text-align: right; }
+  .tag-wo-label { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 1px; }
+  .tag-wo-num { font-family: 'DM Mono', monospace; font-size: 18px; color: #c8a96e; font-weight: 700; }
+  .tag-date-text { font-size: 10px; color: #aaa; margin-top: 2px; }
+
+  .tag-body { display: flex; gap: 14px; }
+  .tag-info { flex: 1; }
+  .tag-qr { flex-shrink: 0; }
+  .tag-qr img { display: block; border: 2px solid #c8a96e; border-radius: 4px; }
+
+  .tag-row { margin-bottom: 8px; }
+  .tag-row-label { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+  .tag-row-val { font-size: 13px; color: #1a1a1a; font-weight: 600; line-height: 1.3; }
+  .tag-row-val.mono { font-family: 'DM Mono', monospace; color: #c8a96e; font-size: 15px; }
+
+  .tag-status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; }
+  .tag-status-intake     { background: #e8f0fb; color: #3a6fbd; }
+  .tag-status-waiting    { background: #fdf6e3; color: #a07820; }
+  .tag-status-progress   { background: #fdf0e3; color: #b06020; }
+  .tag-status-gearready     { background: #e3f0fd; color: #3a7ab0; }
+  .tag-status-gearready      { background: #e3fdf0; color: #2a8a50; }
+  .tag-status-pickedup   { background: #f0f0f0; color: #666; }
+
+  .tag-svcs { margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee; }
+  .tag-svcs-label { font-size: 9px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+  .tag-svc-line { font-size: 11px; color: #333; padding: 2px 0; border-bottom: 1px dotted #eee; }
+  .tag-svc-line:last-child { border-bottom: none; }
+
+  .tag-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid #eee; display: flex; justify-content: space-between; align-items: flex-end; }
+  .tag-notes { font-size: 10px; color: #666; line-height: 1.4; flex: 1; padding-right: 10px; }
+  .tag-contact { text-align: right; font-size: 9px; color: #aaa; line-height: 1.6; }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    body, html { background: #fff !important; }
+    .site-header, .site-nav, .header-divider, .page-header, .steps, .tag-success-banner, .tag-actions, .tag-preview-head, .tag-preview-wrap > *:not(#printable-tag) { display: none !important; }
+    .wrap { padding: 0 !important; max-width: 100% !important; }
+    .tag-preview-wrap { border: none !important; background: transparent !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; }
+    .tag-preview-body { padding: 0 !important; }
+    #printable-tag { max-width: 100% !important; border: 2px solid #1a1a1a !important; page-break-inside: avoid; }
+    .tag-screen { display: block !important; }
+    .screen:not(.active) { display: none !important; }
+  }
+  .site-header img { max-height: 120px !important; object-fit: contain; }
+</style>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js'));
+  }
+</script>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-inner">
+    <img src="image1.png" alt="Tier2 Rigging LLC">
+    <div class="header-tagline">Parachute Rigging Services</div>
+  </div>
+</div>
+<div class="header-divider"></div>
+<nav class="site-nav">
+  <a class="nav-link" href="index.html">📋 Service Request</a>
+  <div class="nav-divider"></div>
+  <a class="nav-link" href="customer.html">🔍 My Rig</a>
+  <div class="nav-divider"></div>
+  <a class="nav-link active" href="intake.html">📥 Intake</a>
+  <div class="nav-divider"></div>
+  <a class="nav-link" href="dashboard.html">📊 Dashboard</a>
+  <div class="nav-divider"></div>
+  <a class="nav-link" href="admin.html" style="color:#666;font-size:11px;">⚙ Admin</a>
+</nav>
+
+<div class="wrap">
+
+  <!-- ── STEP INDICATOR ── -->
+  <div class="steps" id="step-indicator">
+    <div class="step active" id="step1"><div class="step-num">1</div><div class="step-label">Customer</div></div>
+    <div class="step" id="step2"><div class="step-num">2</div><div class="step-label">Rig Info</div></div>
+    <div class="step" id="step3"><div class="step-num">3</div><div class="step-label">Services</div></div>
+    <div class="step" id="step4"><div class="step-num">4</div><div class="step-label">Tag</div></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN 1 — Customer Info
+  ════════════════════════════════════════ -->
+  <div class="screen active" id="screen-1">
+
+    <div class="page-header">
+      <div class="page-header-label">Step 1 of 3</div>
+      <div class="page-header-title">Customer Info</div>
+      <div class="page-header-sub">Enter customer contact details. The job ID will be auto-generated.</div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">👤</div>
+        <div class="section-head-title">Contact</div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field">
+            <label>Full Name *</label>
+            <input type="text" id="i-name" placeholder="Jane Smith" autocomplete="name">
+          </div>
+          <div class="field">
+            <label>Phone *</label>
+            <input type="tel" id="i-phone" placeholder="(516) 555-0100" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="i-email" placeholder="jane@example.com" autocomplete="email">
+          </div>
+          <div class="field">
+            <label>Home DZ</label>
+            <input type="text" id="i-dz" placeholder="Skydive Long Island">
+          </div>
+        </div>
+        <div class="field">
+          <label>Initial Status</label>
+          <div class="status-grid" id="status-selector">
+            <div class="status-opt selected" data-status="Intake" onclick="selectStatus(this)">
+              <div class="status-opt-icon">📥</div>
+              <div class="status-opt-label">Intake</div>
+            </div>
+            <div class="status-opt" data-status="Waiting" onclick="selectStatus(this)">
+              <div class="status-opt-icon">⏳</div>
+              <div class="status-opt-label">Waiting</div>
+            </div>
+            <div class="status-opt" data-status="In Progress" onclick="selectStatus(this)">
+              <div class="status-opt-icon">🔧</div>
+              <div class="status-opt-label">In Progress</div>
+            </div>
+            <div class="status-opt" data-status="Gear Ready" onclick="selectStatus(this)">
+              <div class="status-opt-icon">✅</div>
+              <div class="status-opt-label">Gear Ready</div>
+            </div>
+            <div class="status-opt" data-status="Picked Up" onclick="selectStatus(this)">
+              <div class="status-opt-icon">🏁</div>
+              <div class="status-opt-label">Picked Up</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-box" id="err-1"></div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="goToStep2()">Next — Rig Info →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN 2 — Rig Info
+  ════════════════════════════════════════ -->
+  <div class="screen" id="screen-2">
+
+    <div class="page-header">
+      <div class="page-header-label">Step 2 of 3</div>
+      <div class="page-header-title">Rig Information</div>
+      <div class="page-header-sub">Enter the container and component details. Serial number is required for QR tracking.</div>
+    </div>
+
+    <!-- Container -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">🎒</div>
+        <div class="section-head-title">Harness &amp; Container</div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field"><label>Manufacturer</label><input type="text" id="i-cont-mfr" placeholder="Javelin, Vector, Wings…"></div>
+          <div class="field"><label>Model</label><input type="text" id="i-cont-model" placeholder="Odyssey, Micron…"></div>
+          <div class="field"><label>Serial # *</label><input type="text" id="i-cont-serial" placeholder="JVL-12345" style="font-family:'DM Mono',monospace;letter-spacing:1px;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field"><label>DOM</label><input type="text" id="i-cont-dom" placeholder="01/2020"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">🪂</div>
+        <div class="section-head-title">Main Canopy</div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field"><label>Manufacturer</label><input type="text" id="i-main-mfr" placeholder="PD, Icarus, Aerodyne…"></div>
+          <div class="field"><label>Model &amp; Size</label><input type="text" id="i-main-model" placeholder="Pilot 168"></div>
+          <div class="field"><label>Serial #</label><input type="text" id="i-main-serial" placeholder="" style="font-family:'DM Mono',monospace;letter-spacing:1px;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field"><label>DOM</label><input type="text" id="i-main-dom" placeholder="01/2019"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reserve -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">🛟</div>
+        <div class="section-head-title">Reserve Canopy</div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field"><label>Manufacturer</label><input type="text" id="i-res-mfr" placeholder="PD, Precision, Fury…"></div>
+          <div class="field"><label>Model &amp; Size</label><input type="text" id="i-res-model" placeholder="PD Reserve 143"></div>
+          <div class="field"><label>Serial #</label><input type="text" id="i-res-serial" placeholder="" style="font-family:'DM Mono',monospace;letter-spacing:1px;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field"><label>DOM</label><input type="text" id="i-res-dom" placeholder="06/2018"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AAD -->
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">🔋</div>
+        <div class="section-head-title">AAD</div>
+      </div>
+      <div class="section-body">
+        <div class="field-grid">
+          <div class="field"><label>Manufacturer</label><input type="text" id="i-aad-mfr" placeholder="Cypres, Vigil, MARS…"></div>
+          <div class="field"><label>Model</label><input type="text" id="i-aad-model" placeholder="Expert Cypres 2"></div>
+          <div class="field"><label>Serial #</label><input type="text" id="i-aad-serial" placeholder="" style="font-family:'DM Mono',monospace;letter-spacing:1px;" oninput="this.value=this.value.toUpperCase()"></div>
+          <div class="field"><label>Next Service Date</label><input type="text" id="i-aad-service" placeholder="mm/yyyy"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="error-box" id="err-2"></div>
+    <div class="btn-row">
+      <button class="btn-ghost" onclick="goToStep(1)">← Back</button>
+      <button class="btn-primary" onclick="goToStep3()">Next — Services →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN 3 — Services
+  ════════════════════════════════════════ -->
+  <div class="screen" id="screen-3">
+
+    <div class="page-header">
+      <div class="page-header-label">Step 3 of 3</div>
+      <div class="page-header-title">Services &amp; Notes</div>
+      <div class="page-header-sub">Select services for this intake. You can add more later from the admin panel.</div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">🔧</div>
+        <div class="section-head-title">Services Requested</div>
+      </div>
+      <div class="section-body">
+        <div class="svc-grid" id="intake-svc-grid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-head">
+        <div class="section-head-icon">📝</div>
+        <div class="section-head-title">Additional Notes</div>
+      </div>
+      <div class="section-body">
+        <div class="field">
+          <label>Notes / Damage Description</label>
+          <textarea id="i-notes" placeholder="Describe any known damage, special requests, or notes about the rig…" rows="4"></textarea>
+        </div>
+        <div class="field-grid">
+          <div class="field">
+            <label>Requested Completion</label>
+            <input type="text" id="i-completion" placeholder="mm/dd/yyyy">
+          </div>
+          <div class="field">
+            <label>Rush Service</label>
+            <select id="i-rush">
+              <option value="No">No rush service</option>
+              <option value="2-5 Day Rush">2–5 Day Rush (+$40)</option>
+              <option value="Same Day / Next Day">Same / Next Day (+$65)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="loading-box" id="loading-box">
+      <div class="spinner"></div>
+      Creating work order…
+    </div>
+    <div class="error-box" id="err-3"></div>
+    <div class="btn-row" id="submit-btn-row">
+      <button class="btn-ghost" onclick="goToStep(2)">← Back</button>
+      <button class="btn-primary" onclick="submitIntake()">Create Work Order &amp; Print Tag →</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SCREEN 4 — Tag
+  ════════════════════════════════════════ -->
+  <div class="screen tag-screen" id="screen-4">
+
+    <div class="tag-success-banner">
+      <div class="tag-success-icon">✅</div>
+      <div>
+        <div class="tag-success-title">Work Order Created</div>
+        <div class="tag-success-sub" id="tag-success-sub">Job ID generated and saved to the sheet.</div>
+      </div>
+    </div>
+
+    <div class="tag-actions">
+      <button class="tag-btn tag-btn-print" onclick="window.print()">🖨 Print Tag</button>
+      <button class="tag-btn tag-btn-dash" onclick="window.location.href='dashboard.html'">📊 Dashboard</button>
+      <button class="tag-btn tag-btn-new" onclick="resetIntake()">+ New Intake</button>
+    </div>
+
+    <div class="tag-preview-wrap">
+      <div class="tag-preview-head">PRINTABLE RIG TAG — print this and attach to the rig</div>
+      <div class="tag-preview-body">
+        <div id="printable-tag">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screen-4 -->
+
+</div><!-- /wrap -->
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
+
+const INTAKE_SERVICES = [
+  { name: 'Reserve Inspection & Repack (Sport)',   price: 115 },
+  { name: 'Reserve Inspection & Repack (Tandem)',  price: 150 },
+  { name: 'Inspect Harness / Container',           price: 20  },
+  { name: 'Inspect Main or Reserve',               price: 25  },
+  { name: 'AAD Batteries / Service',               price: 0   },
+  { name: 'Install AAD',                           price: 10  },
+  { name: 'Pack Main Sport',                       price: 15  },
+  { name: 'Pack Main Tandem',                      price: 20  },
+  { name: 'Wash Rig',                              price: 65  },
+  { name: 'Sewing',                                price: 85  },
+  { name: 'Canopy Patch',                          price: 0   },
+  { name: 'Slinks',                                price: 35  },
+  { name: 'Re-line Sport (lines not included)',    price: 130 },
+  { name: 'Re-line Tandem (lines not included)',   price: 175 },
+  { name: 'BOC Replacement',                      price: 100 },
+  { name: 'Reserve Safety Stow Replacement',      price: 0   },
+  { name: 'Full Inspection',                      price: 45  },
+  { name: 'AAD Service (Cypres/Vigil)',            price: 0   },
+];
+
+let selectedStatus = 'Intake';
+let generatedWO = '';
+
+// Build service grid
+(function buildSvcGrid() {
+  const grid = document.getElementById('intake-svc-grid');
+  INTAKE_SERVICES.forEach(function(svc, i) {
+    const item = document.createElement('label');
+    item.className = 'svc-item';
+    item.innerHTML =
+      '<input type="checkbox" name="intake-svc" value="' + svc.name + '" data-price="' + svc.price + '">' +
+      '<div class="svc-box"></div>' +
+      '<div class="svc-label">' + svc.name + '</div>' +
+      (svc.price > 0 ? '<div class="svc-price">$' + svc.price + '</div>' : '');
+    item.addEventListener('click', function() {
+      const cb = item.querySelector('input');
+      setTimeout(function() { item.classList.toggle('checked', cb.checked); }, 0);
+    });
+    grid.appendChild(item);
+  });
+})();
+
+function selectStatus(el) {
+  document.querySelectorAll('.status-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+  selectedStatus = el.getAttribute('data-status');
+}
+
+function goToStep(n) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById('screen-' + n).classList.add('active');
+  document.querySelectorAll('.step').forEach(function(s, i) {
+    s.classList.remove('active', 'done');
+    if (i + 1 < n) s.classList.add('done');
+    else if (i + 1 === n) s.classList.add('active');
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showErr(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function hideErr(id) { document.getElementById(id).classList.remove('show'); }
+
+function goToStep2() {
+  hideErr('err-1');
+  var name = document.getElementById('i-name').value.trim();
+  var phone = document.getElementById('i-phone').value.trim();
+  if (!name) { showErr('err-1', 'Please enter the customer name.'); return; }
+  if (!phone) { showErr('err-1', 'Please enter the customer phone number.'); return; }
+  goToStep(2);
+}
+
+function goToStep3() {
+  hideErr('err-2');
+  var serial = document.getElementById('i-cont-serial').value.trim();
+  if (!serial) { showErr('err-2', 'Container serial number is required for QR tag tracking.'); return; }
+  goToStep(3);
+}
+
+function genJobId() {
+  var now = new Date();
+  var mo = String(now.getMonth() + 1).padStart(2, '0');
+  var dy = String(now.getDate()).padStart(2, '0');
+  var yr = String(now.getFullYear()).slice(2);
+  var rand = String(Math.floor(Math.random() * 900) + 100);
+  return 'T2-' + yr + mo + dy + '-' + rand;
+}
+
+function formatDateNow() {
+  var d = new Date();
+  return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+}
+
+async function submitIntake() {
+  hideErr('err-3');
+  document.getElementById('submit-btn-row').style.display = 'none';
+  document.getElementById('loading-box').classList.add('show');
+
+  var wo = genJobId();
+  generatedWO = wo;
+
+  var name     = document.getElementById('i-name').value.trim();
+  var phone    = document.getElementById('i-phone').value.trim();
+  var email    = document.getElementById('i-email').value.trim();
+  var dz       = document.getElementById('i-dz').value.trim();
+  var contMfr  = document.getElementById('i-cont-mfr').value.trim();
+  var contMod  = document.getElementById('i-cont-model').value.trim();
+  var contSer  = document.getElementById('i-cont-serial').value.trim().toUpperCase();
+  var contDom  = document.getElementById('i-cont-dom').value.trim();
+  var mainMfr  = document.getElementById('i-main-mfr').value.trim();
+  var mainMod  = document.getElementById('i-main-model').value.trim();
+  var mainSer  = document.getElementById('i-main-serial').value.trim().toUpperCase();
+  var mainDom  = document.getElementById('i-main-dom').value.trim();
+  var resMfr   = document.getElementById('i-res-mfr').value.trim();
+  var resMod   = document.getElementById('i-res-model').value.trim();
+  var resSer   = document.getElementById('i-res-serial').value.trim().toUpperCase();
+  var resDom   = document.getElementById('i-res-dom').value.trim();
+  var aadMfr   = document.getElementById('i-aad-mfr').value.trim();
+  var aadMod   = document.getElementById('i-aad-model').value.trim();
+  var aadSer   = document.getElementById('i-aad-serial').value.trim().toUpperCase();
+  var aadSvc   = document.getElementById('i-aad-service').value.trim();
+  var notes    = document.getElementById('i-notes').value.trim();
+  var comp     = document.getElementById('i-completion').value.trim();
+  var rush     = document.getElementById('i-rush').value;
+
+  var svcs = [];
+  document.querySelectorAll('input[name="intake-svc"]:checked').forEach(function(cb) { svcs.push(cb.value); });
+
+  // Map status: admin uses "New" for "Intake" / "Waiting"
+  var mappedStatus = selectedStatus;
+  if (mappedStatus === 'Intake') mappedStatus = 'Intake';
+  else if (mappedStatus === 'Waiting') mappedStatus = 'Waiting';
+  // Gear Ready is canonical
+
+  var payload = {
+    action:                   'createOrder',
+    woNum:                    wo,
+    name:                     name,
+    phone:                    phone,
+    email:                    email,
+    homeDz:                   dz,
+    containerManufacturer:    contMfr,
+    containerModel:           contMod,
+    containerSerial:          contSer,
+    containerDom:             contDom,
+    mainManufacturer:         mainMfr,
+    mainModel:                mainMod,
+    mainSerial:               mainSer,
+    mainDom:                  mainDom,
+    reserveManufacturer:      resMfr,
+    reserveModel:             resMod,
+    reserveSerial:            resSer,
+    reserveDom:               resDom,
+    aadManufacturer:          aadMfr,
+    aadModel:                 aadMod,
+    aadSerial:                aadSer,
+    aadServiceDate:           aadSvc,
+    servicesSelected:         svcs.join(', '),
+    estimatedTotal:           '0',
+    rushService:              rush,
+    notes:                    notes,
+    requestedCompletion:      comp,
+    status:                   mappedStatus,
+  };
+
+  try {
+    var res = await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // no-cors won't give us a readable response, so we assume success
+    document.getElementById('loading-box').classList.remove('show');
+    buildAndShowTag({
+      wo, name, phone, email, contMfr, contMod, contSer, contDom,
+      mainMfr, mainMod, resMfr, resMod, aadMfr, aadMod, aadSer,
+      svcs, notes, rush, status: selectedStatus
+    });
+
+  } catch(err) {
+    document.getElementById('loading-box').classList.remove('show');
+    document.getElementById('submit-btn-row').style.display = 'flex';
+    showErr('err-3', '⚠ Could not submit. Check your connection and try again. (' + err.message + ')');
+  }
+}
+
+function statusTagClass(status) {
+  if (status === 'Intake')      return 'tag-status-intake';
+  if (status === 'Waiting')     return 'tag-status-waiting';
+  if (status === 'In Progress') return 'tag-status-progress';
+  if (status === 'Gear Ready')      return 'tag-status-gearready';
+  if (status === 'Picked Up')   return 'tag-status-pickedup';
+  return 'tag-status-intake';
+}
+
+function buildAndShowTag(d) {
+  var portalUrl = 'https://tier2rigging.com/customer.html?serial=' + encodeURIComponent(d.contSer);
+  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + encodeURIComponent(portalUrl);
+  var today = formatDateNow();
+  var contName = [d.contMfr, d.contMod].filter(Boolean).join(' ') || '—';
+  var mainName = [d.mainMfr, d.mainMod].filter(Boolean).join(' ') || '—';
+  var resName  = [d.resMfr, d.resMod].filter(Boolean).join(' ') || '—';
+  var aadName  = [d.aadMfr, d.aadMod].filter(Boolean).join(' ') || '—';
+
+  var svcLines = d.svcs.length
+    ? d.svcs.map(function(s) { return '<div class="tag-svc-line">▸ ' + esc(s) + '</div>'; }).join('')
+    : '<div class="tag-svc-line" style="color:#aaa;font-style:italic;">To be determined</div>';
+
+  document.getElementById('printable-tag').innerHTML =
+    '<div class="tag-brand">' +
+      '<div><div class="tag-brand-name">TIER2 RIGGING</div><div class="tag-brand-sub">Parachute Rigging Services · LLC</div></div>' +
+      '<div class="tag-wo"><div class="tag-wo-label">Work Order</div><div class="tag-wo-num">' + esc(d.wo) + '</div><div class="tag-date-text">' + today + '</div></div>' +
+    '</div>' +
+
+    '<div class="tag-body">' +
+      '<div class="tag-info">' +
+        '<div class="tag-row"><div class="tag-row-label">Customer</div><div class="tag-row-val">' + esc(d.name) + '</div></div>' +
+        (d.phone ? '<div class="tag-row"><div class="tag-row-label">Phone</div><div class="tag-row-val">' + esc(d.phone) + '</div></div>' : '') +
+        '<div class="tag-row"><div class="tag-row-label">Container S/N</div><div class="tag-row-val mono">' + esc(d.contSer) + '</div></div>' +
+        '<div class="tag-row"><div class="tag-row-label">Container</div><div class="tag-row-val">' + esc(contName) + '</div></div>' +
+        '<div class="tag-row"><div class="tag-row-label">Main</div><div class="tag-row-val">' + esc(mainName) + '</div></div>' +
+        '<div class="tag-row"><div class="tag-row-label">Reserve</div><div class="tag-row-val">' + esc(resName) + '</div></div>' +
+        '<div class="tag-row"><div class="tag-row-label">AAD</div><div class="tag-row-val">' + esc(aadName) + '</div></div>' +
+        (d.rush && d.rush !== 'No' ? '<span class="tag-status" style="background:#ffe8e3;color:#c0522a;margin-top:4px;">⚡ ' + esc(d.rush) + '</span>' : '') +
+        '<span class="tag-status ' + statusTagClass(d.status) + '">' + esc(d.status) + '</span>' +
+      '</div>' +
+      '<div class="tag-qr">' +
+        '<img src="' + qrUrl + '" width="110" height="110" alt="QR">' +
+        '<div style="font-size:8px;color:#999;text-align:center;margin-top:4px;line-height:1.3;">Scan to view<br>rig history</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="tag-svcs"><div class="tag-svcs-label">Services</div>' + svcLines + '</div>' +
+
+    '<div class="tag-footer">' +
+      (d.notes ? '<div class="tag-notes"><strong>Notes:</strong> ' + esc(d.notes) + '</div>' : '<div class="tag-notes"></div>') +
+      '<div class="tag-contact">(516) 902-8843<br>tier2riggingservices@gmail.com<br><span style="color:#c8a96e;">tier2rigging.com</span></div>' +
+    '</div>';
+
+  document.getElementById('tag-success-sub').textContent = 'Work order ' + d.wo + ' created — ' + today;
+
+  // Update step indicator
+  document.querySelectorAll('.step').forEach(function(s, i) {
+    s.classList.remove('active', 'done');
+    if (i < 3) s.classList.add('done');
+    else s.classList.add('active');
+  });
+
+  goToStep(4);
+}
+
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function resetIntake() {
+  // Clear all fields
+  document.querySelectorAll('input[type="text"], input[type="email"], input[type="tel"], textarea, select').forEach(function(el) {
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  document.querySelectorAll('input[name="intake-svc"]').forEach(function(cb) {
+    cb.checked = false;
+    cb.closest('.svc-item').classList.remove('checked');
+  });
+  // Reset status
+  document.querySelectorAll('.status-opt').forEach(function(o) { o.classList.remove('selected'); });
+  document.querySelector('.status-opt[data-status="Intake"]').classList.add('selected');
+  selectedStatus = 'Intake';
+  generatedWO = '';
+  goToStep(1);
+}
+</script>
+</body>
+</html>

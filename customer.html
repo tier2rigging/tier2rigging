@@ -44,7 +44,9 @@
     display: block;
     width: 100%;
     max-width: 100%;
+    max-height: 120px;
     height: auto;
+    object-fit: contain;
   }
   .header-divider {
     height: 3px;
@@ -718,7 +720,7 @@
       } else {
         timelineHtml = '<div class="timeline">' +
           history.map(function(rec) {
-            const svcs = (rec.services || rec.servicesSelected || '').replace(/\n/g, ',').split(',').map(function(s){return s.trim();}).filter(Boolean);
+            const svcs = splitServices(rec.services || rec.servicesSelected || '');
             const isComplete = (rec.status||'').toLowerCase().includes('complete') ||
                                (rec.status||'').toLowerCase().includes('picked') ||
                                (rec.status||'').toLowerCase() === 'gear ready';
@@ -800,8 +802,22 @@
     document.getElementById('inputEmail').value = '';
   }
 
+  function splitServices(str) {
+    if (!str) return [];
+    var result = [];
+    var parts = str.split(',');
+    for (var i = 0; i < parts.length; i++) {
+      var lines = parts[i].split('\n');
+      for (var j = 0; j < lines.length; j++) {
+        var s = lines[j].trim();
+        if (s) result.push(s);
+      }
+    }
+    return result;
+  }
+
   function esc(s) {
-    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    var r=String(s||'');r=r.split('&').join('&amp;');r=r.split('<').join('&lt;');r=r.split('>').join('&gt;');r=r.split('"').join('&quot;');return r;
   }
   function formatDate(d) {
     if (!d) return '—';
