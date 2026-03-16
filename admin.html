@@ -698,8 +698,8 @@ async function loadOrders() {
   try {
     const res = await fetch(GAS_URL + '?action=getAll&t=' + Date.now());
     const data = await res.json();
-    if (data.orders) {
-      allOrders = data.orders;
+    if (data.rows || data.orders) {
+      allOrders = data.rows || data.orders;
       updateStats();
       renderTable();
     }
