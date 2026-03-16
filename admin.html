@@ -690,14 +690,6 @@
 
 <script>
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
-
-window.addEventListener('DOMContentLoaded', function() {
-  if (sessionStorage.getItem('t2_admin_session') === '1') {
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadOrders();
-  }
-});
 const ADMIN_PASSWORD = 'tier2admin'; // Change this to your preferred password
 
 const ALL_SERVICES = [
@@ -741,7 +733,6 @@ let currentRowIndex = null;
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
   if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem('t2_admin_session', '1');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -751,7 +742,6 @@ function doLogin() {
   }
 }
 function logout() {
-  sessionStorage.removeItem('t2_admin_session');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pw-input').value = '';
@@ -1514,6 +1504,13 @@ document.addEventListener('keydown', e => {
 
 // Bind new-order button and DZ selectors after DOM ready
 document.addEventListener('DOMContentLoaded', function() {
+  // Restore admin session if previously logged in
+  if (sessionStorage.getItem('t2_admin_session') === '1') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    loadOrders();
+  }
+
   var btn = document.getElementById('new-order-btn');
   if (btn) btn.addEventListener('click', openNewOrderModal);
 
