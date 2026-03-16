@@ -512,7 +512,7 @@
     <div class="welcome-bar">
       <div>
         <div class="welcome-name" id="welcomeName">Welcome Back</div>
-        <div class="welcome-sub">Tier2 Rigging LLC — Rig Portal</div>
+        <div class="welcome-sub" id="welcomeSub">Tier2 Rigging LLC — Rig Portal</div>
       </div>
       <button class="btn-signout" onclick="signOut()">← Portal Home</button>
     </div>
@@ -718,8 +718,7 @@
       } else {
         timelineHtml = '<div class="timeline">' +
           history.map(function(rec) {
-            const svcs = (rec.services || rec.servicesSelected || '').split(/[,
-]/).map(function(s){return s.trim();}).filter(Boolean);
+            const svcs = (rec.services || rec.servicesSelected || '').replace(/\n/g, ',').split(',').map(function(s){return s.trim();}).filter(Boolean);
             const isComplete = (rec.status||'').toLowerCase().includes('complete') ||
                                (rec.status||'').toLowerCase().includes('picked') ||
                                (rec.status||'').toLowerCase() === 'gear ready';
