@@ -344,6 +344,15 @@
     margin: auto; overflow: hidden;
   }
   .invoice-options { display: flex; flex-direction: column; gap: 10px; padding: 24px; }
+  .email-selector { padding: 0 24px 16px; }
+  .email-selector label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); margin-bottom: 7px; }
+  .email-selector-row { display: flex; gap: 8px; align-items: center; }
+  .email-selector select { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 7px; color: var(--parchment); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 12px; outline: none; transition: border-color 0.2s; cursor: pointer; }
+  .email-selector select:focus { border-color: var(--tan); }
+  .email-selector select option { background: var(--card); }
+  .email-selector input[type="text"] { flex: 1; background: var(--input-bg); border: 1px solid var(--border); border-radius: 7px; color: var(--parchment); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 8px 12px; outline: none; transition: border-color 0.2s; display: none; }
+  .email-selector input[type="text"]:focus { border-color: var(--tan); }
+  .email-selector input[type="text"].show { display: block; }
   .invoice-opt-btn {
     display: flex; align-items: center; gap: 14px;
     background: var(--input-bg); border: 1px solid var(--border);
@@ -1042,9 +1051,47 @@ function openInvoiceModal() {
 
   document.getElementById('invoice-modal-title').textContent = 'SEND INVOICE — ' + (o.woNum || '');
   document.getElementById('invoice-customer-info').textContent = 'Customer: ' + (o.name || '—');
-  document.getElementById('invoice-email-addr').textContent = o.email || 'No email on file';
   document.getElementById('send-status').textContent = '';
   document.getElementById('send-status').className = 'send-status';
+
+  // Build email dropdown options
+  const sel = document.getElementById('invoice-email-select');
+  sel.innerHTML = '';
+  const customerEmail = o.email ? o.email.trim() : '';
+
+  // Add customer email option
+  const custOpt = document.createElement('option');
+  custOpt.value = 'customer';
+  custOpt.textContent = customerEmail ? 'Customer — ' + customerEmail : 'Customer (no email on file)';
+  custOpt.disabled = !customerEmail;
+  sel.appendChild(custOpt);
+
+  // Add DZ-specific emails if applicable
+  const name = (o.name || '').toLowerCase();
+  if (name.includes('go jump')) {
+    const dzOpt = document.createElement('option');
+    dzOpt.value = DROPZONES.gojump.email;
+    dzOpt.textContent = 'Go Jump NY — ' + DROPZONES.gojump.email;
+    sel.appendChild(dzOpt);
+  }
+  if (name.includes('sussex')) {
+    const dzOpt = document.createElement('option');
+    dzOpt.value = DROPZONES.sussex.email;
+    dzOpt.textContent = 'Skydive Sussex — ' + DROPZONES.sussex.email;
+    sel.appendChild(dzOpt);
+  }
+
+  // Always add test option
+  const testOpt = document.createElement('option');
+  testOpt.value = 'test';
+  testOpt.textContent = 'Test email address…';
+  sel.appendChild(testOpt);
+
+  // Default to customer if available, else first option
+  sel.value = customerEmail ? 'customer' : (sel.options[0] ? sel.options[0].value : 'test');
+  document.getElementById('invoice-email-addr').textContent = customerEmail || '—';
+  document.getElementById('invoice-email-custom').classList.remove('show');
+
   document.getElementById('invoice-overlay').classList.add('open');
 }
 function closeInvoiceModal() {
@@ -1055,12 +1102,36 @@ function closeInvoiceOutside(e) {
 }
 
 
+function handleInvoiceEmailSelect() {
+  const sel = document.getElementById('invoice-email-select');
+  const customInput = document.getElementById('invoice-email-custom');
+  if (sel.value === 'test') {
+    customInput.classList.add('show');
+    customInput.focus();
+  } else {
+    customInput.classList.remove('show');
+  }
+}
+
+function getInvoiceEmail() {
+  const sel = document.getElementById('invoice-email-select');
+  if (sel.value === 'test') {
+    return document.getElementById('invoice-email-custom').value.trim();
+  } else if (sel.value === 'customer') {
+    const o = allOrders[currentOrderIndex];
+    return (o.email || '').trim();
+  } else {
+    return sel.value; // DZ email stored directly as value
+  }
+}
+
 async function sendInvoice(method) {
   const o = allOrders[currentOrderIndex];
   const statusEl = document.getElementById('send-status');
 
-  if (!o.email || o.email.trim() === '') {
-    statusEl.textContent = '⚠ No email address on file for this customer.';
+  const toEmail = getInvoiceEmail();
+  if (!toEmail) {
+    statusEl.textContent = '⚠ Please enter or select a valid email address.';
     statusEl.className = 'send-status err';
     return;
   }
@@ -1090,7 +1161,7 @@ async function sendInvoice(method) {
     method: 'email',
     woNum: o.woNum || '',
     name: o.name || '',
-    email: o.email.trim(),
+    email: toEmail,
     containerMakeModel: o.containerMakeModel || '',
     containerSerial: o.containerSerial || '',
     services: services.join(', '),
@@ -1108,14 +1179,14 @@ async function sendInvoice(method) {
     try { json = JSON.parse(text); } catch(e) { json = null; }
 
     if (json && (json.status === 'sent' || json.status === 'ok')) {
-      statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
+      statusEl.textContent = '✓ Invoice sent to ' + toEmail;
       statusEl.className = 'send-status ok';
     } else if (json && json.message) {
       statusEl.textContent = '⚠ GAS error: ' + json.message;
       statusEl.className = 'send-status err';
     } else {
       // If we got any response at all, assume it worked
-      statusEl.textContent = '✓ Invoice sent to ' + o.email.trim();
+      statusEl.textContent = '✓ Invoice sent to ' + toEmail;
       statusEl.className = 'send-status ok';
     }
   } catch(err) {
@@ -1403,6 +1474,16 @@ document.addEventListener('DOMContentLoaded', function() {
       <button class="modal-close" onclick="closeInvoiceModal()">✕</button>
     </div>
     <div style="padding: 16px 24px 0; color: var(--muted); font-size: 13px;" id="invoice-customer-info"></div>
+    <div class="email-selector" id="invoice-email-selector">
+      <label>Send To</label>
+      <div class="email-selector-row">
+        <select id="invoice-email-select" onchange="handleInvoiceEmailSelect()">
+          <option value="customer" id="invoice-opt-customer">Customer email</option>
+          <option value="test">Test email address</option>
+        </select>
+        <input type="text" id="invoice-email-custom" placeholder="Enter test email address">
+      </div>
+    </div>
     <div class="invoice-options">
       <button class="invoice-opt-btn" onclick="sendInvoice('email')">
         <span class="opt-icon">📧</span>
