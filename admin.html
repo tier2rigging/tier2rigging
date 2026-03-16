@@ -1200,8 +1200,8 @@ async function sendInvoice(method) {
 // ── DROPZONE CONFIGS ──────────────────────────────────────
 const DROPZONES = {
   fun:    { name: '',                   email: '',                                        phone: '',              sheet: 'Work Orders' },
-  gojump: { name: 'Go Jump New York LLC', email: 'steve' + '@' + 'gojump-america.com',  phone: '631-000-0000', sheet: 'Go Jump New York' },
-  sussex: { name: 'Skydive Sussex',       email: 'mackenzie' + '@' + 'skydivesussex.com', phone: '973-000-0000', sheet: 'Skydive Sussex' },
+  gojump: { name: 'Go Jump New York, LLC', email: 'steve' + '@' + 'gojump-america.com', phone: '631-000-0000', address: '133 Dawn Dr, Shirley, NY 11967', sheet: 'Go Jump New York' },
+  sussex: { name: 'Skydive Sussex',        email: 'mackenzie' + '@' + 'skydivesussex.com', phone: '(973) 702-7000', address: '55 County Rd 639, Sussex, NJ 07461', sheet: 'Skydive Sussex' },
 };
 
 let selectedDZ = null;
@@ -1364,6 +1364,7 @@ async function submitNewOrder() {
     name: selectedDZ === 'fun' ? document.getElementById('no-name').value : dz.name,
     phone: selectedDZ === 'fun' ? document.getElementById('no-phone').value : dz.phone,
     email: selectedDZ === 'fun' ? document.getElementById('no-email').value : dz.email,
+    address: selectedDZ === 'fun' ? '' : (dz.address || ''),
     containerManufacturer: document.getElementById('no-container-mfr').value,
     containerModel: document.getElementById('no-container-model').value,
     containerMakeModel: document.getElementById('no-container-mfr').value + ' ' + document.getElementById('no-container-model').value,
