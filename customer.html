@@ -75,6 +75,20 @@
   .gear-edit-field input:focus { outline: none; border-color: var(--tan); }
   .gear-save-btn { margin-top: 8px; padding: 7px 18px; background: var(--tan); color: #1a1a18; border: none; border-radius: 6px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px; cursor: pointer; }
   .gear-save-btn:hover { background: var(--tan-light); }
+
+  .gear-customer-notes { margin-top: 12px; }
+  .gear-customer-notes-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .gear-customer-notes textarea {
+    width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 8px 10px; color: var(--parchment);
+    font-size: 13px; font-family: 'Barlow', sans-serif; resize: vertical;
+    min-height: 60px;
+  }
+  .gear-customer-notes textarea:focus { outline: none; border-color: var(--tan); }
+  .gear-notes-save-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .gear-notes-save-btn { padding: 5px 14px; background: rgba(200,169,110,0.15); border: 1px solid rgba(200,169,110,0.4); color: var(--tan); border-radius: 6px; font-family: 'Bebas Neue', sans-serif; font-size: 13px; letter-spacing: 1px; cursor: pointer; }
+  .gear-notes-save-btn:hover { background: rgba(200,169,110,0.25); }
+  .gear-notes-saved-msg { font-size: 11px; color: var(--success); }
   .gear-save-msg { font-size: 11px; color: var(--success); margin-top: 6px; min-height: 14px; }
 
   /* ── VERIFY GATE ─────────────────────────────────────────── */
@@ -649,7 +663,8 @@
 
     const isEmail = input.indexOf('@') !== -1;
     const email   = isEmail ? input.toLowerCase() : '';
-    const serial  = !isEmail ? input.toUpperCase() : (document.getElementById('inputSerial') ? document.getElementById('inputSerial').value.trim().toUpperCase() : '');
+    // Serial comes only from the main combined input — ignore the legacy inputSerial field
+    const serial  = !isEmail ? input.toUpperCase() : '';
 
     document.getElementById('gateCard').style.display = 'none';
     document.getElementById('loadingBox').classList.add('show');
@@ -832,6 +847,14 @@
                 '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + esc(latest.containerDom||'') + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
+                '<div class="gear-customer-notes">' +
+                '<div class="gear-customer-notes-label">📝 My Notes</div>' +
+                '<textarea id="gnote_container_' + esc(sn) + '" rows="2" placeholder="Private notes about this container...">' + getGearNote(esc(sn), 'container') + '</textarea>' +
+                '<div class="gear-notes-save-row">' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'container\', esc(sn))">Save</button>' +
+                '<span class="gear-notes-saved-msg" id="gnotemsg_container_' + esc(sn) + '"></span>' +
+                '</div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -857,6 +880,14 @@
                 '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + esc(latest.mainDom||'') + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
+                '<div class="gear-customer-notes">' +
+                '<div class="gear-customer-notes-label">📝 My Notes</div>' +
+                '<textarea id="gnote_main_' + esc(sn) + '" rows="2" placeholder="Private notes about this main...">' + getGearNote(esc(sn), 'main') + '</textarea>' +
+                '<div class="gear-notes-save-row">' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'main\', esc(sn))">Save</button>' +
+                '<span class="gear-notes-saved-msg" id="gnotemsg_main_' + esc(sn) + '"></span>' +
+                '</div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -882,6 +913,14 @@
                 '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + esc(latest.reserveDom||'') + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
+                '<div class="gear-customer-notes">' +
+                '<div class="gear-customer-notes-label">📝 My Notes</div>' +
+                '<textarea id="gnote_reserve_' + esc(sn) + '" rows="2" placeholder="Private notes about this reserve...">' + getGearNote(esc(sn), 'reserve') + '</textarea>' +
+                '<div class="gear-notes-save-row">' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'reserve\', esc(sn))">Save</button>' +
+                '<span class="gear-notes-saved-msg" id="gnotemsg_reserve_' + esc(sn) + '"></span>' +
+                '</div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -907,6 +946,14 @@
                 '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + esc(latest.aadServiceDate||'') + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
+                '<div class="gear-customer-notes">' +
+                '<div class="gear-customer-notes-label">📝 My Notes</div>' +
+                '<textarea id="gnote_aad_' + esc(sn) + '" rows="2" placeholder="Private notes about this aad...">' + getGearNote(esc(sn), 'aad') + '</textarea>' +
+                '<div class="gear-notes-save-row">' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'aad\', esc(sn))">Save</button>' +
+                '<span class="gear-notes-saved-msg" id="gnotemsg_aad_' + esc(sn) + '"></span>' +
+                '</div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
           '</div>' +
@@ -1010,6 +1057,20 @@
       }
     }
     return result;
+  }
+
+
+  function getGearNote(serial, category) {
+    try { return localStorage.getItem('t2note_' + serial + '_' + category) || ''; } catch(e) { return ''; }
+  }
+  function saveGearNote(category, serial) {
+    try {
+      var ta = document.getElementById('gnote_' + category + '_' + serial);
+      if (!ta) return;
+      localStorage.setItem('t2note_' + serial + '_' + category, ta.value);
+      var msg = document.getElementById('gnotemsg_' + category + '_' + serial);
+      if (msg) { msg.textContent = '✓ Saved'; setTimeout(function(){ msg.textContent=''; }, 2000); }
+    } catch(e) {}
   }
 
   function esc(s) {
