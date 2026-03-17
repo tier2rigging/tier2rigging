@@ -306,17 +306,7 @@
     /* Service history */
     .rig-history { padding: 12px 14px; }
 
-    /* Nav bar */
-    .site-nav { 
-      padding: 0 16px; 
-      overflow-x: auto; 
-      justify-content: flex-end !important;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      flex-wrap: nowrap;
-    }
-    .site-nav::-webkit-scrollbar { display: none; }
-    .nav-link { padding: 10px 10px; font-size: 11px; letter-spacing: 0.5px; white-space: nowrap; }
+    /* Nav divider */
     .nav-divider { display: none; }
 
     /* Shrink logo on mobile */
@@ -369,6 +359,16 @@
     @media (max-width: 480px) {
       .nav-link { padding: 10px 14px; font-size: 13px; letter-spacing: 1.5px; }
       .nav-divider { display: none; }
+    }
+    @media (max-width: 520px) {
+      .site-nav {
+        justify-content: center;
+        padding: 0 0 0 60px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .site-nav::-webkit-scrollbar { display: none; }
     }
 
   
