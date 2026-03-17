@@ -757,7 +757,8 @@ async function loadOrders() {
   try {
     const res = await fetch(GAS_URL + '?action=getAll&t=' + Date.now(), {
       method: 'GET',
-      redirect: 'follow'
+      redirect: 'follow',
+      credentials: 'omit'
     });
     const data = await res.json();
     if (data.rows || data.orders) {
@@ -776,8 +777,12 @@ async function loadOrders() {
 
       // Override status with any locally saved values
       allOrders.forEach(function(o) {
-        const woNum = o.woNum || o.ticket_number || '';
+        // Key from sheet is 'active_work_order_#' — normalize to woNum
+        const woNum = o.woNum || o.ticket || o['active_work_order_#'] || o['work_order_#'] || o['active work order #'] || o['work order #'] || o.ticket_number || '';
+        if (woNum) o.woNum = woNum;
         if (!woNum) return;
+        // status comes back as 'New' from sheet — normalize it
+        if (!o.status || o.status === 'New' || o.status === 'Received') o.status = 'Intake';
         const saved = localStorage.getItem('t2_status_' + woNum);
         if (saved) {
           console.log('Overriding status for', woNum, 'from', o.status, 'to', saved);
@@ -933,7 +938,7 @@ async function autoSaveStatus() {
   if (!o) return;
   const newStatus = document.getElementById('edit-status').value;
   const msg = document.getElementById('status-autosave-msg');
-  const woNum = o.woNum || o.ticket_number || '';
+  const woNum = o.woNum || o['active_work_order_#'] || o['work_order_#'] || o['active work order #'] || o['work order #'] || o.ticket_number || '';
 
   // Update local state immediately
   allOrders[currentOrderIndex].status = newStatus;
@@ -953,7 +958,7 @@ async function autoSaveStatus() {
       mode: 'no-cors',
       body: JSON.stringify({
         action: 'updateStatus',
-        woNum: o.woNum || o.ticket_number || '',
+        woNum: o.woNum || o['active_work_order_#'] || o['work_order_#'] || o['active work order #'] || o['work order #'] || o.ticket_number || '',
         status: newStatus
       })
     });
