@@ -844,7 +844,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="containerManufacturer" value="' + esc(latest.containerManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="containerModel" value="' + esc(latest.containerModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="containerSerial" value="' + esc(latest.containerSerial||sn) + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + esc(latest.containerDom||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + formatDate(latest.containerDom) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -877,7 +877,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="mainManufacturer" value="' + esc(latest.mainManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="mainModel" value="' + esc(latest.mainModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="mainSerial" value="' + esc(latest.mainSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + esc(latest.mainDom||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + formatDate(latest.mainDom) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -910,7 +910,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="reserveManufacturer" value="' + esc(latest.reserveManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="reserveModel" value="' + esc(latest.reserveModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="reserveSerial" value="' + esc(latest.reserveSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + esc(latest.reserveDom||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + formatDate(latest.reserveDom) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -943,7 +943,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="aadManufacturer" value="' + esc(latest.aadManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="aadModel" value="' + esc(latest.aadModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="aadSerial" value="' + esc(latest.aadSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + esc(latest.aadServiceDate||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + formatDate(latest.aadServiceDate) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
