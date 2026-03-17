@@ -1,6 +1,6 @@
 // Tier2 Rigging Service Worker
 // ── BUMP THIS NUMBER every time you deploy changes ──
-const VERSION    = '4';
+const VERSION    = '5';
 const CACHE_NAME = 'tier2-v' + VERSION;
 
 const OFFLINE_URLS = [
@@ -10,9 +10,9 @@ const OFFLINE_URLS = [
   '/admin.html',
   '/customers.html',
   '/rigger-update.html',
-  '/dashboard.html',
-  '/intake.html',
   '/invoice.html',
+  '/dashboard.html',
+  '/qr-generator.html',
   '/manifest.json',
   '/apple-touch-icon.png',
   '/icon-192x192.png',
