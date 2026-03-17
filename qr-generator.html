@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer QR Generator — Tier2 Rigging</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#1c1c1e; --card:#252527; --tan:#c8a96e; --tan-light:#e0c080;
+    --parchment:#f2ede4; --muted:#9a9890; --border:rgba(200,185,150,0.2); --input-bg:#161618;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--parchment);font-family:'Barlow',sans-serif;min-height:100vh;padding:32px 20px 60px;}
+  .wrap{max-width:500px;margin:0 auto;}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:var(--parchment);}
+  h1 span{color:var(--tan-light);}
+  .sub{font-size:13px;color:var(--muted);margin:6px 0 28px;line-height:1.6;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:20px;}
+  label{display:block;font-family:'Barlow',sans-serif;font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tan);margin-bottom:7px;}
+  input{width:100%;background:var(--input-bg);border:1px solid var(--border);border-radius:7px;color:var(--parchment);font-family:'Barlow',sans-serif;font-size:15px;padding:11px 14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;margin-bottom:14px;-webkit-appearance:none;}
+  input:focus{border-color:var(--tan);box-shadow:0 0 0 3px rgba(200,169,110,0.15);}
+  input::placeholder{color:rgba(154,152,144,0.45);}
+  .btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--tan),var(--tan-light));color:#1c1c1e;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:3px;border:none;border-radius:8px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;box-shadow:0 4px 20px rgba(200,169,110,0.3);}
+  .btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,169,110,0.4);}
+
+  /* RESULT */
+  .result{display:none;text-align:center;}
+  .result.show{display:block;}
+
+  /* PRINTABLE QR CARD */
+  .print-card{background:#f2ede4;border-radius:14px;padding:28px 24px 22px;display:inline-block;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.5);margin-bottom:22px;}
+  .pc-brand{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#1c1c1e;line-height:1;}
+  .pc-brand span{color:#8a6a3e;}
+  .pc-tagline{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a7a60;margin:3px 0 14px;}
+  #qrcode{display:flex;justify-content:center;margin-bottom:12px;}
+  #qrcode canvas,#qrcode img{border-radius:8px;border:3px solid #1c1c1e;}
+  .pc-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#2a1e10;margin-bottom:4px;}
+  .pc-serial{font-family:'DM Mono',monospace;font-size:12px;color:#5a4a30;background:rgba(138,106,62,0.12);border:1px solid rgba(138,106,62,0.2);padding:4px 14px;border-radius:20px;display:inline-block;}
+  .pc-container{font-size:12px;color:#8a7a60;margin-top:5px;}
+  .pc-scan{font-size:10px;color:#a08060;margin-top:12px;letter-spacing:0.5px;border-top:1px solid rgba(138,106,62,0.15);padding-top:10px;}
+  .pc-scan strong{color:#5a4a30;}
+
+  .url-box{background:var(--input-bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--tan);word-break:break-all;margin:0 0 14px;text-align:left;}
+  .url-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;text-align:left;}
+
+  .btn-row{display:flex;gap:10px;margin-bottom:16px;}
+  .btn-sec{flex:1;padding:11px;background:var(--card);border:1px solid var(--border);color:var(--tan);font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;border-radius:8px;cursor:pointer;transition:all 0.15s;}
+  .btn-sec:hover{border-color:var(--tan);background:rgba(200,169,110,0.08);}
+
+  .tip{background:rgba(200,169,110,0.08);border:1px solid rgba(200,169,110,0.2);border-radius:8px;padding:14px 16px;font-size:13px;color:var(--muted);line-height:1.65;text-align:left;}
+  .tip strong{color:var(--tan-light);}
+  .tip ul{margin:8px 0 0 16px;}
+  .tip li{margin-bottom:4px;}
+
+  @media print{
+    body{background:white;padding:0;}
+    .card,.btn-row,.url-lbl,.url-box,.tip,.sub,h1{display:none!important;}
+    .result{display:block!important;}
+    .print-card{box-shadow:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>TIER<span>2</span> RIGGING</h1>
+  <p class="sub">Generate a personal QR code for each customer. They scan it once and get instant access to their full service history AND a pre-filled new work order form.</p>
+
+  <div class="card">
+    <label>Customer Full Name</label>
+    <input type="text" id="inName" placeholder="e.g. Jane Skydiver">
+    <label>Container Serial Number</label>
+    <input type="text" id="inSerial" placeholder="e.g. JO-12345">
+    <label>Container Make / Model <span style="font-weight:400;font-size:11px;letter-spacing:0;text-transform:none;color:var(--muted)">(optional, shows on card)</span></label>
+    <input type="text" id="inContainer" placeholder="e.g. Javelin Odyssey">
+    <button class="btn" onclick="generate()">⚡ GENERATE CUSTOMER QR</button>
+  </div>
+
+  <div class="result" id="result">
+
+    <!-- PRINTABLE CARD -->
+    <div class="print-card">
+      <div class="pc-brand">TIER<span>2</span> RIGGING LLC</div>
+      <div class="pc-tagline">Parachute Rigging Services</div>
+      <div id="qrcode"></div>
+      <div class="pc-name" id="pcName"></div>
+      <div class="pc-serial" id="pcSerial"></div>
+      <div class="pc-container" id="pcContainer"></div>
+      <div class="pc-scan">
+        Scan to view service history &amp; submit work orders<br>
+        <strong>tier2rigging.com</strong>
+      </div>
+    </div>
+
+    <div class="url-lbl">QR code links to:</div>
+    <div class="url-box" id="urlBox"></div>
+
+    <div class="btn-row">
+      <button class="btn-sec" onclick="window.print()">🖨 Print</button>
+      <button class="btn-sec" onclick="reset()">+ New Customer</button>
+    </div>
+
+    <div class="tip">
+      <strong>📌 How to use this QR code:</strong>
+      <ul>
+        <li>Print and laminate it, or put in a small badge holder</li>
+        <li>Attach to the customer's gear bag, handle, or reserve cover</li>
+        <li>When they scan it → they enter their email to verify ownership</li>
+        <li>They see all their service records + a button to submit a new work order</li>
+        <li>Their info auto-fills on the new order form — no re-typing needed</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  let qrInstance = null;
+
+  function generate() {
+    const name      = document.getElementById('inName').value.trim();
+    const serial    = document.getElementById('inSerial').value.trim().toUpperCase();
+    const container = document.getElementById('inContainer').value.trim();
+
+    if (!serial) { alert('Please enter a container serial number.'); return; }
+
+    // Build the customer portal URL with serial pre-filled
+    const url = 'https://tier2rigging.com/customer.html?serial=' + encodeURIComponent(serial);
+
+    // Populate print card
+    document.getElementById('pcName').textContent    = name || '';
+    document.getElementById('pcSerial').textContent  = 'S/N: ' + serial;
+    document.getElementById('pcContainer').textContent = container || '';
+    document.getElementById('urlBox').textContent    = url;
+
+    // Clear old QR
+    document.getElementById('qrcode').innerHTML = '';
+    if (qrInstance) { try { qrInstance.clear(); } catch(e){} }
+
+    qrInstance = new QRCode(document.getElementById('qrcode'), {
+      text: url,
+      width: 200,
+      height: 200,
+      colorDark: '#1c1c1e',
+      colorLight: '#f2ede4',
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function reset() {
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('inName').value = '';
+    document.getElementById('inSerial').value = '';
+    document.getElementById('inContainer').value = '';
+    document.getElementById('inName').focus();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
