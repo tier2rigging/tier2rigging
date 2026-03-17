@@ -576,8 +576,8 @@
         <div class="modal-section-title">Status & Scheduling</div>
         <div class="info-grid">
           <div class="info-field">
-            <label>Status</label>
-            <select class="status-select" id="edit-status" style="width:100%">
+            <label>Status <span id="status-autosave-msg" style="font-size:11px;color:var(--green);margin-left:8px;font-weight:400;letter-spacing:0;text-transform:none;font-family:'Barlow',sans-serif;"></span></label>
+            <select class="status-select" id="edit-status" style="width:100%" onchange="autoSaveStatus()">
               <option value="Intake">📥 Intake</option>
               <option value="Waiting">⏳ Waiting</option>
               <option value="In Progress">🔧 In Progress</option>
@@ -901,6 +901,40 @@ function formatDate(str) {
 }
 
 // MODAL
+// AUTO-SAVE STATUS on dropdown change
+async function autoSaveStatus() {
+  const o = allOrders[currentOrderIndex];
+  if (!o) return;
+  const newStatus = document.getElementById('edit-status').value;
+  const msg = document.getElementById('status-autosave-msg');
+
+  // Update local state immediately
+  allOrders[currentOrderIndex].status = newStatus;
+  updateStats();
+  renderTable();
+
+  msg.textContent = 'Saving…';
+
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      mode: 'no-cors',
+      body: JSON.stringify({
+        action: 'updateStatus',
+        woNum: o.woNum || o.ticket_number || '',
+        status: newStatus
+      })
+    });
+    msg.textContent = '✓ Saved';
+    setTimeout(() => { msg.textContent = ''; }, 2500);
+  } catch(e) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = '⚠ Failed';
+    setTimeout(() => { msg.textContent = ''; msg.style.color = 'var(--green)'; }, 3000);
+  }
+}
+
 function openModal(idx) {
   currentOrderIndex = idx;
   const o = allOrders[idx];
