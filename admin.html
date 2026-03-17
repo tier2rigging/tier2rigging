@@ -755,17 +755,34 @@ async function loadOrders() {
   document.getElementById('empty-state').style.display = 'none';
 
   try {
-    const res = await fetch(GAS_URL + '?action=getAll&t=' + Date.now());
+    const res = await fetch(GAS_URL + '?action=getAll&t=' + Date.now(), {
+      method: 'GET',
+      redirect: 'follow'
+    });
     const data = await res.json();
     if (data.rows || data.orders) {
       allOrders = data.rows || data.orders;
 
-      // Override status with any locally saved values (in case sheet returns wrong status)
+      // DEBUG — log raw status values from sheet
+      console.log('=== RAW STATUS FROM SHEET ===');
+      allOrders.forEach(function(o) {
+        console.log('woNum:', JSON.stringify(o.woNum), 
+          '| ticket:', JSON.stringify(o.ticket),
+          '| Work_Order_#:', JSON.stringify(o['Work_Order_#']),
+          '| status:', JSON.stringify(o.status),
+          '| Status:', JSON.stringify(o.Status));
+        console.log('ALL KEYS:', Object.keys(o).join(', '));
+      });
+
+      // Override status with any locally saved values
       allOrders.forEach(function(o) {
         const woNum = o.woNum || o.ticket_number || '';
         if (!woNum) return;
         const saved = localStorage.getItem('t2_status_' + woNum);
-        if (saved) o.status = saved;
+        if (saved) {
+          console.log('Overriding status for', woNum, 'from', o.status, 'to', saved);
+          o.status = saved;
+        }
       });
 
       updateStats();
