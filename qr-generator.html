@@ -54,12 +54,41 @@
   .tip ul{margin:8px 0 0 16px;}
   .tip li{margin-bottom:4px;}
 
-  @media print{
+
+  /* SIZE TOGGLE */
+  .size-toggle { display: flex; gap: 10px; margin-bottom: 16px; }
+  .size-opt { flex: 1; padding: 10px; background: var(--input-bg); border: 1px solid var(--border); color: var(--muted); font-family: 'Bebas Neue', sans-serif; font-size: 15px; letter-spacing: 1.5px; border-radius: 7px; cursor: pointer; text-align: center; transition: all 0.15s; }
+  .size-opt.active { border-color: var(--tan); color: var(--tan); background: rgba(200,169,110,0.08); }
+  .size-opt small { display: block; font-family: 'Barlow', sans-serif; font-size: 10px; letter-spacing: 0.5px; text-transform: none; margin-top: 2px; color: var(--muted); }
+
+  /* SMALL CARD (1.5" x 2") — for print only */
+  .print-card.small-card {
+    padding: 6px 8px 5px;
+    border-radius: 6px;
+    width: 144px;   /* 1.5" at 96dpi */
+  }
+  .print-card.small-card .pc-brand { font-size: 11px; letter-spacing: 1px; }
+  .print-card.small-card .pc-tagline { font-size: 6px; letter-spacing: 1px; margin: 1px 0 5px; }
+  .print-card.small-card .pc-name { font-size: 9px; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .print-card.small-card .pc-serial { font-size: 7px; padding: 2px 6px; border-radius: 10px; }
+  .print-card.small-card .pc-container { font-size: 7px; margin-top: 2px; }
+  .print-card.small-card .pc-scan { font-size: 6px; margin-top: 5px; padding-top: 5px; }
+  .print-card.small-card #qrcode { margin-bottom: 5px; }
+  .print-card.small-card #qrcode canvas,
+  .print-card.small-card #qrcode img { border-radius: 3px; border: 2px solid #1c1c1e; }
+
+  @media print {
     body{background:white;padding:0;}
-    .card,.btn-row,.url-lbl,.url-box,.tip,.sub,h1{display:none!important;}
+    .card,.btn-row,.url-lbl,.url-box,.tip,.sub,h1,.size-toggle-wrap{display:none!important;}
     .result{display:block!important;}
     .print-card{box-shadow:none;}
+    /* 1.5x2 print size */
+    .print-card.small-card {
+      width: 1.5in;
+      padding: 0.08in 0.1in 0.06in;
+    }
   }
+
 </style>
 </head>
 <body>
@@ -74,6 +103,13 @@
     <input type="text" id="inSerial" placeholder="e.g. JO-12345">
     <label>Container Make / Model <span style="font-weight:400;font-size:11px;letter-spacing:0;text-transform:none;color:var(--muted)">(optional, shows on card)</span></label>
     <input type="text" id="inContainer" placeholder="e.g. Javelin Odyssey">
+    <div class="size-toggle-wrap">
+      <label>Card Size</label>
+      <div class="size-toggle">
+        <div class="size-opt active" id="size-standard" onclick="setSize('standard')">Standard<small>Wallet / Gear Bag</small></div>
+        <div class="size-opt" id="size-small" onclick="setSize('small')">1.5" × 2"<small>Label / Tag</small></div>
+      </div>
+    </div>
     <button class="btn" onclick="generate()">⚡ GENERATE CUSTOMER QR</button>
   </div>
 
@@ -117,6 +153,14 @@
 <script>
   let qrInstance = null;
 
+  let currentSize = 'standard';
+
+  function setSize(size) {
+    currentSize = size;
+    document.getElementById('size-standard').classList.toggle('active', size === 'standard');
+    document.getElementById('size-small').classList.toggle('active', size === 'small');
+  }
+
   function generate() {
     const name      = document.getElementById('inName').value.trim();
     const serial    = document.getElementById('inSerial').value.trim().toUpperCase();
@@ -124,14 +168,24 @@
 
     if (!serial) { alert('Please enter a container serial number.'); return; }
 
-    // Build the customer portal URL with serial pre-filled
     const url = 'https://tier2rigging.com/customer.html?serial=' + encodeURIComponent(serial);
 
     // Populate print card
-    document.getElementById('pcName').textContent    = name || '';
-    document.getElementById('pcSerial').textContent  = 'S/N: ' + serial;
+    document.getElementById('pcName').textContent      = name || '';
+    document.getElementById('pcSerial').textContent    = 'S/N: ' + serial;
     document.getElementById('pcContainer').textContent = container || '';
-    document.getElementById('urlBox').textContent    = url;
+    document.getElementById('urlBox').textContent      = url;
+
+    // Apply size class
+    const card = document.querySelector('.print-card');
+    if (currentSize === 'small') {
+      card.classList.add('small-card');
+    } else {
+      card.classList.remove('small-card');
+    }
+
+    // QR size based on selection
+    const qrSize = currentSize === 'small' ? 110 : 200;
 
     // Clear old QR
     document.getElementById('qrcode').innerHTML = '';
@@ -139,8 +193,8 @@
 
     qrInstance = new QRCode(document.getElementById('qrcode'), {
       text: url,
-      width: 200,
-      height: 200,
+      width: qrSize,
+      height: qrSize,
       colorDark: '#1c1c1e',
       colorLight: '#f2ede4',
       correctLevel: QRCode.CorrectLevel.H
