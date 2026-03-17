@@ -676,7 +676,7 @@
       }
 
       if (records && records.length > 0) {
-        const resolvedEmail = email || (records[0].email || '');
+        const resolvedEmail = email || (records[0].email || records[0]['email'] || '');
         sessionStorage.setItem('t2_session', JSON.stringify({ records, serial, email: resolvedEmail }));
         renderDashboard(records, serial, resolvedEmail);
       } else {
@@ -818,9 +818,11 @@
             '</div>' +
             '<div class="gear-section-body collapsed">' +
               '<div class="rig-block-gear" style="margin-top:10px;">' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc([latest.containerManufacturer, latest.containerModel].filter(Boolean).join(' ') || latest.containerMakeModel || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Manufacturer</div><div class="rig-gear-val">' + esc(latest.containerManufacturer || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Model</div><div class="rig-gear-val">' + esc(latest.containerModel || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + formatDate(latest.containerDom) + '</div></div>' +
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.containerSerial || sn) + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + esc(latest.containerDom || '—') + '</div></div>' +
+                '<div class="rig-gear-cell" style="grid-column:1/-1"><div class="rig-gear-label">Notes</div><div class="rig-gear-val">' + esc(latest.notes || '—') + '</div></div>' +
               '</div>' +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
               '<div class="gear-edit-fields">' +
@@ -842,9 +844,10 @@
             '</div>' +
             '<div class="gear-section-body collapsed">' +
               '<div class="rig-block-gear" style="margin-top:10px;">' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc(mainName) + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.mainSerial||'—') + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + esc(latest.mainDom||'—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Manufacturer</div><div class="rig-gear-val">' + esc(latest.mainManufacturer || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Model</div><div class="rig-gear-val">' + esc(latest.mainModel || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + formatDate(latest.mainDom) + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.mainSerial || '—') + '</div></div>' +
               '</div>' +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
               '<div class="gear-edit-fields">' +
@@ -866,9 +869,10 @@
             '</div>' +
             '<div class="gear-section-body collapsed">' +
               '<div class="rig-block-gear" style="margin-top:10px;">' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc(reserveName) + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.reserveSerial||'—') + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + esc(latest.reserveDom||'—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Manufacturer</div><div class="rig-gear-val">' + esc(latest.reserveManufacturer || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Model</div><div class="rig-gear-val">' + esc(latest.reserveModel || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + formatDate(latest.reserveDom) + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.reserveSerial || '—') + '</div></div>' +
               '</div>' +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
               '<div class="gear-edit-fields">' +
@@ -890,9 +894,10 @@
             '</div>' +
             '<div class="gear-section-body collapsed">' +
               '<div class="rig-block-gear" style="margin-top:10px;">' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc(aadName) + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.aadSerial||'—') + '</div></div>' +
-                '<div class="rig-gear-cell"><div class="rig-gear-label">Last Service</div><div class="rig-gear-val">' + esc(latest.aadServiceDate||'—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Manufacturer</div><div class="rig-gear-val">' + esc(latest.aadManufacturer || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Model</div><div class="rig-gear-val">' + esc(latest.aadModel || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.aadSerial || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Last Service</div><div class="rig-gear-val">' + formatDate(latest.aadServiceDate) + '</div></div>' +
               '</div>' +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
               '<div class="gear-edit-fields">' +
@@ -1012,7 +1017,14 @@
   }
   function formatDate(d) {
     if (!d) return '—';
+    // Strip time portion from ISO strings like 2026-03-01T05:00:00.000Z
+    const s = String(d);
+    if (s.includes('T')) {
+      const parts = s.split('T')[0].split('-');
+      if (parts.length === 3) return (parseInt(parts[1]))+'/'+parseInt(parts[2])+'/'+parts[0];
+    }
     const dt = new Date(d);
+    if (isNaN(dt.getTime())) return s;
     return (dt.getMonth()+1)+'/'+dt.getDate()+'/'+dt.getFullYear();
   }
 </script>
