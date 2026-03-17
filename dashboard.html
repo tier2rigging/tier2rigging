@@ -433,9 +433,19 @@ async function loadOrders() {
   document.getElementById('kanban-board').style.display = 'none';
 
   try {
-    var res  = await fetch(GAS_URL + '?action=getAll&t=' + Date.now());
+    var res  = await fetch(GAS_URL + '?action=getAll&t=' + Date.now(), { method: 'GET', redirect: 'follow', credentials: 'omit' });
     var data = await res.json();
     allOrders = data.rows || data.orders || [];
+
+    // Normalize woNum and status, apply localStorage overrides
+    allOrders.forEach(function(o) {
+      var woNum = o.woNum || o.ticket || o['active_work_order_#'] || o['work_order_#'] || o.ticket_number || '';
+      if (woNum) o.woNum = woNum;
+      if (!o.status || o.status === 'New' || o.status === 'Received') o.status = 'Intake';
+      var saved = woNum ? localStorage.getItem('t2_status_' + woNum) : null;
+      if (saved) o.status = saved;
+    });
+
     updateStats();
     render();
     var now = new Date();
@@ -640,11 +650,12 @@ function renderList() {
 function quickStatusChange(idx, newStatus, sel) {
   var o = allOrders[idx];
   if (!o) return;
-  var mappedStatus = newStatus;
-  allOrders[idx] = Object.assign({}, o, { status: mappedStatus });
+  allOrders[idx] = Object.assign({}, o, { status: newStatus });
+  var woNum = o.woNum || o['active_work_order_#'] || o.ticket_number || '';
+  if (woNum) localStorage.setItem('t2_status_' + woNum, newStatus);
   updateStats();
   render();
-  pushStatusUpdate(allOrders[idx], mappedStatus);
+  pushStatusUpdate(allOrders[idx], newStatus);
   showToast('Status → ' + newStatus, 'ok');
 }
 
@@ -703,10 +714,12 @@ async function saveModal() {
   if (!editingOrder) return;
   var newStatus = document.getElementById('modal-status').value;
   var newNotes  = document.getElementById('modal-notes').value.trim();
+  var woNum = editingOrder.woNum || editingOrder['active_work_order_#'] || editingOrder.ticket_number || '';
 
   var mapped = newStatus;
   allOrders[editingIdx] = Object.assign({}, editingOrder, { status: mapped, notes: newNotes });
   editingOrder = allOrders[editingIdx];
+  if (woNum) localStorage.setItem('t2_status_' + woNum, mapped);
 
   updateStats();
   render();
@@ -717,11 +730,12 @@ async function saveModal() {
 }
 
 function pushStatusUpdate(o, status) {
-  var payload = Object.assign({}, o, { action: 'updateOrder', status: status });
+  var woNum = o.woNum || o['active_work_order_#'] || o.ticket_number || '';
+  if (woNum) localStorage.setItem('t2_status_' + woNum, status);
   fetch(GAS_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
-    body: 'action=updateOrder&data=' + encodeURIComponent(JSON.stringify(payload)),
+    body: JSON.stringify({ action: 'updateStatus', woNum: woNum, status: status }),
     mode: 'no-cors'
   }).catch(function(e) { console.warn('Status push failed', e); });
 }
