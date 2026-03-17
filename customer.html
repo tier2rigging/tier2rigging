@@ -44,6 +44,39 @@
 
   @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
 
+
+  /* ── COLLAPSIBLE GEAR SECTIONS ───────────────────────────── */
+  .gear-section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; padding: 10px 0; border-bottom: 1px solid var(--border);
+    user-select: none;
+  }
+  .gear-section-head:hover { color: var(--tan); }
+  .gear-section-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--tan); }
+  .gear-section-chevron { font-size: 13px; color: var(--muted); transition: transform 0.2s; }
+  .gear-section-chevron.open { transform: rotate(180deg); }
+  .gear-section-body { overflow: hidden; transition: max-height 0.3s ease; }
+  .gear-section-body.collapsed { max-height: 0; }
+  .gear-section-body.expanded { max-height: 800px; }
+  .gear-section-edit-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 10px; padding: 7px 16px;
+    background: rgba(200,169,110,0.1); border: 1px solid rgba(200,169,110,0.3);
+    color: var(--tan); border-radius: 6px; font-size: 12px; letter-spacing: 1px;
+    cursor: pointer; font-family: 'Bebas Neue', sans-serif;
+    transition: background 0.15s;
+  }
+  .gear-section-edit-btn:hover { background: rgba(200,169,110,0.2); }
+  .gear-edit-fields { margin-top: 12px; display: none; }
+  .gear-edit-fields.open { display: block; }
+  .gear-edit-field { margin-bottom: 10px; }
+  .gear-edit-field label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px; }
+  .gear-edit-field input { width: 100%; background: var(--input-bg); border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; color: var(--parchment); font-size: 13px; font-family: 'Barlow', sans-serif; }
+  .gear-edit-field input:focus { outline: none; border-color: var(--tan); }
+  .gear-save-btn { margin-top: 8px; padding: 7px 18px; background: var(--tan); color: #1a1a18; border: none; border-radius: 6px; font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 1px; cursor: pointer; }
+  .gear-save-btn:hover { background: var(--tan-light); }
+  .gear-save-msg { font-size: 11px; color: var(--success); margin-top: 6px; min-height: 14px; }
+
   /* ── VERIFY GATE ─────────────────────────────────────────── */
   .gate-card {
     background: var(--card);
@@ -481,11 +514,11 @@
     <div class="gate-body">
       <div class="qr-greeting" id="qrGreeting">
         👋 Welcome! Your rig's QR code brought you here.<br>
-        <strong>Enter your email to access your records.</strong>
+        <strong>Enter your email address or container serial # to access your records.</strong>
       </div>
       <div class="field">
         <label>Email Address</label>
-        <input type="email" id="inputEmail" placeholder="Email used on your work order" autocomplete="email">
+        <input type="text" id="inputEmail" placeholder="Email address or container serial #" autocomplete="off">
       </div>
       <div class="field" id="serialField">
         <label>Container Serial Number <span style="color:var(--muted);font-weight:400;font-size:10px;letter-spacing:0;text-transform:none;">(optional — leave blank to see all your rigs)</span></label>
@@ -608,34 +641,49 @@
   document.addEventListener('keydown', e => { if (e.key === 'Enter') doVerify(); });
 
   async function doVerify() {
-    const email  = document.getElementById('inputEmail').value.trim().toLowerCase();
-    const serial = document.getElementById('inputSerial').value.trim().toUpperCase();
+    const input  = document.getElementById('inputEmail').value.trim();
     const errBox = document.getElementById('errorBox');
     errBox.classList.remove('show');
 
-    if (!email) { errBox.textContent = 'Please enter your email address.'; errBox.classList.add('show'); return; }
+    if (!input) { errBox.textContent = 'Please enter your email or container serial number.'; errBox.classList.add('show'); return; }
+
+    const isEmail = input.indexOf('@') !== -1;
+    const email   = isEmail ? input.toLowerCase() : '';
+    const serial  = !isEmail ? input.toUpperCase() : (document.getElementById('inputSerial') ? document.getElementById('inputSerial').value.trim().toUpperCase() : '');
 
     document.getElementById('gateCard').style.display = 'none';
     document.getElementById('loadingBox').classList.add('show');
 
     try {
-      // If serial provided, filter by both; otherwise return all rigs for this email
-      const url = serial
-        ? GAS_URL + '?action=lookup&email=' + encodeURIComponent(email) + '&serial=' + encodeURIComponent(serial)
-        : GAS_URL + '?action=lookupByEmail&email=' + encodeURIComponent(email);
+      let url;
+      if (isEmail) {
+        url = GAS_URL + '?action=lookupByEmail&email=' + encodeURIComponent(email);
+      } else {
+        // Serial-only lookup
+        url = GAS_URL + '?action=lookupSerial&serial=' + encodeURIComponent(serial);
+      }
 
       const resp = await fetch(url, { method: 'GET', mode: 'cors' });
       const data = await resp.json();
       document.getElementById('loadingBox').classList.remove('show');
 
+      // Normalize response — support both {records:[]} and {order:{}} formats
+      let records = null;
       if (data.status === 'ok' && data.records && data.records.length > 0) {
-        sessionStorage.setItem('t2_session', JSON.stringify({ records: data.records, serial, email }));
-        renderDashboard(data.records, serial, email);
-      } else if (data.status === 'not_found') {
+        records = data.records;
+      } else if (data.order) {
+        records = [data.order];
+      }
+
+      if (records && records.length > 0) {
+        const resolvedEmail = email || (records[0].email || '');
+        sessionStorage.setItem('t2_session', JSON.stringify({ records, serial, email: resolvedEmail }));
+        renderDashboard(records, serial, resolvedEmail);
+      } else {
         document.getElementById('gateCard').style.display = 'block';
-        errBox.innerHTML = '❌ No records found for that email' + (serial ? ' and serial number' : '') + '. Make sure it matches your work order.';
+        errBox.innerHTML = '❌ No records found. Make sure it matches your work order email or serial number.';
         errBox.classList.add('show');
-      } else { throw new Error('Unknown error'); }
+      }
     } catch(err) {
       document.getElementById('loadingBox').classList.remove('show');
       document.getElementById('gateCard').style.display = 'block';
@@ -761,20 +809,119 @@
           '</div>' +
         '</div>' +
         '<div class="rig-block-body">' +
-          '<div class="rig-block-gear">' +
-            '<div class="rig-gear-cell"><div class="rig-gear-label">Main Canopy</div><div class="rig-gear-val">' + esc(mainName) + '</div></div>' +
-            '<div class="rig-gear-cell"><div class="rig-gear-label">Reserve Canopy</div><div class="rig-gear-val">' + esc(reserveName) + '</div></div>' +
-            '<div class="rig-gear-cell"><div class="rig-gear-label">AAD</div><div class="rig-gear-val">' + esc(aadName) + '</div></div>' +
-            '<div class="rig-gear-cell"><div class="rig-gear-label">AAD Serial</div><div class="rig-gear-val">' + esc(latest.aadSerial || '—') + '</div></div>' +
+
+          // ── Container ──
+          '<div class="gear-section">' +
+            '<div class="gear-section-head" onclick="toggleGearSection(this)">' +
+              '<span class="gear-section-title">🎒 Container</span>' +
+              '<span class="gear-section-chevron">⌄</span>' +
+            '</div>' +
+            '<div class="gear-section-body collapsed">' +
+              '<div class="rig-block-gear" style="margin-top:10px;">' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc([latest.containerManufacturer, latest.containerModel].filter(Boolean).join(' ') || latest.containerMakeModel || '—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.containerSerial || sn) + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + esc(latest.containerDom || '—') + '</div></div>' +
+              '</div>' +
+              '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
+              '<div class="gear-edit-fields">' +
+                '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="containerManufacturer" value="' + esc(latest.containerManufacturer||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="containerModel" value="' + esc(latest.containerModel||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="containerSerial" value="' + esc(latest.containerSerial||sn) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + esc(latest.containerDom||'') + '"></div>' +
+                '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
+                '<div class="gear-save-msg"></div>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
+
+          // ── Main Canopy ──
+          '<div class="gear-section">' +
+            '<div class="gear-section-head" onclick="toggleGearSection(this)">' +
+              '<span class="gear-section-title">🪂 Main Canopy</span>' +
+              '<span class="gear-section-chevron">⌄</span>' +
+            '</div>' +
+            '<div class="gear-section-body collapsed">' +
+              '<div class="rig-block-gear" style="margin-top:10px;">' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc(mainName) + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.mainSerial||'—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + esc(latest.mainDom||'—') + '</div></div>' +
+              '</div>' +
+              '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
+              '<div class="gear-edit-fields">' +
+                '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="mainManufacturer" value="' + esc(latest.mainManufacturer||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="mainModel" value="' + esc(latest.mainModel||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="mainSerial" value="' + esc(latest.mainSerial||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + esc(latest.mainDom||'') + '"></div>' +
+                '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
+                '<div class="gear-save-msg"></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          // ── Reserve ──
+          '<div class="gear-section">' +
+            '<div class="gear-section-head" onclick="toggleGearSection(this)">' +
+              '<span class="gear-section-title">🎯 Reserve Canopy</span>' +
+              '<span class="gear-section-chevron">⌄</span>' +
+            '</div>' +
+            '<div class="gear-section-body collapsed">' +
+              '<div class="rig-block-gear" style="margin-top:10px;">' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc(reserveName) + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.reserveSerial||'—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + esc(latest.reserveDom||'—') + '</div></div>' +
+              '</div>' +
+              '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
+              '<div class="gear-edit-fields">' +
+                '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="reserveManufacturer" value="' + esc(latest.reserveManufacturer||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="reserveModel" value="' + esc(latest.reserveModel||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="reserveSerial" value="' + esc(latest.reserveSerial||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + esc(latest.reserveDom||'') + '"></div>' +
+                '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
+                '<div class="gear-save-msg"></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
+          // ── AAD ──
+          '<div class="gear-section">' +
+            '<div class="gear-section-head" onclick="toggleGearSection(this)">' +
+              '<span class="gear-section-title">⚡ AAD</span>' +
+              '<span class="gear-section-chevron">⌄</span>' +
+            '</div>' +
+            '<div class="gear-section-body collapsed">' +
+              '<div class="rig-block-gear" style="margin-top:10px;">' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Make / Model</div><div class="rig-gear-val">' + esc(aadName) + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.aadSerial||'—') + '</div></div>' +
+                '<div class="rig-gear-cell"><div class="rig-gear-label">Last Service</div><div class="rig-gear-val">' + esc(latest.aadServiceDate||'—') + '</div></div>' +
+              '</div>' +
+              '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
+              '<div class="gear-edit-fields">' +
+                '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="aadManufacturer" value="' + esc(latest.aadManufacturer||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="aadModel" value="' + esc(latest.aadModel||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="aadSerial" value="' + esc(latest.aadSerial||'') + '"></div>' +
+                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + esc(latest.aadServiceDate||'') + '"></div>' +
+                '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
+                '<div class="gear-save-msg"></div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+
           '<div class="rig-block-actions">' +
             '<a class="rig-action-btn rig-action-primary" href="index.html?' + rigParams.toString() + '">📋 Request Service</a>' +
-            '<a class="rig-action-btn rig-action-ghost" href="rigger-update.html?serial=' + encodeURIComponent(sn) + '">🔧 Log Service Entry</a>' +
+            '<a class="rig-action-btn rig-action-ghost" href="rigger-update.html?serial=' + encodeURIComponent(sn) + '">🔧 Rigger Service Entry</a>' +
           '</div>' +
-          '<div class="rig-history">' +
-            '<div class="rig-history-label">Service History — ' + history.length + ' record' + (history.length !== 1 ? 's' : '') + '</div>' +
-            timelineHtml +
+
+          // ── Service History (collapsed) ──
+          '<div class="gear-section">' +
+            '<div class="gear-section-head" onclick="toggleGearSection(this)">' +
+              '<span class="gear-section-title">📋 Service History — ' + history.length + ' record' + (history.length !== 1 ? 's' : '') + '</span>' +
+              '<span class="gear-section-chevron">⌄</span>' +
+            '</div>' +
+            '<div class="gear-section-body collapsed">' +
+              '<div class="rig-history">' + timelineHtml + '</div>' +
+            '</div>' +
           '</div>' +
+
         '</div>';
 
       grid.appendChild(block);
@@ -785,6 +932,51 @@
     if (bottomCta) bottomCta.style.display = 'block';
 
     document.getElementById('dashboard').classList.add('show');
+  }
+
+  function toggleGearSection(head) {
+    var chevron = head.querySelector('.gear-section-chevron');
+    var body = head.nextElementSibling;
+    var isOpen = body.classList.contains('expanded');
+    if (isOpen) {
+      body.classList.remove('expanded');
+      body.classList.add('collapsed');
+      chevron.classList.remove('open');
+    } else {
+      body.classList.remove('collapsed');
+      body.classList.add('expanded');
+      chevron.classList.add('open');
+    }
+  }
+
+  function toggleGearEdit(btn) {
+    var fields = btn.nextElementSibling;
+    fields.classList.toggle('open');
+    btn.textContent = fields.classList.contains('open') ? '✕ Cancel' : '✏ Edit';
+  }
+
+  async function saveGearEdit(saveBtn, serial, email) {
+    var section = saveBtn.closest('.gear-section-body');
+    var inputs = section.querySelectorAll('input[data-field]');
+    var msgEl = section.querySelector('.gear-save-msg');
+    var payload = { action: 'updateGear', serial: serial, email: email };
+    inputs.forEach(function(inp) { payload[inp.dataset.field] = inp.value.trim(); });
+    saveBtn.textContent = 'Saving…';
+    saveBtn.disabled = true;
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+      msgEl.textContent = '✓ Saved!';
+      setTimeout(function() { msgEl.textContent = ''; }, 3000);
+    } catch(e) {
+      msgEl.textContent = '⚠ Save failed.';
+      msgEl.style.color = 'var(--danger)';
+    }
+    saveBtn.textContent = 'Save';
+    saveBtn.disabled = false;
   }
 
   function toggleRig(block) {
