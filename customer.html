@@ -22,6 +22,8 @@
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  html, body { overflow-x: hidden; }
+
   body {
     background: var(--bg);
     color: var(--parchment);
@@ -255,6 +257,82 @@
   @media (max-width: 600px) {
     .site-header-img { height:90px!important; width:auto!important; display:block; padding:6px 14px; }
   }
+
+  /* ── MOBILE OPTIMIZATIONS ── */
+  @media (max-width: 520px) {
+    /* Wrap & spacing */
+    .wrap { padding: 16px 12px 60px; }
+
+    /* Gate card */
+    .gate-card { padding: 22px 16px; border-radius: 12px; }
+
+    /* Portal header */
+    .portal-header { padding: 20px 12px 16px; }
+    .portal-header .ph-title { font-size: 24px; }
+    .portal-header .ph-icon { font-size: 38px; margin-bottom: 8px; }
+
+    /* Portal buttons */
+    .portal-btn { padding: 16px; gap: 14px; }
+    .portal-btn .pb-icon { width: 46px; height: 46px; font-size: 24px; border-radius: 10px; }
+    .portal-btn .pb-title { font-size: 19px; }
+
+    /* Welcome header */
+    .portal-welcome { padding: 20px 12px 8px; }
+
+    /* Rig block head */
+    .rig-block-head { padding: 12px 14px; gap: 8px; }
+    .rig-block-name { font-size: 17px; }
+    .rig-block-icon { font-size: 18px; }
+
+    /* Gear cells — single column on mobile */
+    .rig-block-gear { grid-template-columns: 1fr; }
+    .rig-gear-cell { border-right: none; padding: 9px 14px; }
+    .rig-gear-cell:nth-last-child(-n+2) { border-bottom: 1px solid var(--border); }
+    .rig-gear-cell:last-child { border-bottom: none; }
+
+    /* Action buttons — stack on mobile */
+    .rig-block-actions { flex-direction: column; gap: 8px; padding: 12px 14px; }
+    .rig-action-btn { width: 100%; justify-content: center; padding: 11px 16px; font-size: 14px; }
+
+    /* Gear section */
+    .gear-section-head { padding: 12px 14px; }
+    .gear-section-body.expanded { max-height: 1200px; }
+    .gear-edit-fields { padding: 0 2px; }
+    .gear-edit-field input { font-size: 16px; } /* Prevents iOS zoom on focus */
+
+    /* Notes textarea */
+    .gear-customer-notes textarea { font-size: 16px; } /* Prevents iOS zoom */
+
+    /* Service history */
+    .rig-history { padding: 12px 14px; }
+
+    /* Nav bar */
+    .site-nav { 
+      padding: 0 6px; 
+      overflow-x: auto; 
+      justify-content: center;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      flex-wrap: nowrap;
+    }
+    .site-nav::-webkit-scrollbar { display: none; }
+    .nav-link { padding: 10px 10px; font-size: 11px; letter-spacing: 0.5px; white-space: nowrap; }
+    .nav-divider { display: none; }
+
+    /* Shrink logo on mobile */
+    .site-header-img { height: 64px !important; max-height: 64px !important; padding: 4px 10px !important; }
+
+    /* Bottom CTA */
+    .bottom-cta { padding: 18px 14px; margin-top: 20px; }
+    .bottom-cta-btn { font-size: 16px; padding: 12px 22px; width: 100%; justify-content: center; }
+
+    /* Loading box */
+    .loading-box { padding: 28px 16px; }
+
+    /* Dashboard header */
+    .portal-header .ph-sub { font-size: 12px; }
+  }
+
 
   /* ── NAV BAR ── */
     .site-nav {
