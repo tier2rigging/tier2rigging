@@ -934,12 +934,27 @@ function openModal(idx) {
   document.getElementById('edit-bands').value = o.rubberBands || '';
   document.getElementById('edit-keepers').value = o.elasticKeepers || '';
 
-  // Build services checkboxes
-  const checkedServices = (o.servicesSelected || '').split(',').map(s => s.trim());
+  // Build services checkboxes — handle both \n and , as separators
+  const rawServices = o.servicesSelected || '';
+  const checkedServices = rawServices
+    .split(/[\n,]+/)
+    .map(s => s.trim())
+    .filter(Boolean)
+    .map(s => s.replace(/\s*-\s*\$[\d.]+$/, '').replace(/\s*-\s*Varies$/, '').trim().toLowerCase());
+
   const editor = document.getElementById('services-editor');
   editor.innerHTML = '';
   ALL_SERVICES.forEach((svc, i) => {
-    const isChecked = checkedServices.some(cs => cs.toLowerCase().includes(svc.name.toLowerCase().substring(0, 15)));
+    const svcLower = svc.name.toLowerCase().trim();
+    const isChecked = checkedServices.some(cs => cs === svcLower || cs.includes(svcLower) || svcLower.includes(cs));
+
+    // Extract saved price if present
+    const savedEntry = rawServices.split(/[\n,]+/).map(s => s.trim()).find(s => s.toLowerCase().includes(svc.name.toLowerCase().substring(0, 20)));
+    let savedPrice = svc.price;
+    if (savedEntry) {
+      const priceMatch = savedEntry.match(/\$\s*([\d.]+)/);
+      if (priceMatch) savedPrice = parseFloat(priceMatch[1]) || svc.price;
+    }
     const row = document.createElement('div');
     row.className = 'svc-row' + (isChecked ? ' checked-row' : '');
     row.innerHTML = `
@@ -947,7 +962,7 @@ function openModal(idx) {
       <label for="svc-${i}">${svc.name}</label>
       <span style="display:flex;align-items:center;gap:3px;">
         <span style="color:var(--muted);font-size:12px;">$</span>
-        <input type="number" class="svc-price-input" value="${svc.price}" min="0" step="1"
+        <input type="number" class="svc-price-input" value="${savedPrice}" min="0" step="1"
           style="width:60px;background:var(--input-bg);border:1px solid var(--border);border-radius:4px;color:var(--tan);font-family:'DM Mono',monospace;font-size:12px;padding:2px 5px;text-align:right;"
           oninput="recalcTotal()">
       </span>
