@@ -759,6 +759,15 @@ async function loadOrders() {
     const data = await res.json();
     if (data.rows || data.orders) {
       allOrders = data.rows || data.orders;
+
+      // Override status with any locally saved values (in case sheet returns wrong status)
+      allOrders.forEach(function(o) {
+        const woNum = o.woNum || o.ticket_number || '';
+        if (!woNum) return;
+        const saved = localStorage.getItem('t2_status_' + woNum);
+        if (saved) o.status = saved;
+      });
+
       updateStats();
       renderTable();
     }
@@ -907,9 +916,14 @@ async function autoSaveStatus() {
   if (!o) return;
   const newStatus = document.getElementById('edit-status').value;
   const msg = document.getElementById('status-autosave-msg');
+  const woNum = o.woNum || o.ticket_number || '';
 
   // Update local state immediately
   allOrders[currentOrderIndex].status = newStatus;
+
+  // Persist to localStorage so refresh doesn't revert it
+  if (woNum) localStorage.setItem('t2_status_' + woNum, newStatus);
+
   updateStats();
   renderTable();
 
