@@ -951,6 +951,26 @@
               <textarea name="damage_description" placeholder="Describe location, size, and nature of damage..."></textarea>
             </div>
           </div>
+
+          <!-- PHOTO UPLOAD -->
+          <div class="field" style="margin-top:20px">
+            <label>Upload Photos <span class="opt">(optional — attach photos of damage or gear)</span></label>
+            <div id="photo-upload-area" style="
+              border: 2px dashed rgba(200,185,150,0.3);
+              border-radius: 10px;
+              padding: 20px;
+              text-align: center;
+              cursor: pointer;
+              transition: border-color 0.2s;
+              margin-top: 8px;
+            " onclick="document.getElementById('photo-input').click()">
+              <div style="font-size:28px;margin-bottom:6px;">📷</div>
+              <div style="font-size:13px;color:var(--muted);">Tap to add photos</div>
+              <div style="font-size:11px;color:rgba(154,152,144,0.5);margin-top:4px;">JPG, PNG — up to 3 photos</div>
+              <input type="file" id="photo-input" accept="image/*" multiple style="display:none" onchange="handlePhotoUpload(this)">
+            </div>
+            <div id="photo-previews" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;"></div>
+          </div>
         </div>
       </div>
 
@@ -1042,6 +1062,43 @@
 
   // ── HELPERS ───────────────────────────────────────────────
   var total = 0;
+  var uploadedPhotos = []; // stores base64 strings
+
+  function handlePhotoUpload(input) {
+    var files = Array.from(input.files).slice(0, 3); // max 3 photos
+    var area = document.getElementById('photo-upload-area');
+    var previews = document.getElementById('photo-previews');
+    uploadedPhotos = [];
+    previews.innerHTML = '';
+
+    files.forEach(function(file, i) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        uploadedPhotos[i] = e.target.result;
+
+        // Preview thumbnail
+        var wrap = document.createElement('div');
+        wrap.style.cssText = 'position:relative;display:inline-block;';
+        var img = document.createElement('img');
+        img.src = e.target.result;
+        img.style.cssText = 'width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid rgba(200,185,150,0.3);';
+        var rem = document.createElement('button');
+        rem.textContent = '✕';
+        rem.style.cssText = 'position:absolute;top:-6px;right:-6px;background:#c0522a;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;line-height:18px;padding:0;';
+        rem.onclick = function() {
+          uploadedPhotos.splice(i, 1);
+          wrap.remove();
+          if (uploadedPhotos.length === 0) area.querySelector('div:first-child') && (area.style.borderColor = 'rgba(200,185,150,0.3)');
+        };
+        wrap.appendChild(img);
+        wrap.appendChild(rem);
+        previews.appendChild(wrap);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    area.style.borderColor = uploadedPhotos.length ? 'rgba(200,169,110,0.5)' : 'rgba(200,185,150,0.3)';
+  }
 
   function genTicket() {
     var d = new Date();
@@ -1059,9 +1116,6 @@
       var inp = document.getElementById(id);
       if (inp) t += (parseInt(inp.value) || 0) * SUPPLY_PRICES[id];
     });
-    // Add rush fee
-    var rushFee = parseFloat(document.getElementById('rush-fee-field').value) || 0;
-    t += rushFee;
     total = t;
     document.getElementById('total-display').textContent = '$' + t;
     document.getElementById('total_field').value = '$' + t;
@@ -1209,7 +1263,6 @@
     document.getElementById('rush-service-field').value = selectedRushLabel;
     document.getElementById('rush-fee-field').value = selectedRushFee;
     closeRushModal();
-    recalcTotal();
     doSubmit();
   }
 
@@ -1230,6 +1283,11 @@
       if (cb.value) checkedServices.push(cb.value);
     });
     payload['services_selected'] = checkedServices.join('\n');
+
+    // Add photos if any were uploaded
+    if (uploadedPhotos && uploadedPhotos.length > 0) {
+      payload['photos'] = JSON.stringify(uploadedPhotos.filter(Boolean));
+    }
 
     var encoded = Object.keys(payload).map(function(k) {
       return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k] || '');
