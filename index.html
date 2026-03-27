@@ -25,9 +25,7 @@
         repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(200,185,150,0.03) 39px, rgba(200,185,150,0.03) 40px);
     }
 
-    
-
-                    /* ── HEADER ── */
+    /* ── HEADER ── */
     .site-header {
       padding: 0;
       background: linear-gradient(180deg, #111111 0%, #181818 60%, #202020 100%);
@@ -68,7 +66,7 @@
       opacity: 0.7;
     }
 
-  /* ── NAV BAR ── */
+    /* ── NAV BAR ── */
     .site-nav {
       background: #111;
       border-bottom: 1px solid rgba(200,169,110,0.2);
@@ -560,12 +558,12 @@
       <div class="prefill-text"><strong>Rig info loaded from your service record.</strong> Just select the services you need and submit.</div>
     </div>
 
-    <!-- RETURNING CUSTOMER LOOKUP -->
+    <!-- RETURNING CUSTOMER SERIAL LOOKUP -->
     <div class="returning-card" id="returning-card">
       <div class="returning-card-title">&#x21BA; Returning Customer?</div>
-      <p class="returning-card-sub">Enter your email address <em>or</em> container serial number and we'll pull up your rig info automatically.</p>
+      <p class="returning-card-sub">Enter your container serial number and we'll pull up your rig info automatically.</p>
       <div class="returning-card-row">
-        <input type="text" id="serial-lookup-input" placeholder="Email address or container serial #" autocomplete="off">
+        <input type="text" id="serial-lookup-input" placeholder="Container serial # (e.g. JO-12345)" autocomplete="off">
         <button type="button" id="serial-lookup-btn">Load My Rig</button>
       </div>
       <div id="serial-lookup-msg" class="lookup-msg"></div>
@@ -1061,6 +1059,9 @@
       var inp = document.getElementById(id);
       if (inp) t += (parseInt(inp.value) || 0) * SUPPLY_PRICES[id];
     });
+    // Add rush fee
+    var rushFee = parseFloat(document.getElementById('rush-fee-field').value) || 0;
+    t += rushFee;
     total = t;
     document.getElementById('total-display').textContent = '$' + t;
     document.getElementById('total_field').value = '$' + t;
@@ -1208,6 +1209,7 @@
     document.getElementById('rush-service-field').value = selectedRushLabel;
     document.getElementById('rush-fee-field').value = selectedRushFee;
     closeRushModal();
+    recalcTotal();
     doSubmit();
   }
 
@@ -1254,71 +1256,31 @@
 
   // ── SERIAL LOOKUP ────────────────────────────────────────
   async function serialLookup() {
-    var input  = (document.getElementById('serial-lookup-input').value || '').trim();
+    var serial = (document.getElementById('serial-lookup-input').value || '').trim();
     var msgEl  = document.getElementById('serial-lookup-msg');
-
-    if (!input) {
+    if (!serial) {
       msgEl.className = 'lookup-msg err';
-      msgEl.textContent = 'Please enter your email or container serial number.';
+      msgEl.textContent = 'Please enter your container serial number.';
       return;
     }
-
     msgEl.className = 'lookup-msg';
     msgEl.textContent = 'Looking up...';
-
-    // Detect if input is an email or a serial number
-    var isEmail = input.indexOf('@') !== -1;
-
     try {
-      var url, data;
-
-      if (isEmail) {
-        // Look up by email — returns all records for that email
-        var res = await fetch(GAS_URL + '?action=lookupByEmail&email=' + encodeURIComponent(input.toLowerCase()));
-        data = await res.json();
-        if (data.status === 'ok' && data.records && data.records.length > 0) {
-          // Use the most recent record to prefill
-          fillRigFields(data.records[0]);
-          showPrefillBanner();
-          msgEl.className = 'lookup-msg ok';
-          var count = data.records.length;
-          msgEl.textContent = 'Rig info loaded' + (count > 1 ? ' (' + count + ' records found — showing most recent)' : '') + '. Review below and select services.';
-          setTimeout(function() {
-            var svc = document.querySelector('.section-card:nth-child(4)');
-            if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 500);
-        } else {
-          msgEl.className = 'lookup-msg err';
-          msgEl.textContent = 'No records found for that email. Please fill in your info below.';
-        }
-      } else {
-        // Look up by serial number
-        var res = await fetch(GAS_URL + '?action=lookupSerial&serial=' + encodeURIComponent(input.toUpperCase()));
-        data = await res.json();
-        if (data.status === 'ok' && data.records && data.records.length > 0) {
-          fillRigFields(data.records[0]);
-          showPrefillBanner();
-          msgEl.className = 'lookup-msg ok';
-          msgEl.textContent = 'Rig loaded! Review your info and select services below.';
-          setTimeout(function() {
-            var svc = document.querySelector('.section-card:nth-child(4)');
-            if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 500);
-        } else if (data.order) {
-          // Legacy response format
-          fillRigFields(data.order);
-          showPrefillBanner();
-          msgEl.className = 'lookup-msg ok';
-          msgEl.textContent = 'Rig loaded! Review your info and select services below.';
-          setTimeout(function() {
-            var svc = document.querySelector('.section-card:nth-child(4)');
-            if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 500);
-        } else {
-          msgEl.className = 'lookup-msg err';
-          msgEl.textContent = 'No record found for that serial. Please fill in your info below.';
-        }
+      var res = await fetch(GAS_URL + '?action=lookupSerial&serial=' + encodeURIComponent(serial));
+      var data = await res.json();
+      if (!data.order) {
+        msgEl.className = 'lookup-msg err';
+        msgEl.textContent = 'No record found. Please fill in your info below.';
+        return;
       }
+      fillRigFields(data.order);
+      showPrefillBanner();
+      msgEl.className = 'lookup-msg ok';
+      msgEl.textContent = 'Rig loaded! Review your info and select services below.';
+      setTimeout(function() {
+        var svc = document.querySelector('.section-card:nth-child(4)');
+        if (svc) svc.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 500);
     } catch(err) {
       msgEl.className = 'lookup-msg err';
       msgEl.textContent = 'Lookup failed. Please fill in your info manually.';
