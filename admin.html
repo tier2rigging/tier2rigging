@@ -816,6 +816,7 @@ let currentRowIndex = null;
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
   if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem('t2_admin_session', '1');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -825,6 +826,7 @@ function doLogin() {
   }
 }
 function logout() {
+  sessionStorage.removeItem('t2_admin_session');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pw-input').value = '';
