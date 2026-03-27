@@ -416,6 +416,12 @@
   }
   #update-banner.show { display: block; }
   @keyframes slideDown { from { transform: translateY(-100%); } to { transform: translateY(0); } }
+  @media print {
+    body > *:not(#order-summary-overlay) { display: none !important; }
+    #order-summary-overlay { display: block !important; position: static !important; background: none !important; padding: 0 !important; }
+    #sum-btns { display: none !important; }
+    #order-summary-panel { box-shadow: none !important; border-radius: 0 !important; }
+  }
 </style>
   <!-- PWA -->
   <link rel="manifest" href="/manifest.json">
@@ -680,13 +686,88 @@
       </div>
 
     </div>
+    <!-- ORDER SUMMARY TAB -->
+    <div class="modal-section" style="background:rgba(200,169,110,0.04);border-top:2px solid rgba(200,169,110,0.2);margin:0;padding:0;">
+      <div style="padding:16px 24px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;" onclick="toggleOrderSummary()">
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--tan);">📋 Order Summary</div>
+        <span id="summary-chevron" style="color:var(--muted);font-size:14px;transition:transform 0.2s;">⌄</span>
+      </div>
+      <div id="order-summary-panel" style="display:none;padding:0 24px 20px;">
+        <div id="order-summary-lines" style="border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--input-bg);border-radius:8px;border:1px solid rgba(200,169,110,0.3);">
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--parchment);">ESTIMATED TOTAL</span>
+          <span id="summary-total" style="font-family:'DM Mono',monospace;font-size:20px;font-weight:700;color:var(--tan);">$0.00</span>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-footer">
       <div class="save-msg" id="save-msg">✓ Saved successfully</div>
       <button class="btn btn-danger" onclick="deleteOrder()">Delete</button>
       <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-ghost" onclick="toggleOrderSummary()" id="summary-tab-btn" style="border-color:rgba(200,169,110,0.4);color:var(--tan);">📋 Summary</button>
       <button class="btn btn-invoice" onclick="openInvoiceModal()">Send Invoice</button>
       <button class="btn btn-primary" onclick="saveOrder()">Save Changes</button>
     </div>
+  </div>
+</div>
+
+<!-- ORDER SUMMARY PANEL (printable) -->
+<div id="order-summary-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;overflow-y:auto;padding:30px 20px;">
+  <div id="order-summary-panel" style="max-width:680px;margin:0 auto;background:#fff;border-radius:12px;overflow:hidden;font-family:Arial,sans-serif;">
+    <!-- Header -->
+    <div style="background:#1a1a1a;border-bottom:3px solid #c8a96e;padding:20px 28px;">
+      <table width="100%"><tr>
+        <td><div style="font-family:Georgia,serif;font-size:24px;letter-spacing:4px;color:#c8a96e;">TIER<span style="font-size:32px;">2</span> RIGGING LLC</div>
+        <div style="font-size:10px;letter-spacing:2px;color:#888;margin-top:3px;">PARACHUTE RIGGING SERVICES</div></td>
+        <td align="right"><div style="font-size:10px;color:#666;letter-spacing:1px;">WORK ORDER</div>
+        <div style="font-family:monospace;font-size:15px;color:#c8a96e;margin-top:3px;" id="sum-wo"></div>
+        <div style="font-size:11px;color:#888;margin-top:3px;" id="sum-date"></div></td>
+      </tr></table>
+    </div>
+    <!-- Customer & Rig -->
+    <div style="background:#f8f6f2;border-bottom:1px solid #ede8df;padding:14px 28px;">
+      <table width="100%"><tr>
+        <td style="padding-right:20px;vertical-align:top;">
+          <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Customer</div>
+          <div style="font-size:14px;font-weight:bold;color:#333;" id="sum-name"></div>
+          <div style="font-size:12px;color:#666;margin-top:2px;" id="sum-phone"></div>
+          <div style="font-size:12px;color:#666;" id="sum-email"></div>
+        </td>
+        <td style="vertical-align:top;">
+          <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Rig</div>
+          <div style="font-size:14px;font-weight:bold;color:#333;" id="sum-container"></div>
+          <div style="font-family:monospace;font-size:12px;color:#c8a96e;margin-top:2px;" id="sum-serial"></div>
+        </td>
+      </tr></table>
+    </div>
+    <!-- Services -->
+    <div style="padding:18px 28px;">
+      <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Services & Line Items</div>
+      <table width="100%" style="border-collapse:collapse;" id="sum-services-table"></table>
+      <!-- Rush -->
+      <div id="sum-rush-row" style="display:none;margin-top:8px;padding:8px 12px;background:#fff5f5;border:1px solid #ffcccc;border-radius:6px;font-size:13px;color:#c0392b;font-weight:bold;"></div>
+      <!-- Total -->
+      <div style="margin-top:14px;background:#1a1a1a;border-radius:6px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-family:Georgia,serif;font-size:16px;letter-spacing:2px;color:#fff;">ESTIMATED TOTAL</span>
+        <span style="font-family:monospace;font-size:20px;font-weight:bold;color:#c8a96e;" id="sum-total"></span>
+      </div>
+    </div>
+    <!-- Notes -->
+    <div id="sum-notes-section" style="padding:0 28px 18px;display:none;">
+      <div style="font-size:10px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Notes</div>
+      <div style="font-size:13px;color:#333;line-height:1.6;" id="sum-notes"></div>
+    </div>
+    <!-- Status -->
+    <div style="background:#f0f0f0;padding:12px 28px;display:flex;justify-content:space-between;align-items:center;">
+      <div style="font-size:12px;color:#666;">Status: <strong id="sum-status" style="color:#333;"></strong></div>
+      <div style="font-size:11px;color:#999;">tier2rigging.com · (516) 902-8843</div>
+    </div>
+  </div>
+  <!-- Buttons (hidden on print) -->
+  <div id="sum-btns" style="max-width:680px;margin:16px auto;display:flex;gap:10px;justify-content:center;">
+    <button onclick="window.print()" style="padding:11px 24px;background:#c8a96e;color:#1a1a1a;border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">🖨 Print</button>
+    <button onclick="toggleOrderSummary()" style="padding:11px 24px;background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;">✕ Close</button>
   </div>
 </div>
 
@@ -935,7 +1016,78 @@ function formatDate(str) {
 
 // MODAL
 // AUTO-SAVE STATUS on dropdown change
-async function autoSaveStatus() {
+async function toggleOrderSummary() {
+  const panel = document.getElementById('order-summary-panel');
+  const chevron = document.getElementById('summary-chevron');
+  const isOpen = panel.style.display !== 'none';
+  if (isOpen) {
+    panel.style.display = 'none';
+    chevron.style.transform = '';
+  } else {
+    buildOrderSummary();
+    panel.style.display = 'block';
+    chevron.style.transform = 'rotate(180deg)';
+  }
+}
+
+function buildOrderSummary() {
+  const lines = [];
+  let total = 0;
+
+  // Checked services
+  document.querySelectorAll('#services-editor .svc-row').forEach(row => {
+    const cb = row.querySelector('input[type="checkbox"]');
+    const label = row.querySelector('label');
+    const priceInput = row.querySelector('.svc-price-input');
+    if (cb && cb.checked && label && priceInput) {
+      const price = parseFloat(priceInput.value) || 0;
+      lines.push({ name: label.textContent.trim(), price });
+      total += price;
+    }
+  });
+
+  // Custom items
+  document.querySelectorAll('#custom-items .custom-item').forEach(ci => {
+    const name = ci.querySelector('input[type="text"]').value.trim();
+    const price = parseFloat(ci.querySelector('input[type="number"]').value) || 0;
+    if (name) { lines.push({ name, price }); total += price; }
+  });
+
+  // Supplies
+  const loops   = parseInt(document.getElementById('edit-loops').value) || 0;
+  const bands   = parseInt(document.getElementById('edit-bands').value) || 0;
+  const keepers = parseInt(document.getElementById('edit-keepers').value) || 0;
+  if (loops   > 0) { lines.push({ name: 'Closing Loops x' + loops,   price: loops   * 2  }); total += loops   * 2;  }
+  if (bands   > 0) { lines.push({ name: 'Rubber Bands x' + bands,    price: bands   * 0.5}); total += bands   * 0.5;}
+  if (keepers > 0) { lines.push({ name: 'Elastic Keepers x' + keepers, price: keepers * 1 }); total += keepers * 1;  }
+
+  // Rush
+  const o = allOrders[currentOrderIndex];
+  const rushService = document.getElementById('edit-status') ? (o && o.rushService) : '';
+  const rushFee = o && o.rushFee ? parseFloat(o.rushFee) : 0;
+  if (rushFee > 0) { lines.push({ name: '⚡ Rush Service (' + (o.rushService||'') + ')', price: rushFee }); total += rushFee; }
+
+  // Render
+  const container = document.getElementById('order-summary-lines');
+  if (lines.length === 0) {
+    container.innerHTML = '<div style="padding:14px 16px;color:var(--muted);font-size:13px;">No services selected.</div>';
+  } else {
+    container.innerHTML = lines.map((l, i) =>
+      `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;
+        border-bottom:${i < lines.length-1 ? '1px solid var(--border)' : 'none'};
+        background:${i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)'};">
+        <span style="font-size:13px;color:var(--parchment);">${l.name}</span>
+        <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--tan);white-space:nowrap;margin-left:16px;">
+          ${l.price > 0 ? '$' + l.price.toFixed(2) : '—'}
+        </span>
+      </div>`
+    ).join('');
+  }
+
+  document.getElementById('summary-total').textContent = '$' + total.toFixed(2);
+}
+
+function autoSaveStatus() {
   const o = allOrders[currentOrderIndex];
   if (!o) return;
   const newStatus = document.getElementById('edit-status').value;
@@ -971,6 +1123,86 @@ async function autoSaveStatus() {
     msg.textContent = '⚠ Failed';
     setTimeout(() => { msg.textContent = ''; msg.style.color = 'var(--green)'; }, 3000);
   }
+}
+
+// ORDER SUMMARY
+function toggleOrderSummary() {
+  const overlay = document.getElementById('order-summary-overlay');
+  const isOpen = overlay.style.display !== 'none';
+  if (isOpen) {
+    overlay.style.display = 'none';
+    return;
+  }
+
+  const o = allOrders[currentOrderIndex];
+  if (!o) return;
+
+  // WO + date
+  document.getElementById('sum-wo').textContent = o.woNum || '—';
+  document.getElementById('sum-date').textContent = o.submissionDate ? new Date(o.submissionDate).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}) : '';
+
+  // Customer
+  document.getElementById('sum-name').textContent = o.name || '—';
+  document.getElementById('sum-phone').textContent = o.phone || '';
+  document.getElementById('sum-email').textContent = o.email || '';
+
+  // Rig
+  const contName = [o.containerManufacturer, o.containerModel].filter(Boolean).join(' ') || o.containerMakeModel || '—';
+  document.getElementById('sum-container').textContent = contName;
+  document.getElementById('sum-serial').textContent = o.containerSerial ? 'S/N: ' + o.containerSerial : '';
+
+  // Services table
+  const tbl = document.getElementById('sum-services-table');
+  tbl.innerHTML = '';
+  const rawSvcs = (o.servicesSelected || o.services || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
+  rawSvcs.forEach(function(svc) {
+    const parts = svc.split(' - $');
+    const name = parts[0] || svc;
+    const price = parts[1] ? '$' + parseFloat(parts[1]).toFixed(2) : '';
+    tbl.innerHTML += '<tr><td style="padding:8px 0;border-bottom:1px solid #eee;font-size:13px;color:#333;">' + name + '</td>' +
+      '<td style="padding:8px 0;border-bottom:1px solid #eee;font-size:13px;color:#222;font-family:monospace;text-align:right;white-space:nowrap;">' + price + '</td></tr>';
+  });
+
+  // Custom items
+  let customItems = [];
+  try { customItems = JSON.parse(o.customItems || '[]'); } catch(e) {}
+  customItems.forEach(function(ci) {
+    if (!ci.name) return;
+    tbl.innerHTML += '<tr><td style="padding:8px 0;border-bottom:1px solid #eee;font-size:13px;color:#333;">' + ci.name + '</td>' +
+      '<td style="padding:8px 0;border-bottom:1px solid #eee;font-size:13px;color:#222;font-family:monospace;text-align:right;">' + (ci.price ? '$' + parseFloat(ci.price).toFixed(2) : '') + '</td></tr>';
+  });
+
+  if (tbl.innerHTML === '') {
+    tbl.innerHTML = '<tr><td style="padding:8px 0;color:#aaa;font-size:13px;">No services listed</td></tr>';
+  }
+
+  // Rush
+  const rushRow = document.getElementById('sum-rush-row');
+  const rush = (o.rushService || '').toLowerCase() !== 'no' && (o.rushService || '').trim() !== '';
+  if (rush) {
+    rushRow.style.display = 'block';
+    rushRow.textContent = '⚡ Rush: ' + o.rushService + (o.rushFee ? ' (+$' + parseFloat(o.rushFee).toFixed(2) + ')' : '');
+  } else {
+    rushRow.style.display = 'none';
+  }
+
+  // Total
+  document.getElementById('sum-total').textContent = '$' + parseFloat(o.estimatedTotal || o.total || 0).toFixed(2);
+
+  // Notes
+  const notesSection = document.getElementById('sum-notes-section');
+  const notes = [o.damageDescription, o.notes].filter(Boolean).join('\n');
+  if (notes) {
+    notesSection.style.display = 'block';
+    document.getElementById('sum-notes').textContent = notes;
+  } else {
+    notesSection.style.display = 'none';
+  }
+
+  // Status
+  document.getElementById('sum-status').textContent = normalizeStatus(o.status);
+
+  overlay.style.display = 'block';
 }
 
 function openModal(idx) {
@@ -1061,6 +1293,10 @@ function openModal(idx) {
 
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
+  const panel = document.getElementById('order-summary-panel');
+  if (panel) panel.style.display = 'none';
+  const chevron = document.getElementById('summary-chevron');
+  if (chevron) chevron.style.transform = '';
 }
 function closeModalOutside(e) {
   if (e.target === document.getElementById('modal-overlay')) closeModal();
