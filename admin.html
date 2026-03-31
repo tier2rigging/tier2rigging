@@ -1094,6 +1094,15 @@ async function autoSaveStatus() {
   const msg = document.getElementById('status-autosave-msg');
   const woNum = o.woNum || o['active_work_order_#'] || o['work_order_#'] || o['active work order #'] || o['work order #'] || o.ticket_number || '';
 
+  console.log('autoSaveStatus: woNum=', woNum, 'status=', newStatus, 'o.woNum=', o.woNum, 'keys=', Object.keys(o).filter(k => k.includes('work') || k.includes('wo') || k.includes('ticket')));
+
+  if (!woNum) {
+    msg.style.color = 'var(--red)';
+    msg.textContent = '⚠ No WO#';
+    setTimeout(() => { msg.textContent = ''; msg.style.color = ''; }, 3000);
+    return;
+  }
+
   // Update local state immediately
   allOrders[currentOrderIndex].status = newStatus;
 
