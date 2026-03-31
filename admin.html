@@ -1569,6 +1569,7 @@ async function sendInvoice(method) {
     if (json && (json.status === 'sent' || json.status === 'ok')) {
       statusEl.textContent = '✓ Invoice sent to ' + toEmail;
       statusEl.className = 'send-status ok';
+      setTimeout(() => { closeInvoiceModal(); closeModal(); }, 1500);
     } else if (json && json.message) {
       statusEl.textContent = '⚠ GAS error: ' + json.message;
       statusEl.className = 'send-status err';
@@ -1576,6 +1577,7 @@ async function sendInvoice(method) {
       // If we got any response at all, assume it worked
       statusEl.textContent = '✓ Invoice sent to ' + toEmail;
       statusEl.className = 'send-status ok';
+      setTimeout(() => { closeInvoiceModal(); closeModal(); }, 1500);
     }
   } catch(err) {
     statusEl.textContent = '⚠ Failed: ' + err.message;
