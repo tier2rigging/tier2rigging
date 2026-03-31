@@ -1254,11 +1254,8 @@ function openModal(idx) {
 
     // Extract saved price if present
     const savedEntry = rawServices.split(/[\n,]+/).map(s => s.trim()).find(s => s.toLowerCase().includes(svc.name.toLowerCase().substring(0, 20)));
+    // Always use the current correct price from ALL_SERVICES, not the old saved price
     let savedPrice = svc.price;
-    if (savedEntry) {
-      const priceMatch = savedEntry.match(/\$\s*([\d.]+)/);
-      if (priceMatch) savedPrice = parseFloat(priceMatch[1]) || svc.price;
-    }
     const row = document.createElement('div');
     row.className = 'svc-row' + (isChecked ? ' checked-row' : '');
     row.innerHTML = `
@@ -1400,11 +1397,10 @@ async function saveOrder() {
 
   // Send to GAS
   try {
-    const body = 'action=updateOrder&data=' + encodeURIComponent(JSON.stringify(updated));
     fetch(GAS_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
-      body,
+      body: JSON.stringify({ action: 'updateOrder', ...updated }),
       mode: 'no-cors'
     });
   } catch(e) { console.error(e); }
