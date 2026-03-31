@@ -644,7 +644,7 @@
           <div class="info-field"><label>Manufacturer</label><input type="text" id="edit-aad-mfr"></div>
           <div class="info-field"><label>Model</label><input type="text" id="edit-aad-model"></div>
           <div class="info-field"><label>Serial #</label><input type="text" id="edit-aad-serial"></div>
-          <div class="info-field"><label>Next Service Date</label><input type="text" id="edit-aad-date"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="edit-aad-date"></div>
         </div>
       </div>
 
@@ -816,7 +816,6 @@ let currentRowIndex = null;
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
   if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem('t2_admin_session', '1');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -826,7 +825,6 @@ function doLogin() {
   }
 }
 function logout() {
-  sessionStorage.removeItem('t2_admin_session');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pw-input').value = '';
@@ -1089,7 +1087,7 @@ function buildOrderSummary() {
   document.getElementById('summary-total').textContent = '$' + total.toFixed(2);
 }
 
-async function autoSaveStatus() {
+function autoSaveStatus() {
   const o = allOrders[currentOrderIndex];
   if (!o) return;
   const newStatus = document.getElementById('edit-status').value;
@@ -1359,6 +1357,7 @@ async function saveOrder() {
 
   const updated = {
     ...o,
+    woNum: o.woNum || o['active_work_order_#'] || o.ticket || o.ticket_number || '',
     status: document.getElementById('edit-status').value,
     requestedCompletion: document.getElementById('edit-completion').value,
     name: document.getElementById('edit-name').value,
@@ -1985,7 +1984,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="info-field"><label>Manufacturer</label><input type="text" id="no-aad-mfr"></div>
           <div class="info-field"><label>Model</label><input type="text" id="no-aad-model"></div>
           <div class="info-field"><label>Serial #</label><input type="text" id="no-aad-serial"></div>
-          <div class="info-field"><label>Next Service Date</label><input type="text" id="no-aad-date"></div>
+          <div class="info-field"><label>Date of Manufacture</label><input type="text" id="no-aad-date"></div>
         </div>
 
         <div style="font-size:11px;color:var(--tan);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;margin-top:14px;">Scheduling</div>
