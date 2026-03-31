@@ -1486,6 +1486,92 @@ function openInvoiceModal() {
   document.getElementById('invoice-overlay').classList.add('open');
 }
 function showInvoicePrintOption(o, toEmail) {
+  // Check if a reserve repack service was performed
+  const svcs = (o.servicesSelected || '').toLowerCase();
+  const isRepack = svcs.includes('repack') && (svcs.includes('reserve') || svcs.includes('inspection'));
+
+  if (isRepack) {
+    showRepackDatePrompt(o, toEmail);
+  } else {
+    buildInvoicePrintOverlay(o, toEmail);
+  }
+}
+
+function showRepackDatePrompt(o, toEmail) {
+  const today = new Date().toISOString().split('T')[0];
+  const existing = document.getElementById('repack-prompt-overlay');
+  if (existing) existing.remove();
+
+  const html = `
+    <div id="repack-prompt-overlay" style="position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div style="background:#252527;border:1px solid rgba(200,169,110,0.3);border-radius:14px;padding:28px 28px 24px;max-width:420px;width:100%;text-align:center;">
+        <div style="font-size:32px;margin-bottom:10px;">📅</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#e0c080;margin-bottom:6px;">Reserve Repack Date</div>
+        <div style="font-size:13px;color:#9a9890;margin-bottom:20px;line-height:1.5;">Enter the date the reserve was packed.<br>The next repack due date will be set to <strong style="color:#c8a96e;">180 days</strong> from this date.</div>
+        <input type="date" id="repack-date-input" value="${today}" style="width:100%;background:#161618;border:1px solid rgba(200,185,150,0.3);border-radius:8px;color:#f2ede4;font-size:16px;padding:11px 14px;margin-bottom:8px;outline:none;font-family:'Barlow',sans-serif;">
+        <div id="repack-next-preview" style="font-size:12px;color:#c8a96e;margin-bottom:20px;min-height:18px;"></div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="skipRepackDate('${(o.woNum||'').replace(/'/g,'')}')" style="flex:1;padding:11px;background:rgba(200,185,150,0.08);border:1px solid rgba(200,185,150,0.2);color:#9a9890;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;">Skip</button>
+          <button onclick="confirmRepackDate('${(o.woNum||'').replace(/'/g,'')}')" style="flex:2;padding:11px;background:linear-gradient(135deg,#c8a96e,#e0c080);color:#1a1a1a;border:none;border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;">Save & Continue</button>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.insertAdjacentHTML('beforeend', html);
+
+  // Live preview of next due date
+  const inp = document.getElementById('repack-date-input');
+  const prev = document.getElementById('repack-next-preview');
+  function updatePreview() {
+    if (!inp.value) { prev.textContent = ''; return; }
+    const d = new Date(inp.value);
+    d.setDate(d.getDate() + 180);
+    prev.textContent = 'Next repack due: ' + (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+  }
+  inp.addEventListener('input', updatePreview);
+  updatePreview();
+
+  // Store order ref for use in confirm
+  window._repackOrder = o;
+  window._repackEmail = toEmail;
+}
+
+async function confirmRepackDate(woNum) {
+  const inp = document.getElementById('repack-date-input');
+  const date = inp ? inp.value : '';
+  const overlay = document.getElementById('repack-prompt-overlay');
+
+  if (date && woNum) {
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        mode: 'no-cors',
+        body: JSON.stringify({ action: 'saveRepackDate', woNum: woNum, repackDate: date })
+      });
+      // Update local order
+      const idx = allOrders.findIndex(o => (o.woNum || o['active_work_order_#'] || '') === woNum);
+      if (idx !== -1) {
+        const d = new Date(date);
+        const nd = new Date(date);
+        nd.setDate(nd.getDate() + 180);
+        allOrders[idx].lastRepackDate = (d.getMonth()+1)+'/'+d.getDate()+'/'+d.getFullYear();
+        allOrders[idx].nextRepackDue  = (nd.getMonth()+1)+'/'+nd.getDate()+'/'+nd.getFullYear();
+      }
+    } catch(e) { console.error('Repack save error', e); }
+  }
+
+  if (overlay) overlay.remove();
+  buildInvoicePrintOverlay(window._repackOrder, window._repackEmail);
+}
+
+function skipRepackDate() {
+  const overlay = document.getElementById('repack-prompt-overlay');
+  if (overlay) overlay.remove();
+  buildInvoicePrintOverlay(window._repackOrder, window._repackEmail);
+}
+
+function buildInvoicePrintOverlay(o, toEmail) {
   // Build printable invoice in a print overlay
   const services = (o.servicesSelected || '').split(/[\n,]+/).map(s => s.trim()).filter(Boolean);
   let customItems = [];
@@ -1538,6 +1624,10 @@ function showInvoicePrintOption(o, toEmail) {
             <span style="font-family:Georgia,serif;font-size:15px;letter-spacing:2px;color:#fff;">TOTAL DUE</span>
             <span style="font-family:monospace;font-size:20px;font-weight:bold;color:#c8a96e;">$${total}</span>
           </div>
+          ${o.nextRepackDue ? `<div style="margin-top:10px;padding:10px 14px;background:#f0f9f4;border:1px solid #b8e0c8;border-radius:6px;display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:12px;color:#2a7a4a;font-weight:bold;">📅 Next Reserve Repack Due</span>
+            <span style="font-family:monospace;font-size:14px;font-weight:bold;color:#2a7a4a;">${o.nextRepackDue}</span>
+          </div>` : ''}
         </div>
         <div style="background:#f0f0f0;padding:10px 28px;text-align:center;font-size:11px;color:#999;">
           tier2rigging.com &nbsp;·&nbsp; (516) 902-8843 &nbsp;·&nbsp; tier2riggingservices@gmail.com &nbsp;·&nbsp; Blue skies!
