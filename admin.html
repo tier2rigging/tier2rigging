@@ -1254,8 +1254,16 @@ function openModal(idx) {
 
     // Extract saved price if present
     const savedEntry = rawServices.split(/[\n,]+/).map(s => s.trim()).find(s => s.toLowerCase().includes(svc.name.toLowerCase().substring(0, 20)));
-    // Always use the current correct price from ALL_SERVICES, not the old saved price
     let savedPrice = svc.price;
+    if (savedEntry) {
+      const priceMatch = savedEntry.match(/\$\s*([\d.]+)/);
+      if (priceMatch) {
+        const p = parseFloat(priceMatch[1]);
+        // Correct known legacy wrong prices (e.g. Tandem was $115, now $150)
+        const legacyFix = (svc.name === 'Reserve Inspection & Repack (Tandem)' && p === 115);
+        savedPrice = legacyFix ? svc.price : p;
+      }
+    }
     const row = document.createElement('div');
     row.className = 'svc-row' + (isChecked ? ' checked-row' : '');
     row.innerHTML = `
