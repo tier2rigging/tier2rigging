@@ -822,7 +822,7 @@
 
       // Due date — prefer nextRepackDue over generic reminder_date
       let dueCls = '', dueText = '';
-      const dueDateStr = latest.nextRepackDue || latest.reminder_date || '';
+      const dueDateStr = stripDateTime(latest.nextRepackDue || latest.reminder_date || '');
       if (dueDateStr) {
         const days = Math.ceil((new Date(dueDateStr) - new Date()) / (1000*60*60*24));
         if (days < 0)      { dueCls = 'overdue'; dueText = '🚨 Repack Overdue'; }
@@ -987,7 +987,7 @@
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.reserveSerial || '—') + '</div></div>' +
               '</div>' +
               (latest.nextRepackDue || latest.reminder_date ? (function() {
-                var dateStr = latest.nextRepackDue || latest.reminder_date || '';
+                var dateStr = stripDateTime(latest.nextRepackDue || latest.reminder_date || '');
                 var days = Math.ceil((new Date(dateStr) - new Date()) / (1000*60*60*24));
                 var cls = days < 0 ? '#e07a5a' : days <= 30 ? '#e0c080' : '#6fcf97';
                 var icon = days < 0 ? '🚨' : days <= 30 ? '⚠️' : '✅';
@@ -1151,6 +1151,18 @@
     return result;
   }
 
+
+
+  function stripDateTime(val) {
+    if (!val) return '';
+    var s = String(val);
+    if (s.indexOf('T') !== -1) {
+      var parts = s.split('T')[0].split('-');
+      if (parts.length === 3) return parseInt(parts[1]) + '/' + parseInt(parts[2]) + '/' + parts[0];
+    }
+    if (s.indexOf(' ') !== -1 && s.indexOf('/') !== -1) return s.split(' ')[0];
+    return s;
+  }
 
   function getGearNote(serial, category) {
     try { return localStorage.getItem('t2note_' + serial + '_' + category) || ''; } catch(e) { return ''; }
