@@ -909,7 +909,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="containerManufacturer" value="' + esc(latest.containerManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="containerModel" value="' + esc(latest.containerModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="containerSerial" value="' + esc(latest.containerSerial||sn) + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + formatDate(latest.containerDom) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + stripDateTime(latest.containerDom + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -942,7 +942,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="mainManufacturer" value="' + esc(latest.mainManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="mainModel" value="' + esc(latest.mainModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="mainSerial" value="' + esc(latest.mainSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + formatDate(latest.mainDom) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + stripDateTime(latest.mainDom + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -986,7 +986,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="reserveManufacturer" value="' + esc(latest.reserveManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="reserveModel" value="' + esc(latest.reserveModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="reserveSerial" value="' + esc(latest.reserveSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + formatDate(latest.reserveDom) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + stripDateTime(latest.reserveDom + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -1019,7 +1019,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="aadManufacturer" value="' + esc(latest.aadManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="aadModel" value="' + esc(latest.aadModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="aadSerial" value="' + esc(latest.aadSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + formatDate(latest.aadServiceDate) + '"></div>' +
+                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + stripDateTime(latest.aadServiceDate + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -1078,7 +1078,9 @@
   }
 
   function toggleGearEdit(btn) {
-    var fields = btn.nextElementSibling;
+    var section = btn.closest('.gear-section-body');
+    var fields = section.querySelector('.gear-edit-fields');
+    if (!fields) return;
     fields.classList.toggle('open');
     btn.textContent = fields.classList.contains('open') ? '✕ Cancel' : '✏ Edit';
   }
@@ -1089,21 +1091,30 @@
     var msgEl = section.querySelector('.gear-save-msg');
     var payload = { action: 'updateGear', serial: serial, email: email };
     inputs.forEach(function(inp) { payload[inp.dataset.field] = inp.value.trim(); });
+
+    console.log('saveGearEdit payload:', JSON.stringify(payload));
+
     saveBtn.textContent = 'Saving…';
     saveBtn.disabled = true;
+    if (msgEl) { msgEl.textContent = ''; msgEl.style.color = ''; }
+
     try {
       await fetch(GAS_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
       });
-      msgEl.textContent = '✓ Saved!';
-      setTimeout(function() { msgEl.textContent = ''; }, 3000);
+      if (msgEl) { msgEl.textContent = '✓ Saved!'; msgEl.style.color = 'var(--success,#4a9e6a)'; }
+      // Close edit fields
+      var fields = section.querySelector('.gear-edit-fields');
+      if (fields) fields.classList.remove('open');
+      saveBtn.textContent = '✏ Edit';
+      setTimeout(function() { if (msgEl) msgEl.textContent = ''; }, 3000);
     } catch(e) {
-      msgEl.textContent = '⚠ Save failed.';
-      msgEl.style.color = 'var(--danger)';
+      if (msgEl) { msgEl.textContent = '⚠ Save failed — try again.'; msgEl.style.color = 'var(--danger)'; }
+      console.error('saveGearEdit error:', e);
+      saveBtn.textContent = 'Save';
     }
-    saveBtn.textContent = 'Save';
     saveBtn.disabled = false;
   }
 
