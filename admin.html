@@ -1012,7 +1012,7 @@ function renderTable() {
 
 function stripDateTime(val) {
   if (!val) return '';
-  var s = String(val);
+  var s = String(val).trim();
   // ISO: 2026-03-01T05:00:00.000Z → 3/1/2026
   if (s.indexOf('T') !== -1) {
     var parts = s.split('T')[0].split('-');
@@ -1020,6 +1020,16 @@ function stripDateTime(val) {
   }
   // M/D/YYYY HH:MM:SS → M/D/YYYY
   if (s.indexOf(' ') !== -1 && s.indexOf('/') !== -1) return s.split(' ')[0];
+  // JS Date toString: "Sat Sep 26 2026 00:00:00 GMT-0400..."
+  if (s.indexOf('GMT') !== -1 || s.indexOf('UTC') !== -1 || /^[A-Za-z]{3}\s[A-Za-z]{3}/.test(s)) {
+    var d = new Date(s);
+    if (!isNaN(d.getTime())) return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+  }
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+    var p = s.split('-');
+    return parseInt(p[1]) + '/' + parseInt(p[2]) + '/' + p[0];
+  }
   return s;
 }
 
