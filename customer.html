@@ -902,7 +902,6 @@
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Model</div><div class="rig-gear-val">' + esc(latest.containerModel || '—') + '</div></div>' +
                 '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + formatDate(latest.containerDom) + '</div></div>' +
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.containerSerial || sn) + '</div></div>' +
-                '<div class="rig-gear-cell" style="grid-column:1/-1"><div class="rig-gear-label">Notes</div><div class="rig-gear-val">' + esc(latest.notes || '—') + '</div></div>' +
               '</div>' +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
               '<div class="gear-edit-fields">' +
@@ -1099,22 +1098,46 @@
     if (msgEl) { msgEl.textContent = ''; msgEl.style.color = ''; }
 
     try {
-      await fetch(GAS_URL, {
-        method: 'POST', mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload)
-      });
-      if (msgEl) { msgEl.textContent = '✓ Saved!'; msgEl.style.color = 'var(--success,#4a9e6a)'; }
-      // Close edit fields
-      var fields = section.querySelector('.gear-edit-fields');
-      if (fields) fields.classList.remove('open');
-      saveBtn.textContent = '✏ Edit';
-      setTimeout(function() { if (msgEl) msgEl.textContent = ''; }, 3000);
+      // Use GET with query params — GAS handles GET more reliably cross-origin than POST
+      var params = new URLSearchParams(payload);
+      var resp = await fetch(GAS_URL + '?' + params.toString(), { method: 'GET', mode: 'cors' });
+      var data = await resp.json();
+      console.log('saveGearEdit response:', JSON.stringify(data));
+
+      if (data.status === 'ok') {
+        if (msgEl) { msgEl.textContent = '✓ Saved — ' + (data.updated || 0) + ' record(s) updated'; msgEl.style.color = 'var(--success,#4a9e6a)'; }
+        // Update the displayed values in the gear cells above the edit form
+        inputs.forEach(function(inp) {
+          var fieldName = inp.dataset.field;
+          var newVal = inp.value.trim();
+          // Find the corresponding display cell (search sibling gear grid)
+          var gearGrid = section.querySelector('.rig-block-gear');
+          if (gearGrid) {
+            var labels = gearGrid.querySelectorAll('.rig-gear-label');
+            labels.forEach(function(lbl) {
+              var labelText = lbl.textContent.toLowerCase().replace(/[^a-z]/g,'');
+              var fieldKey = fieldName.toLowerCase().replace('container','').replace('main','').replace('reserve','').replace('aad','').replace('servicedate','lastservice');
+              if (labelText === fieldKey || labelText === fieldKey.replace('#','')) {
+                var valEl = lbl.nextElementSibling;
+                if (valEl) valEl.textContent = newVal || '—';
+              }
+            });
+          }
+        });
+        // Close edit fields
+        var fields = section.querySelector('.gear-edit-fields');
+        if (fields) fields.classList.remove('open');
+        var editBtn = section.querySelector('.gear-section-edit-btn');
+        if (editBtn) editBtn.textContent = '✏ Edit';
+        setTimeout(function() { if (msgEl) msgEl.textContent = ''; }, 3000);
+      } else {
+        if (msgEl) { msgEl.textContent = '⚠ ' + (data.message || 'Save failed — try again.'); msgEl.style.color = 'var(--danger)'; }
+      }
     } catch(e) {
       if (msgEl) { msgEl.textContent = '⚠ Save failed — try again.'; msgEl.style.color = 'var(--danger)'; }
       console.error('saveGearEdit error:', e);
-      saveBtn.textContent = 'Save';
     }
+    saveBtn.textContent = 'Save';
     saveBtn.disabled = false;
   }
 
