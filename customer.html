@@ -606,20 +606,16 @@
     <div class="gate-body">
       <div class="qr-greeting" id="qrGreeting">
         👋 Welcome! Your rig's QR code brought you here.<br>
-        <strong>Enter your email address or container serial # to access your records.</strong>
+        <strong>Enter your email, phone number, or container serial # to access your records.</strong>
       </div>
       <div class="field">
-        <label>Email Address</label>
-        <input type="text" id="inputEmail" placeholder="Email address or container serial #" autocomplete="off">
-      </div>
-      <div class="field" id="serialField">
-        <label>Container Serial Number <span style="color:var(--muted);font-weight:400;font-size:10px;letter-spacing:0;text-transform:none;">(optional — leave blank to see all your rigs)</span></label>
-        <input type="text" id="inputSerial" placeholder="e.g. JO-12345 — or leave blank" autocomplete="off">
+        <label>Email, Phone Number, or Serial #</label>
+        <input type="text" id="inputEmail" placeholder="e.g. jane@email.com · 6315551234 · JO-12345" autocomplete="off">
       </div>
       <button class="btn-verify" onclick="doVerify()">🔓 ACCESS MY RIGS</button>
       <div class="privacy-note">
         <span>🔒</span>
-        <span>Your email and serial number are used together to verify ownership. Records are private.</span>
+        <span>Your info is used to verify ownership. All rigs linked to your account will be shown.</span>
       </div>
       <div class="error-box" id="errorBox"></div>
     </div>
@@ -737,30 +733,17 @@
     const errBox = document.getElementById('errorBox');
     errBox.classList.remove('show');
 
-    if (!input) { errBox.textContent = 'Please enter your email or container serial number.'; errBox.classList.add('show'); return; }
-
-    const isEmail = input.indexOf('@') !== -1;
-    const email   = isEmail ? input.toLowerCase() : '';
-    // Serial comes only from the main combined input — ignore the legacy inputSerial field
-    const serial  = !isEmail ? input.toUpperCase() : '';
+    if (!input) { errBox.textContent = 'Please enter your email, phone number, or container serial #.'; errBox.classList.add('show'); return; }
 
     document.getElementById('gateCard').style.display = 'none';
     document.getElementById('loadingBox').classList.add('show');
 
     try {
-      let url;
-      if (isEmail) {
-        url = GAS_URL + '?action=lookupByEmail&email=' + encodeURIComponent(email);
-      } else {
-        // Serial-only lookup
-        url = GAS_URL + '?action=lookupSerial&serial=' + encodeURIComponent(serial);
-      }
-
+      const url = GAS_URL + '?action=lookupByAny&input=' + encodeURIComponent(input);
       const resp = await fetch(url, { method: 'GET', mode: 'cors' });
       const data = await resp.json();
       document.getElementById('loadingBox').classList.remove('show');
 
-      // Normalize response — support both {records:[]} and {order:{}} formats
       let records = null;
       if (data.status === 'ok' && data.records && data.records.length > 0) {
         records = data.records;
@@ -769,12 +752,13 @@
       }
 
       if (records && records.length > 0) {
-        const resolvedEmail = email || (records[0].email || records[0]['email'] || '');
-        sessionStorage.setItem('t2_session', JSON.stringify({ records, serial, email: resolvedEmail }));
-        renderDashboard(records, serial, resolvedEmail);
+        const resolvedEmail = records[0].email || '';
+        const resolvedSerial = records[0].containerSerial || '';
+        sessionStorage.setItem('t2_session', JSON.stringify({ records, serial: resolvedSerial, email: resolvedEmail }));
+        renderDashboard(records, resolvedSerial, resolvedEmail);
       } else {
         document.getElementById('gateCard').style.display = 'block';
-        errBox.innerHTML = '❌ No records found. Make sure it matches your work order email or serial number.';
+        errBox.innerHTML = '❌ No records found. Make sure it matches your work order email, phone, or serial number.';
         errBox.classList.add('show');
       }
     } catch(err) {
