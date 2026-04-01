@@ -1009,6 +1009,20 @@ function renderTable() {
   });
 }
 
+
+function stripDateTime(val) {
+  if (!val) return '';
+  var s = String(val);
+  // ISO: 2026-03-01T05:00:00.000Z → 3/1/2026
+  if (s.indexOf('T') !== -1) {
+    var parts = s.split('T')[0].split('-');
+    if (parts.length === 3) return parseInt(parts[1]) + '/' + parseInt(parts[2]) + '/' + parts[0];
+  }
+  // M/D/YYYY HH:MM:SS → M/D/YYYY
+  if (s.indexOf(' ') !== -1 && s.indexOf('/') !== -1) return s.split(' ')[0];
+  return s;
+}
+
 function formatDate(str) {
   if (!str) return '—';
   try {
@@ -1151,7 +1165,7 @@ function toggleOrderSummary() {
 
   // WO + date
   document.getElementById('sum-wo').textContent = o.woNum || '—';
-  document.getElementById('sum-date').textContent = o.submissionDate ? new Date(o.submissionDate).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}) : '';
+  document.getElementById('sum-date').textContent = o.submissionDate ? new Date(stripDateTime(o.submissionDate||'')).toLocaleDateString('en-US', {year:'numeric',month:'long',day:'numeric'}) : '';
 
   // Customer
   document.getElementById('sum-name').textContent = o.name || '—';
@@ -1231,19 +1245,19 @@ function openModal(idx) {
   document.getElementById('edit-container-mfr').value   = o.containerManufacturer || '';
   document.getElementById('edit-container-model').value = o.containerModel || o.containerMakeModel || '';
   document.getElementById('edit-serial').value           = o.containerSerial || '';
-  document.getElementById('edit-container-dom').value   = o.containerDom || '';
+  document.getElementById('edit-container-dom').value   = stripDateTime(o.containerDom || '');
   document.getElementById('edit-main-mfr').value        = o.mainManufacturer || '';
   document.getElementById('edit-main-model').value      = o.mainModel || o.mainCanopy || '';
   document.getElementById('edit-main-serial').value     = o.mainSerial || '';
-  document.getElementById('edit-main-dom').value        = o.mainDom || '';
+  document.getElementById('edit-main-dom').value        = stripDateTime(o.mainDom || '');
   document.getElementById('edit-reserve-mfr').value     = o.reserveManufacturer || '';
   document.getElementById('edit-reserve-model').value   = o.reserveModel || o.reserveCanopy || '';
   document.getElementById('edit-reserve-serial').value  = o.reserveSerial || '';
-  document.getElementById('edit-reserve-dom').value     = o.reserveDom || '';
+  document.getElementById('edit-reserve-dom').value     = stripDateTime(o.reserveDom || '');
   document.getElementById('edit-aad-mfr').value         = o.aadManufacturer || '';
   document.getElementById('edit-aad-model').value       = o.aadModel || o.aadType || '';
   document.getElementById('edit-aad-serial').value      = o.aadSerial || '';
-  document.getElementById('edit-aad-date').value        = o.aadServiceDate || '';
+  document.getElementById('edit-aad-date').value        = stripDateTime(o.aadServiceDate || '');
   document.getElementById('edit-damage').value = o.damageDescription || '';
   document.getElementById('edit-notes').value = o.notes || '';
   document.getElementById('edit-loops').value = o.closingLoops || '';
