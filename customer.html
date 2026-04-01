@@ -595,7 +595,7 @@
 
   <!-- ── VERIFY GATE ── -->
   <button class="back-link" id="gateBackLink" onclick="showSelector()" style="display:none;">← Back to Portal Selection</button>
-  <div class="gate-card" id="gateCard">
+  <div class="gate-card" id="gateCard" style="display:none;">
     <div class="gate-head">
       <div class="gate-icon">🪂</div>
       <div>
@@ -909,14 +909,14 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="containerManufacturer" value="' + esc(latest.containerManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="containerModel" value="' + esc(latest.containerModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="containerSerial" value="' + esc(latest.containerSerial||sn) + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + stripDateTime(latest.containerDom + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + stripDateTime(latest.containerDom) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
                 '<div class="gear-customer-notes-label">📝 My Notes</div>' +
                 '<textarea id="gnote_container_' + esc(sn) + '" rows="2" placeholder="Private notes about this container...">' + getGearNote(esc(sn), 'container') + '</textarea>' +
                 '<div class="gear-notes-save-row">' +
-                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'container\', esc(sn))">Save</button>' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'container\', \'' + esc(sn) + '\')">Save</button>' +
                 '<span class="gear-notes-saved-msg" id="gnotemsg_container_' + esc(sn) + '"></span>' +
                 '</div>' +
                 '</div>' +
@@ -942,14 +942,14 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="mainManufacturer" value="' + esc(latest.mainManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="mainModel" value="' + esc(latest.mainModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="mainSerial" value="' + esc(latest.mainSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + stripDateTime(latest.mainDom + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + stripDateTime(latest.mainDom) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
                 '<div class="gear-customer-notes-label">📝 My Notes</div>' +
                 '<textarea id="gnote_main_' + esc(sn) + '" rows="2" placeholder="Private notes about this main...">' + getGearNote(esc(sn), 'main') + '</textarea>' +
                 '<div class="gear-notes-save-row">' +
-                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'main\', esc(sn))">Save</button>' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'main\', \'' + esc(sn) + '\')">Save</button>' +
                 '<span class="gear-notes-saved-msg" id="gnotemsg_main_' + esc(sn) + '"></span>' +
                 '</div>' +
                 '</div>' +
@@ -986,14 +986,14 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="reserveManufacturer" value="' + esc(latest.reserveManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="reserveModel" value="' + esc(latest.reserveModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="reserveSerial" value="' + esc(latest.reserveSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + stripDateTime(latest.reserveDom + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + stripDateTime(latest.reserveDom) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
                 '<div class="gear-customer-notes-label">📝 My Notes</div>' +
                 '<textarea id="gnote_reserve_' + esc(sn) + '" rows="2" placeholder="Private notes about this reserve...">' + getGearNote(esc(sn), 'reserve') + '</textarea>' +
                 '<div class="gear-notes-save-row">' +
-                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'reserve\', esc(sn))">Save</button>' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'reserve\', \'' + esc(sn) + '\')">Save</button>' +
                 '<span class="gear-notes-saved-msg" id="gnotemsg_reserve_' + esc(sn) + '"></span>' +
                 '</div>' +
                 '</div>' +
@@ -1019,14 +1019,14 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="aadManufacturer" value="' + esc(latest.aadManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="aadModel" value="' + esc(latest.aadModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="aadSerial" value="' + esc(latest.aadSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + stripDateTime(latest.aadServiceDate + '"></div>' +
+                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + stripDateTime(latest.aadServiceDate) + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
                 '<div class="gear-customer-notes-label">📝 My Notes</div>' +
                 '<textarea id="gnote_aad_' + esc(sn) + '" rows="2" placeholder="Private notes about this aad...">' + getGearNote(esc(sn), 'aad') + '</textarea>' +
                 '<div class="gear-notes-save-row">' +
-                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'aad\', esc(sn))">Save</button>' +
+                '<button class="gear-notes-save-btn" onclick="saveGearNote(\'aad\', \'' + esc(sn) + '\')">Save</button>' +
                 '<span class="gear-notes-saved-msg" id="gnotemsg_aad_' + esc(sn) + '"></span>' +
                 '</div>' +
                 '</div>' +
