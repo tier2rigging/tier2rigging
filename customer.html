@@ -825,8 +825,8 @@
       const dueDateStr = latest.nextRepackDue || latest.reminder_date || '';
       if (dueDateStr) {
         const days = Math.ceil((new Date(dueDateStr) - new Date()) / (1000*60*60*24));
-        if (days < 0)      { dueCls = 'overdue'; dueText = '🚨 Repack Overdue ' + Math.abs(days) + 'd'; }
-        else if (days <= 30){ dueCls = 'warn';    dueText = '⚠️ Repack Due in ' + days + 'd'; }
+        if (days < 0)      { dueCls = 'overdue'; dueText = '🚨 Repack Overdue'; }
+        else if (days <= 30){ dueCls = 'warn';    dueText = '⚠️ Due in ' + days + 'd'; }
         else                { dueCls = 'ok';      dueText = '✅ Service Current'; }
       }
 
@@ -895,6 +895,8 @@
             '<div>' +
               '<div class="rig-block-name">' + esc(contName) + '</div>' +
               '<span class="rig-block-serial">' + esc(sn) + '</span>' +
+              (dueDateStr ? '<div style="margin-top:5px;font-size:11px;font-weight:700;color:' + (dueCls==='overdue'?'#e07a5a':dueCls==='warn'?'#e0c080':'#6fcf97') + ';">' +
+                (dueCls==='overdue'?'🚨':dueCls==='warn'?'⚠️':'📅') + ' Reserve Repack Due: ' + esc(dueDateStr) + '</div>' : '') +
             '</div>' +
           '</div>' +
           '<div style="display:flex;align-items:center;gap:10px;">' +
@@ -984,14 +986,15 @@
                 '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + formatDate(latest.reserveDom) + '</div></div>' +
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.reserveSerial || '—') + '</div></div>' +
               '</div>' +
-              (latest.nextRepackDue ? (function() {
-                var days = Math.ceil((new Date(latest.nextRepackDue) - new Date()) / (1000*60*60*24));
+              (latest.nextRepackDue || latest.reminder_date ? (function() {
+                var dateStr = latest.nextRepackDue || latest.reminder_date || '';
+                var days = Math.ceil((new Date(dateStr) - new Date()) / (1000*60*60*24));
                 var cls = days < 0 ? '#e07a5a' : days <= 30 ? '#e0c080' : '#6fcf97';
                 var icon = days < 0 ? '🚨' : days <= 30 ? '⚠️' : '✅';
                 var label = days < 0 ? 'OVERDUE by ' + Math.abs(days) + ' days' : days <= 30 ? 'Due in ' + days + ' days' : 'Current';
                 return '<div style="margin:10px 0 4px;padding:10px 14px;background:rgba(0,0,0,0.15);border-left:3px solid ' + cls + ';border-radius:0 6px 6px 0;">' +
                   '<div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px;">📅 Next Reserve Repack Due</div>' +
-                  '<div style="font-size:15px;font-weight:700;color:' + cls + ';">' + icon + ' ' + esc(latest.nextRepackDue) + ' <span style="font-size:12px;font-weight:400;">(' + label + ')</span></div>' +
+                  '<div style="font-size:15px;font-weight:700;color:' + cls + ';">' + icon + ' ' + esc(dateStr) + ' <span style="font-size:12px;font-weight:400;">(' + label + ')</span></div>' +
                   '</div>';
               })() : '') +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
