@@ -30,17 +30,30 @@
   .result.show{display:block;}
 
   /* PRINTABLE QR CARD */
-  .print-card{background:#f2ede4;border-radius:14px;padding:28px 24px 22px;display:inline-block;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,0.5);margin-bottom:22px;}
-  .pc-brand{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#1c1c1e;line-height:1;}
-  .pc-brand span{color:#8a6a3e;}
-  .pc-tagline{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#8a7a60;margin:3px 0 14px;}
-  #qrcode{display:flex;justify-content:center;margin-bottom:12px;}
-  #qrcode canvas,#qrcode img{border-radius:8px;border:3px solid #1c1c1e;}
-  .pc-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#2a1e10;margin-bottom:4px;}
-  .pc-serial{font-family:'DM Mono',monospace;font-size:12px;color:#5a4a30;background:rgba(138,106,62,0.12);border:1px solid rgba(138,106,62,0.2);padding:4px 14px;border-radius:20px;display:inline-block;}
-  .pc-container{font-size:12px;color:#8a7a60;margin-top:5px;}
-  .pc-scan{font-size:10px;color:#a08060;margin-top:12px;letter-spacing:0.5px;border-top:1px solid rgba(138,106,62,0.15);padding-top:10px;}
-  .pc-scan strong{color:#5a4a30;}
+  .print-card{
+    background:#ffffff;
+    border-radius:10px;
+    padding:16px 18px 14px;
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,0.5);
+    margin-bottom:22px;
+    border:2px solid #000;
+    width:336px;   /* 3.5" at 96dpi */
+    min-height:192px; /* 2" at 96dpi */
+  }
+  .pc-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#000;line-height:1;font-weight:900;}
+  .pc-brand span{color:#000;}
+  .pc-tagline{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#000;margin:2px 0 10px;font-weight:700;}
+  #qrcode{display:flex;justify-content:center;margin-bottom:10px;}
+  #qrcode canvas,#qrcode img{border-radius:4px;border:2px solid #000;}
+  .pc-name{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:#000;margin-bottom:3px;font-weight:900;}
+  .pc-serial{font-family:'DM Mono',monospace;font-size:11px;color:#000;background:#e8e8e8;border:1.5px solid #000;padding:3px 12px;border-radius:20px;display:inline-block;font-weight:900;}
+  .pc-container{font-size:11px;color:#000;margin-top:4px;font-weight:700;}
+  .pc-scan{font-size:9px;color:#000;margin-top:10px;letter-spacing:0.5px;border-top:1.5px solid #000;padding-top:8px;font-weight:600;}
+  .pc-scan strong{color:#000;font-weight:900;}
 
   .url-box{background:var(--input-bg);border:1px solid var(--border);border-radius:7px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--tan);word-break:break-all;margin:0 0 14px;text-align:left;}
   .url-lbl{font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;text-align:left;}
@@ -78,15 +91,33 @@
   .print-card.small-card #qrcode img { border-radius: 3px; border: 2px solid #1c1c1e; }
 
   @media print {
-    body{background:white;padding:0;}
+    body{background:white;padding:0;margin:0;}
     .card,.btn-row,.url-lbl,.url-box,.tip,.sub,h1,.size-toggle-wrap{display:none!important;}
-    .result{display:block!important;}
-    .print-card{box-shadow:none;}
+    .result{display:block!important;text-align:center;padding:0;margin:0;}
+    .print-card{
+      box-shadow:none !important;
+      border-radius:0 !important;
+      width: 3.5in !important;
+      min-height: 2in !important;
+      padding: 0.12in 0.15in !important;
+      border: 1.5pt solid #000 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .pc-brand,.pc-name,.pc-serial,.pc-tagline,.pc-container,.pc-scan { color: #000 !important; }
+    .pc-serial { background: #e8e8e8 !important; border: 1.5pt solid #000 !important; }
+    .pc-scan { border-top: 1.5pt solid #000 !important; }
     /* 1.5x2 print size */
     .print-card.small-card {
-      width: 1.5in;
-      padding: 0.08in 0.1in 0.06in;
+      width: 1.5in !important;
+      min-height: 2in !important;
+      padding: 0.08in 0.1in 0.06in !important;
     }
+    #qrcode canvas, #qrcode img { border: 2pt solid #000 !important; }
   }
 
 </style>
