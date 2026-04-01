@@ -41,8 +41,8 @@
     box-shadow:0 12px 40px rgba(0,0,0,0.5);
     margin-bottom:22px;
     border:2px solid #000;
-    width:336px;   /* 3.5" at 96dpi */
-    min-height:192px; /* 2" at 96dpi */
+    width:192px;    /* 2" at 96dpi */
+    min-height:336px; /* 3.5" at 96dpi */
   }
   .pc-brand{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#000;line-height:1;font-weight:900;}
   .pc-brand span{color:#000;}
@@ -97,9 +97,9 @@
     .print-card{
       box-shadow:none !important;
       border-radius:0 !important;
-      width: 3.5in !important;
-      min-height: 2in !important;
-      padding: 0.12in 0.15in !important;
+      width: 2in !important;
+      min-height: 3.5in !important;
+      padding: 0.15in 0.12in !important;
       border: 1.5pt solid #000 !important;
       display: flex !important;
       flex-direction: column !important;
@@ -124,6 +124,7 @@
 </head>
 <body>
 <div class="wrap">
+  <a href="admin.html" style="display:inline-flex;align-items:center;gap:7px;color:var(--muted);text-decoration:none;font-size:13px;font-family:'Barlow',sans-serif;letter-spacing:1px;margin-bottom:18px;transition:color 0.15s;" onmouseover="this.style.color='var(--tan)'" onmouseout="this.style.color='var(--muted)'">← Back to Admin</a>
   <h1>TIER<span>2</span> RIGGING</h1>
   <p class="sub">Generate a personal QR code for each customer. They scan it once and get instant access to their full service history AND a pre-filled new work order form.</p>
 
@@ -137,7 +138,7 @@
     <div class="size-toggle-wrap">
       <label>Card Size</label>
       <div class="size-toggle">
-        <div class="size-opt active" id="size-standard" onclick="setSize('standard')">Standard<small>Wallet / Gear Bag</small></div>
+        <div class="size-opt active" id="size-standard" onclick="setSize('standard')">Standard<small>2" × 3.5" Portrait</small></div>
         <div class="size-opt" id="size-small" onclick="setSize('small')">1.5" × 2"<small>Label / Tag</small></div>
       </div>
     </div>
