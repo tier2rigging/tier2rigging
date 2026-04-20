@@ -1259,7 +1259,10 @@
     if (sel) sel.classList.add('selected');
   }
 
+  var _submitting = false;
+
   function confirmRushAndSubmit() {
+    if (_submitting) return;
     document.getElementById('rush-service-field').value = selectedRushLabel;
     document.getElementById('rush-fee-field').value = selectedRushFee;
     closeRushModal();
@@ -1268,9 +1271,14 @@
 
   // ── ACTUAL FORM SUBMIT ───────────────────────────────────
   async function doSubmit() {
+    if (_submitting) return;
+    _submitting = true;
+
     var btn = document.getElementById('submit-btn');
+    var rushBtn = document.querySelector('.rush-go-btn');
     btn.disabled = true;
     btn.textContent = 'Submitting…';
+    if (rushBtn) rushBtn.disabled = true;
 
     var form = document.getElementById('order-form');
     var payload = {};
@@ -1306,8 +1314,10 @@
       document.getElementById('success-screen').classList.add('show');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch(err) {
+      _submitting = false;
       btn.disabled = false;
       btn.textContent = '\u25B6 Submit Service Request';
+      if (rushBtn) rushBtn.disabled = false;
       alert('Submission failed. Please try again or call us at (631) 488-0071.');
     }
   }
