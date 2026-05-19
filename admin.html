@@ -1286,10 +1286,21 @@ function openModal(idx) {
   editor.innerHTML = '';
   ALL_SERVICES.forEach((svc, i) => {
     const svcLower = svc.name.toLowerCase().trim();
-    const isChecked = checkedServices.some(cs => cs === svcLower || cs.includes(svcLower) || svcLower.includes(cs));
+    // Normalize: strip all non-alphanumeric for fuzzy comparison
+    const svcNorm = svcLower.replace(/[^a-z0-9]/g, '');
+    const isChecked = checkedServices.some(cs => {
+      // Exact match (after price stripping)
+      if (cs === svcLower) return true;
+      // Normalized exact match (handles & vs and, extra spaces, etc.)
+      if (cs.replace(/[^a-z0-9]/g, '') === svcNorm) return true;
+      return false;
+    });
 
-    // Extract saved price if present
-    const savedEntry = rawServices.split(/[\n,]+/).map(s => s.trim()).find(s => s.toLowerCase().includes(svc.name.toLowerCase().substring(0, 20)));
+    // Extract saved price if present — use normalized match to avoid cross-matching similar service names
+    const savedEntry = rawServices.split(/[\n,]+/).map(s => s.trim()).find(s => {
+      const entryName = s.replace(/\s*-\s*\$[\d.]+$/, '').replace(/\s*-\s*Varies$/, '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      return entryName === svcNorm;
+    });
     let savedPrice = svc.price;
     if (savedEntry) {
       const priceMatch = savedEntry.match(/\$\s*([\d.]+)/);
