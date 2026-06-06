@@ -518,6 +518,11 @@
     My Rig Portal
   </a>
   <div class="nav-divider"></div>
+  <a class="nav-link" href="contact.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Contact
+  </a>
+  <div class="nav-divider"></div>
   <a class="nav-link admin-link" href="admin.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     Admin
@@ -1259,10 +1264,7 @@
     if (sel) sel.classList.add('selected');
   }
 
-  var _submitting = false;
-
   function confirmRushAndSubmit() {
-    if (_submitting) return;
     document.getElementById('rush-service-field').value = selectedRushLabel;
     document.getElementById('rush-fee-field').value = selectedRushFee;
     closeRushModal();
@@ -1271,14 +1273,9 @@
 
   // ── ACTUAL FORM SUBMIT ───────────────────────────────────
   async function doSubmit() {
-    if (_submitting) return;
-    _submitting = true;
-
     var btn = document.getElementById('submit-btn');
-    var rushBtn = document.querySelector('.rush-go-btn');
     btn.disabled = true;
     btn.textContent = 'Submitting…';
-    if (rushBtn) rushBtn.disabled = true;
 
     var form = document.getElementById('order-form');
     var payload = {};
@@ -1314,10 +1311,8 @@
       document.getElementById('success-screen').classList.add('show');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch(err) {
-      _submitting = false;
       btn.disabled = false;
       btn.textContent = '\u25B6 Submit Service Request';
-      if (rushBtn) rushBtn.disabled = false;
       alert('Submission failed. Please try again or call us at (631) 488-0071.');
     }
   }

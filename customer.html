@@ -556,6 +556,11 @@
     My Rig Portal
   </a>
   <div class="nav-divider"></div>
+  <a class="nav-link" href="contact.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+    Contact
+  </a>
+  <div class="nav-divider"></div>
   <a class="nav-link admin-link" href="admin.html">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
     Admin
@@ -585,7 +590,7 @@
       <button class="portal-btn rigger-btn" onclick="goRigger()">
         <div class="pb-icon">🔧</div>
         <div>
-          <div class="pb-title">Rigger Service Entry</div>
+          <div class="pb-title">Rigger Service Update</div>
           <div class="pb-sub">Log service performed on this rig at your DZ</div>
         </div>
         <div class="pb-arrow">→</div>
@@ -902,13 +907,14 @@
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Model</div><div class="rig-gear-val">' + esc(latest.containerModel || '—') + '</div></div>' +
                 '<div class="rig-gear-cell"><div class="rig-gear-label">DOM</div><div class="rig-gear-val">' + formatDate(latest.containerDom) + '</div></div>' +
                 '<div class="rig-gear-cell"><div class="rig-gear-label">Serial #</div><div class="rig-gear-val">' + esc(latest.containerSerial || sn) + '</div></div>' +
+                '<div class="rig-gear-cell" style="grid-column:1/-1"><div class="rig-gear-label">Notes</div><div class="rig-gear-val">' + esc(latest.notes || '—') + '</div></div>' +
               '</div>' +
               '<button class="gear-section-edit-btn" onclick="toggleGearEdit(this)">✏ Edit</button>' +
               '<div class="gear-edit-fields">' +
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="containerManufacturer" value="' + esc(latest.containerManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="containerModel" value="' + esc(latest.containerModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="containerSerial" value="' + esc(latest.containerSerial||sn) + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + stripDateTime(latest.containerDom) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="containerDom" value="' + stripDateTime(latest.containerDom + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -941,7 +947,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="mainManufacturer" value="' + esc(latest.mainManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="mainModel" value="' + esc(latest.mainModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="mainSerial" value="' + esc(latest.mainSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + stripDateTime(latest.mainDom) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="mainDom" value="' + stripDateTime(latest.mainDom + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -985,7 +991,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="reserveManufacturer" value="' + esc(latest.reserveManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="reserveModel" value="' + esc(latest.reserveModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="reserveSerial" value="' + esc(latest.reserveSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + stripDateTime(latest.reserveDom) + '"></div>' +
+                '<div class="gear-edit-field"><label>DOM</label><input type="text" data-field="reserveDom" value="' + stripDateTime(latest.reserveDom + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -1018,7 +1024,7 @@
                 '<div class="gear-edit-field"><label>Manufacturer</label><input type="text" data-field="aadManufacturer" value="' + esc(latest.aadManufacturer||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Model</label><input type="text" data-field="aadModel" value="' + esc(latest.aadModel||'') + '"></div>' +
                 '<div class="gear-edit-field"><label>Serial #</label><input type="text" data-field="aadSerial" value="' + esc(latest.aadSerial||'') + '"></div>' +
-                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + stripDateTime(latest.aadServiceDate) + '"></div>' +
+                '<div class="gear-edit-field"><label>Last Service Date</label><input type="text" data-field="aadServiceDate" value="' + stripDateTime(latest.aadServiceDate + '"></div>' +
                 '<button class="gear-save-btn" onclick="saveGearEdit(this,\'' + esc(sn) + '\',\'' + esc(email) + '\')">Save</button>' +
                 '<div class="gear-save-msg"></div>' +
                 '<div class="gear-customer-notes">' +
@@ -1039,9 +1045,9 @@
           '</div>' +
 
           // ── Service History (collapsed) ──
-          '<div class="gear-section" style="margin-top:6px;background:rgba(200,169,110,0.06);border:1px solid rgba(200,169,110,0.25);border-radius:10px;overflow:hidden;">' +
-            '<div class="gear-section-head" onclick="toggleGearSection(this)" style="padding:14px 16px;border-bottom:1px solid rgba(200,169,110,0.2);">' +
-              '<span class="gear-section-title" style="font-size:12px;color:var(--tan-light);">📋 Service History — ' + history.length + ' record' + (history.length !== 1 ? 's' : '') + '</span>' +
+          '<div class="gear-section">' +
+            '<div class="gear-section-head" onclick="toggleGearSection(this)">' +
+              '<span class="gear-section-title">📋 Service History — ' + history.length + ' record' + (history.length !== 1 ? 's' : '') + '</span>' +
               '<span class="gear-section-chevron">⌄</span>' +
             '</div>' +
             '<div class="gear-section-body collapsed">' +
@@ -1098,46 +1104,22 @@
     if (msgEl) { msgEl.textContent = ''; msgEl.style.color = ''; }
 
     try {
-      // Use GET with query params — GAS handles GET more reliably cross-origin than POST
-      var params = new URLSearchParams(payload);
-      var resp = await fetch(GAS_URL + '?' + params.toString(), { method: 'GET', mode: 'cors' });
-      var data = await resp.json();
-      console.log('saveGearEdit response:', JSON.stringify(data));
-
-      if (data.status === 'ok') {
-        if (msgEl) { msgEl.textContent = '✓ Saved — ' + (data.updated || 0) + ' record(s) updated'; msgEl.style.color = 'var(--success,#4a9e6a)'; }
-        // Update the displayed values in the gear cells above the edit form
-        inputs.forEach(function(inp) {
-          var fieldName = inp.dataset.field;
-          var newVal = inp.value.trim();
-          // Find the corresponding display cell (search sibling gear grid)
-          var gearGrid = section.querySelector('.rig-block-gear');
-          if (gearGrid) {
-            var labels = gearGrid.querySelectorAll('.rig-gear-label');
-            labels.forEach(function(lbl) {
-              var labelText = lbl.textContent.toLowerCase().replace(/[^a-z]/g,'');
-              var fieldKey = fieldName.toLowerCase().replace('container','').replace('main','').replace('reserve','').replace('aad','').replace('servicedate','lastservice');
-              if (labelText === fieldKey || labelText === fieldKey.replace('#','')) {
-                var valEl = lbl.nextElementSibling;
-                if (valEl) valEl.textContent = newVal || '—';
-              }
-            });
-          }
-        });
-        // Close edit fields
-        var fields = section.querySelector('.gear-edit-fields');
-        if (fields) fields.classList.remove('open');
-        var editBtn = section.querySelector('.gear-section-edit-btn');
-        if (editBtn) editBtn.textContent = '✏ Edit';
-        setTimeout(function() { if (msgEl) msgEl.textContent = ''; }, 3000);
-      } else {
-        if (msgEl) { msgEl.textContent = '⚠ ' + (data.message || 'Save failed — try again.'); msgEl.style.color = 'var(--danger)'; }
-      }
+      await fetch(GAS_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+      if (msgEl) { msgEl.textContent = '✓ Saved!'; msgEl.style.color = 'var(--success,#4a9e6a)'; }
+      // Close edit fields
+      var fields = section.querySelector('.gear-edit-fields');
+      if (fields) fields.classList.remove('open');
+      saveBtn.textContent = '✏ Edit';
+      setTimeout(function() { if (msgEl) msgEl.textContent = ''; }, 3000);
     } catch(e) {
       if (msgEl) { msgEl.textContent = '⚠ Save failed — try again.'; msgEl.style.color = 'var(--danger)'; }
       console.error('saveGearEdit error:', e);
+      saveBtn.textContent = 'Save';
     }
-    saveBtn.textContent = 'Save';
     saveBtn.disabled = false;
   }
 
