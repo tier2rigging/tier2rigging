@@ -1,11 +1,13 @@
 // Tier2 Rigging Service Worker
 // ── BUMP THIS NUMBER every time you deploy changes ──
-const VERSION    = '6';
+const VERSION    = '7';
 const CACHE_NAME = 'tier2-v' + VERSION;
 
 const OFFLINE_URLS = [
   '/',
   '/index.html',
+  '/request.html',
+  '/supply.html',
   '/customer.html',
   '/admin.html',
   '/customers.html',

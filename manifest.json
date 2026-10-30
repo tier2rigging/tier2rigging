@@ -2,7 +2,7 @@
   "name": "Tier2 Rigging LLC",
   "short_name": "Tier2 Rigging",
   "description": "Parachute Rigging Services — Submit service requests, view your rig portal, and track your work orders.",
-  "start_url": "/index.html",
+  "start_url": "/request.html",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#c8a96e",
@@ -22,7 +22,7 @@
       "name": "Service Request",
       "short_name": "New Request",
       "description": "Submit a new service request",
-      "url": "/index.html",
+      "url": "/request.html",
       "icons": [{ "src": "/icon-96x96.png", "sizes": "96x96" }]
     },
     {
