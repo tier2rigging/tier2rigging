@@ -502,6 +502,7 @@
       <button class="refresh-btn" onclick="window.location.href='qr-generator.html'" style="border-color:rgba(200,169,110,0.4);color:var(--tan);">⚡ QR Code</button>
       <button class="refresh-btn" onclick="window.location.href='dashboard.html'" style="border-color:rgba(106,159,216,0.3);color:#6a9fd8;">📊 Dashboard</button>
       <button class="refresh-btn" onclick="window.location.href='customers.html'" style="border-color:rgba(200,169,110,0.4);color:var(--tan);">👤 Customers</button>
+      <button class="refresh-btn" onclick="window.location.href='canopy-inspection.html'" style="border-color:rgba(217,72,15,0.45);color:#f08a5d;">📋 Canopy Inspection</button>
       <a class="refresh-btn" href="https://docs.google.com/spreadsheets/d/19j5I6gLBiBS4f6O1Ws0cIRu3TA9ycQRpkTdjk3kBWS8/edit" target="_blank" style="border-color:rgba(100,200,100,0.4);color:#6dcc96;text-decoration:none;">📊 Sheet</a>
       <button class="logout-btn" onclick="logout()">Log Out</button>
     </div>
@@ -819,6 +820,7 @@ let currentRowIndex = null;
 function doLogin() {
   const pw = document.getElementById('pw-input').value;
   if (pw === ADMIN_PASSWORD) {
+    try { sessionStorage.setItem('t2_admin_session', '1'); } catch (e) {}
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
@@ -828,6 +830,7 @@ function doLogin() {
   }
 }
 function logout() {
+  try { sessionStorage.removeItem('t2_admin_session'); } catch (e) {}
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
   document.getElementById('pw-input').value = '';
