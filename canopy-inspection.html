@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tier2 Rigging — Canopy Inspection</title>
+<link rel="icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #1c1c1e; --card: #252527; --tan: #c8a96e; --muted: #9a9890;
+    --border: rgba(200,185,150,0.2); --red: #e05555; --green: #5aad7a;
+    --accent: #D9480F; --ink: #1a1a1a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); font-family: 'DM Sans', sans-serif; color: #eee; }
+
+  /* ── LOGIN ── */
+  #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .login-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 32px; width: 100%; max-width: 340px; text-align: center; }
+  .login-box h1 { font-family: 'Bebas Neue', sans-serif; letter-spacing: 3px; color: var(--tan); margin: 0 0 4px; font-weight: 400; }
+  .login-box p { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  .login-box input { width: 100%; padding: 12px; border-radius: 6px; border: 1px solid var(--border); background: #161618; color: #eee; font-size: 15px; margin-bottom: 12px; }
+  .login-err { color: var(--red); font-size: 13px; margin-top: 10px; display: none; }
+  #app { display: none; }
+
+  /* ── TOOLBAR ── */
+  .toolbar { position: sticky; top: 0; z-index: 10; background: #161618; border-bottom: 1px solid var(--border); padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .toolbar .brand { font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; color: var(--tan); font-size: 20px; margin-right: auto; }
+  .toolbar .brand span { color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px; letter-spacing: 0; margin-left: 8px; }
+  .btn { background: transparent; border: 1px solid var(--border); color: #ddd; padding: 9px 14px; border-radius: 6px; font-size: 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; text-decoration: none; min-height: 40px; }
+  .btn:hover { border-color: var(--tan); color: var(--tan); }
+  .btn-primary { background: var(--tan); color: #1a1a1a; border-color: var(--tan); font-weight: 600; }
+  .btn-primary:hover { background: #e0c080; color: #1a1a1a; }
+  .btn:disabled { opacity: .5; cursor: wait; }
+
+  .email-panel { display: none; background: var(--card); border-bottom: 1px solid var(--border); padding: 12px 16px; }
+  .email-panel.open { display: block; }
+  .email-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; max-width: 900px; margin: 0 auto; }
+  .email-row input, .email-row textarea { background: #161618; border: 1px solid var(--border); border-radius: 6px; color: #eee; padding: 9px 10px; font-size: 14px; font-family: 'DM Sans', sans-serif; }
+  .email-row input { flex: 1 1 240px; }
+  .email-row textarea { flex: 1 1 100%; min-height: 60px; resize: vertical; }
+  .status { font-size: 13px; color: var(--muted); }
+  .status.ok { color: var(--green); } .status.err { color: var(--red); }
+
+  /* ── SHEETS ── */
+  .sheets { padding: 24px 16px 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; overflow-x: auto; }
+  .sheet-wrap { width: 816px; flex-shrink: 0; }
+  .sheet { width: 816px; height: 1056px; background: #fff; color: var(--ink); font-family: 'Barlow', system-ui, sans-serif; padding: 0 40px 36px; position: relative; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.4); }
+  .bar { height: 8px; margin: 0 -40px 18px; background: var(--accent); }
+  .p2 .bar { margin-bottom: 14px; }
+  .hdr { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 12px; border-bottom: 2px solid var(--ink); }
+  .wordmark { font-family: 'Barlow Condensed', sans-serif; font-weight: 800; font-size: 38px; line-height: .9; letter-spacing: 1px; }
+  .wordmark b { color: var(--accent); font-weight: 800; }
+  .sub { font-size: 12px; color: #444; letter-spacing: .4px; white-space: nowrap; }
+  .title { white-space: nowrap; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 26px; line-height: 1; text-transform: uppercase; letter-spacing: .5px; text-align: right; }
+  .p2 .hdr { padding-bottom: 8px; } .p2 .wordmark { font-size: 26px; } .p2 .title { font-size: 20px; }
+
+  .fields { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); column-gap: 20px; row-gap: 6px; padding: 12px 0 4px; }
+  .p2 .fields { padding-top: 10px; }
+  .fld { display: flex; align-items: flex-end; gap: 6px; height: 22px; }
+  .fld.span2 { grid-column: span 2; }
+  .fld label { font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .line-in { flex: 1; min-width: 0; border: 0; border-bottom: 1px solid var(--ink); background: transparent; font-family: 'Barlow', sans-serif; font-size: 13px; color: #0b3a8a; height: 18px; padding: 0 2px; outline: none; }
+  .line-in.light { border-bottom-color: #8a8a8a; }
+  .line-in:focus { background: #fff8e6; }
+
+  .sec { display: flex; align-items: center; gap: 8px; margin: 12px 0 4px; }
+  .sec .n { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 13px; color: var(--accent); }
+  .sec .t { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 17px; text-transform: uppercase; letter-spacing: .6px; }
+  .sec .rule { flex: 1; border-bottom: 1px solid var(--ink); }
+  .sec .aside { font-size: 12px; color: #555; }
+
+  .row { display: flex; align-items: center; gap: 10px; height: 22px; border-bottom: 1px solid #d4d4d4; }
+  .row .lbl { width: 168px; flex-shrink: 0; font-size: 12.5px; font-weight: 600; }
+  .opts { display: flex; align-items: center; gap: 13px; flex-shrink: 0; }
+  .note { flex: 1; display: flex; align-items: flex-end; gap: 6px; min-width: 60px; }
+  .note span { font-size: 12px; color: #555; white-space: nowrap; }
+
+  /* custom checkbox — renders reliably in the PDF */
+  .cb { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; cursor: pointer; user-select: none; }
+  .cb input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .cb .box { width: 11px; height: 11px; border: 1.5px solid var(--ink); border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; font-weight: 700; color: #0b3a8a; }
+  .cb.on .box::after { content: '✕'; font-size: 10px; }
+  .cb.big { font-size: 12.5px; font-weight: 600; gap: 6px; }
+  .cb.big .box { width: 13px; height: 13px; }
+
+  .free { height: 26px; display: flex; align-items: flex-end; }
+  .free .line-in { height: 22px; }
+
+  /* diagram */
+  .views { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); column-gap: 24px; }
+  .view-name { font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: .5px; text-align: center; margin-bottom: 3px; }
+  .nums, .cells { display: grid; grid-template-columns: repeat(9, minmax(0,1fr)); }
+  .nums div { text-align: center; font-size: 11px; font-weight: 600; color: #444; }
+  .arc { height: 10px; margin-top: 3px; border: 1.5px solid var(--ink); border-bottom: 0; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+  .cells { border-left: 1.5px solid var(--ink); border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); }
+  .cell { position: relative; height: 26px; border-right: 1.5px solid var(--ink); border-bottom: 1px dotted #9a9a9a; cursor: pointer; }
+  .cell .mid { position: absolute; left: 50%; top: 0; bottom: 0; border-left: 1px dashed #8a8a8a; }
+  .cell .l, .cell .r { position: absolute; top: 3px; font-size: 10.5px; font-weight: 600; color: #333; }
+  .cell .l { left: 2px; } .cell .r { right: 2px; }
+  .cell .mk { position: absolute; left: 0; right: 0; bottom: 1px; text-align: center; font-size: 13px; font-weight: 800; color: #c0182a; }
+  .edge { text-align: center; font-size: 11px; color: #555; margin-top: 3px; }
+  .hint { font-size: 12px; color: #555; margin-bottom: 6px; }
+
+  .check-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); column-gap: 24px; }
+  .check-grid .row .lbl { width: 128px; }
+
+  .verdict { display: flex; align-items: center; gap: 18px; height: 22px; }
+  .verdict .lbl { font-size: 12.5px; font-weight: 600; width: 120px; }
+
+  .sign { display: flex; gap: 20px; align-items: flex-end; margin-top: 18px; }
+  .sign > div { display: flex; flex-direction: column; gap: 3px; }
+  .sign .cap { font-size: 12px; font-weight: 600; }
+  .sigpad { position: relative; height: 40px; border-bottom: 1.5px solid var(--ink); }
+  .sigpad canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+  .sigclear { position: absolute; right: 0; top: 0; font-size: 11px; border: 1px solid #bbb; background: #fff; border-radius: 4px; padding: 1px 6px; cursor: pointer; color: #555; }
+  .sign .line-in { height: 26px; border-bottom-width: 1.5px; font-size: 14px; }
+
+  .foot { position: absolute; left: 40px; right: 40px; bottom: 16px; display: flex; justify-content: space-between; gap: 16px; font-size: 12px; color: #555; }
+
+  /* while capturing for PDF */
+  .capturing .sigclear { display: none; }
+  .capturing .line-in:focus { background: transparent; }
+
+  @page { size: letter; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .toolbar, .email-panel, .sigclear { display: none !important; }
+    .sheets { padding: 0; gap: 0; display: block; overflow: visible; }
+    .sheet { box-shadow: none; page-break-after: always; break-after: page; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .sheet-wrap:last-child .sheet { page-break-after: auto; break-after: auto; }
+    .line-in:focus { background: transparent; }
+  }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-box">
+    <h1>TIER2 RIGGING</h1>
+    <p>Admin Access Only</p>
+    <input type="password" id="pw-input" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn btn-primary" style="width:100%" onclick="doLogin()">ENTER</button>
+    <div class="login-err" id="login-err">Incorrect password</div>
+    <div style="margin-top:16px"><a href="admin.html" style="color:var(--muted);font-size:13px">← Back to Admin</a></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="toolbar">
+    <div class="brand">TIER2 RIGGING <span>Canopy Inspection</span></div>
+    <a class="btn" href="admin.html">← Admin</a>
+    <button class="btn" onclick="clearForm()">Clear</button>
+    <button class="btn" onclick="window.print()">🖨 Print</button>
+    <button class="btn" id="dl-btn" onclick="downloadPdf()">⬇ Download PDF</button>
+    <button class="btn btn-primary" onclick="toggleEmail()">✉ Email to Customer</button>
+  </div>
+  <div class="email-panel" id="email-panel">
+    <div class="email-row">
+      <input type="email" id="email-to" placeholder="Customer email">
+      <button class="btn btn-primary" id="send-btn" onclick="emailPdf()">Send PDF</button>
+      <span class="status" id="email-status"></span>
+      <textarea id="email-msg" placeholder="Message (optional)">Attached is the canopy inspection report for your canopy. Let me know if you have any questions.
+
+Shaun Tierney
+Tier2 Rigging LLC · 516-902-8843</textarea>
+    </div>
+  </div>
+
+  <div class="sheets" id="sheets">
+    <!-- PAGE 1 -->
+    <div class="sheet-wrap"><div class="sheet p1" id="sheet1">
+      <div class="bar"></div>
+      <div class="hdr">
+        <div>
+          <div class="wordmark">TIER<b>2</b> RIGGING</div>
+          <div class="sub">Tier2 Rigging LLC · Manorville, NY · FAA Master Parachute Rigger</div>
+        </div>
+        <div>
+          <div class="title">Canopy Inspection Report</div>
+          <div class="sub" style="text-align:right;margin-top:3px">516-902-8843 · tier2rigging@gmail.com</div>
+        </div>
+      </div>
+      <div class="fields" id="fields1"></div>
+      <div id="sections1"></div>
+      <div class="sec"><div class="n">04</div><div class="t">Comments / Recommendations</div><div class="rule"></div></div>
+      <div class="free"><input class="line-in light" data-k="rec1"></div>
+      <div class="free"><input class="line-in light" data-k="rec2"></div>
+      <div class="free"><input class="line-in light" data-k="rec3"></div>
+      <div class="foot"><div>Tier2 Rigging LLC · Canopy Inspection Report</div><div>Page 1 of 2</div></div>
+    </div></div>
+
+    <!-- PAGE 2 -->
+    <div class="sheet-wrap"><div class="sheet p2" id="sheet2">
+      <div class="bar"></div>
+      <div class="hdr">
+        <div class="wordmark">TIER<b>2</b> RIGGING</div>
+        <div class="title">Canopy Inspection Report — continued</div>
+      </div>
+      <div class="fields">
+        <div class="fld"><label>Customer</label><input class="line-in" data-mirror="customer" readonly tabindex="-1"></div>
+        <div class="fld"><label>Model / size</label><input class="line-in" data-mirror="modelsize" readonly tabindex="-1"></div>
+        <div class="fld"><label>Serial #</label><input class="line-in" data-mirror="serial" readonly tabindex="-1"></div>
+      </div>
+
+      <div class="sec"><div class="n">05</div><div class="t">Damage / Patch Map</div><div class="rule"></div></div>
+      <div class="hint">Tap a cell to mark: X = damage · P = patch · S = sun fade. Solid = loaded rib · dashed = unloaded rib.</div>
+      <div class="views" id="views"></div>
+
+      <div class="sec"><div class="n">06</div><div class="t">Canopy Check</div><div class="rule"></div></div>
+      <div class="check-grid" id="checks"></div>
+
+      <div class="sec"><div class="n">07</div><div class="t">Container Components</div><div class="aside">(if submitted)</div><div class="rule"></div></div>
+      <div id="container"></div>
+
+      <div class="sec" style="margin-bottom:6px"><div class="n">08</div><div class="t">Rigger Determination</div><div class="rule"></div></div>
+      <div class="verdict" id="verdict"><div class="lbl">Overall condition</div></div>
+      <div class="views" style="margin-top:4px">
+        <div class="fld"><label style="font-size:12.5px">Est. jumps remaining on lines</label><input class="line-in" data-k="jumpsLeft"></div>
+        <div class="fld"><label style="font-size:12.5px">Est. market value $</label><input class="line-in" data-k="value"></div>
+      </div>
+      <div class="fld" style="height:26px"><label style="font-size:12.5px">Rigger comments</label><input class="line-in light" data-k="rc1"></div>
+      <div class="free"><input class="line-in light" data-k="rc2"></div>
+      <div class="free"><input class="line-in light" data-k="rc3"></div>
+
+      <div class="sign">
+        <div style="flex:2"><div class="sigpad"><canvas id="sig"></canvas><button class="sigclear" onclick="clearSig()">clear</button></div><div class="cap">Rigger signature</div></div>
+        <div style="flex:1"><input class="line-in" data-k="seal"><div class="cap">Seal symbol</div></div>
+        <div style="flex:1"><input class="line-in" data-k="signDate"><div class="cap">Date</div></div>
+      </div>
+      <div class="foot"><div>This inspection reflects canopy condition on the date shown and is not a guarantee of future airworthiness.</div><div style="white-space:nowrap">Page 2 of 2</div></div>
+    </div></div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbw92Fc7bT3RlPYXnIUC_Y52HNNOOkGxA2ls9UVSAJEyT_azp3XR3a2KoSb1MMcZols/exec';
+const ADMIN_PASSWORD = 'tier2admin';
+const DRAFT_KEY = 't2_canopy_inspection_draft';
+
+// ── AUTH ──
+function doLogin() {
+  if (document.getElementById('pw-input').value === ADMIN_PASSWORD) {
+    try { sessionStorage.setItem('t2_admin_session', '1'); } catch (e) {}
+    showApp();
+  } else {
+    document.getElementById('login-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  sizeSig();
+}
+
+// ── FORM DEFINITION ──
+const FIELDS = [
+  ['customer', 'Customer'], ['phone', 'Phone'], ['email', 'Email'],
+  ['mfr', 'Manufacturer'], ['model', 'Model'], ['size', 'Size'],
+  ['serial', 'Serial #'], ['dom', 'DOM'], ['date', 'Date'],
+  ['container', 'Container / rig'], ['totalJumps', 'Est. total jumps on canopy', 'span2']
+];
+const SECTIONS = [
+  ['01', 'Canopy', [
+    ['Fabric condition', ['Crisp', 'Good', 'Fair', 'Dusty', 'Poor'], ''],
+    ['Sun fade', ['None', 'Light', 'Moderate', 'Heavy'], 'Cell(s)'],
+    ['Packing creases', ['None', 'Mild', 'Heavy'], 'Cell(s)'],
+    ['Crossport fraying', ['None', 'Mild', 'Moderate', 'Heavy'], ''],
+    ['Tail seam', ['Okay', 'Damage'], 'Location'],
+    ['Fabric / porosity test', ['Not tested', 'Pass', 'Fail'], 'Reading'],
+    ['Patches', ['No', 'Yes'], 'Location'],
+    ['', [], ''],
+    ['Damage', ['No', 'Yes'], 'Location'],
+    ['Stabilizers / slider stops', ['Good', 'Slack', 'Worn', 'Damage'], ''],
+    ['Line attachment points', ['Good', 'Damage'], 'Location'],
+    ['Bridle attachment', ['Good', 'Damage'], '']
+  ]],
+  ['02', 'Slider', [
+    ['Size', ['Student', 'Collapsible'], ''],
+    ['Grommets', ['Good', 'Worn / sharp', 'Replace'], ''],
+    ['Fabric / kill lines', ['Good', 'Worn', 'Damage'], ''],
+    ['Comments', [], '']
+  ]],
+  ['03', 'Lines', [
+    ['Line material', ['HMA', 'Dacron', 'Vectran', 'Spectra'], 'Other'],
+    ['Line condition', [], '% worn (0% new – 100% replace)'],
+    ['Trim / shrinkage', ['In spec', 'Out of spec', 'Not measured'], ''],
+    ['Brake to toggle length', ['Factory', 'Modified'], 'Length'],
+    ['Brake lines', ['Good', 'Worn', 'Replace'], ''],
+    ['Line continuity', ['Correct', 'Incorrect'], ''],
+    ['Link type', ['Soft links', 'Hard links', 'Bumpers'], ''],
+    ['Link condition', ['New', 'Some wear', 'Heavy wear (replace)'], '']
+  ]]
+];
+const CHECKS = ['Top skin', 'Bottom skin', 'Ribs', 'Crossports', 'Stabilizers', 'Slider stops',
+  'Lines', 'Attachment points', 'Bartacks', 'Line continuity', 'Slider', 'Grommets',
+  'Connector links', 'Brake lines / toggles'];
+const CONTAINER = [
+  ['Risers', ['Good', 'Worn', 'Replace']],
+  ['3-rings / release loops', ['Good', 'Worn', 'Replace']],
+  ['Toggle keepers / guides', ['Good', 'Worn', 'Replace']],
+  ['Pilot chute', ['Good', 'Worn', 'Damage']],
+  ['Bridle / kill line', ['Good', 'Short', 'Long']],
+  ['Deployment bag', ['Good', 'Grommets', 'Stitching']]
+];
+const VERDICTS = ['Airworthy', 'Airworthy — see recommendations', 'Not airworthy / retire'];
+const MARKS = ['', 'X', 'P', 'S'];
+
+// ── BUILD ──
+const el = (tag, cls, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; };
+const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, '_');
+
+function checkbox(key, label, opts) {
+  opts = opts || {};
+  const lab = el('label', 'cb' + (opts.big ? ' big' : ''));
+  const inp = document.createElement('input');
+  inp.type = 'checkbox'; inp.dataset.k = key;
+  if (opts.group) inp.dataset.group = opts.group;
+  lab.appendChild(inp);
+  lab.appendChild(el('span', 'box'));
+  lab.appendChild(el('span', '', label));
+  return lab;
+}
+function lineInput(key, light) {
+  const i = document.createElement('input');
+  i.className = 'line-in' + (light ? ' light' : ''); i.dataset.k = key;
+  return i;
+}
+function optionRow(prefix, label, options, note, i) {
+  const key = prefix + '_' + (label ? slug(label) : 'blank' + i);
+  if (!label && !options.length) {
+    const f = el('div', 'row'); f.appendChild(lineInput(key + '_note', true)); return f;
+  }
+  const r = el('div', 'row');
+  r.appendChild(el('div', 'lbl', label));
+  const o = el('div', 'opts');
+  options.forEach(opt => o.appendChild(checkbox(key + '__' + slug(opt), opt)));
+  r.appendChild(o);
+  const n = el('div', 'note');
+  if (note) n.appendChild(el('span', '', note));
+  n.appendChild(lineInput(key + '_note', true));
+  r.appendChild(n);
+  return r;
+}
+
+function build() {
+  const f1 = document.getElementById('fields1');
+  FIELDS.forEach(([k, label, cls]) => {
+    const d = el('div', 'fld' + (cls ? ' ' + cls : ''));
+    d.appendChild(el('label', '', label));
+    const i = lineInput(k); if (k === 'email') i.type = 'email';
+    d.appendChild(i); f1.appendChild(d);
+  });
+
+  const s1 = document.getElementById('sections1');
+  SECTIONS.forEach(([n, t, rows]) => {
+    s1.appendChild(el('div', 'sec', `<div class="n">${n}</div><div class="t">${t}</div><div class="rule"></div>`));
+    rows.forEach((r, i) => s1.appendChild(optionRow('s' + n, r[0], r[1], r[2], i)));
+  });
+
+  // diagram
+  const views = document.getElementById('views');
+  const leftG = [5, 4, 3, 2, 1], rightG = [1, 2, 3, 4, 5];
+  ['Top view', 'Bottom view'].forEach(v => {
+    const w = el('div');
+    w.appendChild(el('div', 'view-name', v));
+    const nums = el('div', 'nums');
+    ['8', '6', '4', '2', '1', '3', '5', '7', '9'].forEach(n => nums.appendChild(el('div', '', n)));
+    w.appendChild(nums);
+    w.appendChild(el('div', 'arc'));
+    const cells = el('div', 'cells');
+    ['A', 'B', 'C', 'D'].forEach(row => {
+      for (let i = 0; i < 9; i++) {
+        const c = el('div', 'cell');
+        c.dataset.k = 'map_' + slug(v) + '_' + row + i;
+        c.appendChild(el('div', 'mid'));
+        if (i <= 4) c.appendChild(el('div', 'l', row + leftG[i]));
+        if (i >= 4) c.appendChild(el('div', 'r', row + rightG[i - 4]));
+        c.appendChild(el('div', 'mk', ''));
+        c.addEventListener('click', () => {
+          const mk = c.querySelector('.mk');
+          mk.textContent = MARKS[(MARKS.indexOf(mk.textContent) + 1) % MARKS.length];
+          saveDraft();
+        });
+        cells.appendChild(c);
+      }
+    });
+    w.appendChild(cells);
+    w.appendChild(el('div', 'edge', 'Leading edge at top · tail at bottom'));
+    views.appendChild(w);
+  });
+
+  const ch = document.getElementById('checks');
+  CHECKS.forEach(c => {
+    const k = 'chk_' + slug(c);
+    const r = el('div', 'row');
+    r.appendChild(el('div', 'lbl', c));
+    r.appendChild(checkbox(k + '__ok', 'OK', { group: k }));
+    r.appendChild(checkbox(k + '__attn', 'ATTN', { group: k }));
+    r.appendChild(lineInput(k + '_note', true));
+    ch.appendChild(r);
+  });
+
+  const ct = document.getElementById('container');
+  CONTAINER.forEach(([l, o], i) => ct.appendChild(optionRow('c', l, o, 'Notes', i)));
+
+  const vd = document.getElementById('verdict');
+  VERDICTS.forEach(v => vd.appendChild(checkbox('verdict__' + slug(v), v, { big: true, group: 'verdict' })));
+
+  // checkbox behavior
+  document.querySelectorAll('.cb input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      if (inp.checked && inp.dataset.group) {
+        document.querySelectorAll(`.cb input[data-group="${inp.dataset.group}"]`).forEach(o => {
+          if (o !== inp) { o.checked = false; o.parentElement.classList.remove('on'); }
+        });
+      }
+      inp.parentElement.classList.toggle('on', inp.checked);
+      saveDraft();
+    });
+  });
+  document.querySelectorAll('.line-in[data-k]').forEach(i => i.addEventListener('input', () => { mirror(); saveDraft(); }));
+}
+
+function val(k) { const e = document.querySelector(`.line-in[data-k="${k}"]`); return e ? e.value.trim() : ''; }
+function mirror() {
+  const m = { customer: val('customer'), serial: val('serial'),
+    modelsize: [val('model'), val('size')].filter(Boolean).join(' ') };
+  document.querySelectorAll('[data-mirror]').forEach(e => e.value = m[e.dataset.mirror] || '');
+  const to = document.getElementById('email-to');
+  if (!to.dataset.touched) to.value = val('email');
+}
+
+// ── SIGNATURE ──
+const sig = document.getElementById('sig');
+let sigCtx, drawing = false, sigDirty = false;
+function sizeSig() {
+  const r = sig.getBoundingClientRect();
+  if (!r.width) return;
+  const data = sigDirty ? sig.toDataURL() : null;
+  sig.width = r.width * 2; sig.height = r.height * 2;
+  sigCtx = sig.getContext('2d');
+  sigCtx.scale(2, 2); sigCtx.lineWidth = 1.8; sigCtx.lineCap = 'round'; sigCtx.lineJoin = 'round'; sigCtx.strokeStyle = '#0b3a8a';
+  if (data) { const img = new Image(); img.onload = () => sigCtx.drawImage(img, 0, 0, r.width, r.height); img.src = data; }
+}
+function pos(e) { const r = sig.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+sig.addEventListener('pointerdown', e => { if (!sigCtx) sizeSig(); drawing = true; sig.setPointerCapture(e.pointerId); const [x, y] = pos(e); sigCtx.beginPath(); sigCtx.moveTo(x, y); });
+sig.addEventListener('pointermove', e => { if (!drawing) return; const [x, y] = pos(e); sigCtx.lineTo(x, y); sigCtx.stroke(); sigDirty = true; });
+sig.addEventListener('pointerup', () => { drawing = false; saveDraft(); });
+function clearSig() { if (sigCtx) sigCtx.clearRect(0, 0, sig.width, sig.height); sigDirty = false; saveDraft(); }
+
+// ── DRAFT (survives a refresh on this device) ──
+function collect() {
+  const d = { inputs: {}, checks: [], marks: {}, sig: sigDirty ? sig.toDataURL() : '' };
+  document.querySelectorAll('.line-in[data-k]').forEach(i => { if (i.value) d.inputs[i.dataset.k] = i.value; });
+  document.querySelectorAll('.cb input:checked').forEach(i => d.checks.push(i.dataset.k));
+  document.querySelectorAll('.cell').forEach(c => { const m = c.querySelector('.mk').textContent; if (m) d.marks[c.dataset.k] = m; });
+  return d;
+}
+function saveDraft() { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collect())); } catch (e) {} }
+function loadDraft() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) {}
+  if (!d) return;
+  Object.entries(d.inputs || {}).forEach(([k, v]) => { const e = document.querySelector(`.line-in[data-k="${k}"]`); if (e) e.value = v; });
+  (d.checks || []).forEach(k => { const e = document.querySelector(`.cb input[data-k="${k}"]`); if (e) { e.checked = true; e.parentElement.classList.add('on'); } });
+  Object.entries(d.marks || {}).forEach(([k, v]) => { const c = document.querySelector(`.cell[data-k="${k}"]`); if (c) c.querySelector('.mk').textContent = v; });
+  if (d.sig) {
+    const img = new Image();
+    img.onload = () => { if (!sigCtx) sizeSig(); const r = sig.getBoundingClientRect(); sigCtx.drawImage(img, 0, 0, r.width, r.height); sigDirty = true; };
+    img.src = d.sig;
+  }
+}
+function clearForm() {
+  if (!confirm('Clear the whole form?')) return;
+  document.querySelectorAll('.line-in[data-k]').forEach(i => i.value = '');
+  document.querySelectorAll('.cb input').forEach(i => { i.checked = false; i.parentElement.classList.remove('on'); });
+  document.querySelectorAll('.cell .mk').forEach(m => m.textContent = '');
+  clearSig(); setToday(); mirror();
+  try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+}
+function setToday() {
+  const t = new Date().toLocaleDateString('en-US');
+  ['date', 'signDate'].forEach(k => { const e = document.querySelector(`.line-in[data-k="${k}"]`); if (e && !e.value) e.value = t; });
+}
+
+// ── PDF ──
+function fileName() {
+  const parts = ['Canopy Inspection', val('customer'), val('model'), val('serial')].filter(Boolean);
+  return parts.join(' - ').replace(/[\\/:*?"<>|]+/g, '') + '.pdf';
+}
+async function makePdf() {
+  document.activeElement && document.activeElement.blur();
+  document.body.classList.add('capturing');
+  try {
+    await document.fonts.ready;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ unit: 'in', format: 'letter', orientation: 'portrait' });
+    const sheets = [document.getElementById('sheet1'), document.getElementById('sheet2')];
+    for (let i = 0; i < sheets.length; i++) {
+      const canvas = await html2canvas(sheets[i], { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false });
+      if (i > 0) pdf.addPage('letter', 'portrait');
+      pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 8.5, 11);
+    }
+    pdf.setProperties({ title: fileName().replace('.pdf', ''), author: 'Tier2 Rigging LLC' });
+    return pdf;
+  } finally {
+    document.body.classList.remove('capturing');
+  }
+}
+async function downloadPdf() {
+  const b = document.getElementById('dl-btn');
+  b.disabled = true; b.textContent = 'Building PDF…';
+  try { (await makePdf()).save(fileName()); }
+  catch (e) { alert('Could not build PDF: ' + e.message); }
+  finally { b.disabled = false; b.textContent = '⬇ Download PDF'; }
+}
+function toggleEmail() {
+  const p = document.getElementById('email-panel');
+  p.classList.toggle('open');
+  if (p.classList.contains('open')) { mirror(); document.getElementById('email-to').focus(); }
+}
+document.getElementById('email-to').addEventListener('input', e => e.target.dataset.touched = '1');
+
+async function emailPdf() {
+  const to = document.getElementById('email-to').value.trim();
+  const st = document.getElementById('email-status');
+  const btn = document.getElementById('send-btn');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) { st.className = 'status err'; st.textContent = 'Enter a valid email'; return; }
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Building PDF…';
+  try {
+    const pdf = await makePdf();
+    const b64 = pdf.output('datauristring').split(',')[1];
+    st.textContent = 'Sending…';
+    const payload = {
+      action: 'emailInspection', to, filename: fileName(), pdfBase64: b64,
+      customer: val('customer'), model: [val('mfr'), val('model'), val('size')].filter(Boolean).join(' '),
+      serial: val('serial'), message: document.getElementById('email-msg').value
+    };
+    let json = null;
+    try {
+      const res = await fetch(GAS_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
+      try { json = JSON.parse(await res.text()); } catch (e) {}
+    } catch (corsErr) {
+      // Fallback: fire-and-forget if the browser blocks reading the response
+      await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(payload) });
+    }
+    if (json && json.status && json.status !== 'sent' && json.status !== 'ok') throw new Error(json.message || json.status);
+    st.className = 'status ok'; st.textContent = '✓ Sent to ' + to;
+  } catch (e) {
+    st.className = 'status err'; st.textContent = '⚠ ' + e.message;
+  } finally { btn.disabled = false; }
+}
+
+// ── INIT ──
+build();
+loadDraft();
+// Prefill from URL, e.g. canopy-inspection.html?customer=Justin&serial=001371&email=...
+new URLSearchParams(location.search).forEach((v, k) => { const e = document.querySelector(`.line-in[data-k="${k}"]`); if (e && !e.value) e.value = v; });
+setToday(); mirror();
+window.addEventListener('resize', sizeSig);
+try { if (sessionStorage.getItem('t2_admin_session') === '1') showApp(); } catch (e) {}
+</script>
+</body>
+</html>
