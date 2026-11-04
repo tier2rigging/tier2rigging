@@ -16,6 +16,8 @@
     --accent: #D9480F; --ink: #1a1a1a;
   }
   * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  .sheet, .sheet * { -webkit-text-size-adjust: none; text-size-adjust: none; }
   body { margin: 0; background: var(--bg); font-family: 'DM Sans', sans-serif; color: #eee; }
 
   /* ── LOGIN ── */
@@ -78,7 +80,7 @@
   .sec .aside { font-size: 12px; color: #555; }
 
   .row { display: flex; align-items: center; gap: 10px; height: 22px; border-bottom: 1px solid #d4d4d4; }
-  .row .lbl { width: 168px; flex-shrink: 0; font-size: 12.5px; font-weight: 600; }
+  .row .lbl { width: 168px; flex-shrink: 0; font-size: 12.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .opts { display: flex; align-items: center; gap: 13px; flex-shrink: 0; }
   .note { flex: 1; display: flex; align-items: flex-end; gap: 6px; min-width: 60px; }
   .note span { font-size: 12px; color: #555; white-space: nowrap; }
