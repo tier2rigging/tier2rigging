@@ -47,7 +47,10 @@
   .status.ok { color: var(--green); } .status.err { color: var(--red); }
 
   /* ── SHEETS ── */
-  .sheets { padding: 24px 16px 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; overflow-x: auto; }
+  .sheets { padding: 24px 16px 60px; display: flex; flex-direction: column; align-items: center; gap: 24px; }
+  .phone-hint { display: none; text-align: center; color: var(--muted); font-size: 13px; padding: 10px 16px 0; }
+  .fit .phone-hint { display: block; }
+  .fit .sheets { padding: 12px 8px 60px; gap: 14px; }
   .sheet-wrap { width: 816px; flex-shrink: 0; }
   .sheet { width: 816px; height: 1056px; background: #fff; color: var(--ink); font-family: 'Barlow', system-ui, sans-serif; padding: 0 40px 36px; position: relative; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,.4); }
   .bar { height: 8px; margin: 0 -40px 18px; background: var(--accent); }
@@ -81,7 +84,7 @@
   .note span { font-size: 12px; color: #555; white-space: nowrap; }
 
   /* custom checkbox — renders reliably in the PDF */
-  .cb { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; cursor: pointer; user-select: none; }
+  .cb { -webkit-tap-highlight-color: transparent; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; white-space: nowrap; cursor: pointer; user-select: none; }
   .cb input { position: absolute; opacity: 0; width: 0; height: 0; }
   .cb .box { width: 11px; height: 11px; border: 1.5px solid var(--ink); border-radius: 2px; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; line-height: 1; font-weight: 700; color: #0b3a8a; }
   .cb.on .box::after { content: '✕'; font-size: 10px; }
@@ -130,7 +133,9 @@
   @media print {
     body { background: #fff; }
     .toolbar, .email-panel, .sigclear { display: none !important; }
-    .sheets { padding: 0; gap: 0; display: block; overflow: visible; }
+    .sheets { padding: 0 !important; gap: 0; display: block; overflow: visible; }
+    .sheet-wrap { zoom: 1 !important; }
+    .phone-hint { display: none !important; }
     .sheet { box-shadow: none; page-break-after: always; break-after: page; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     .sheet-wrap:last-child .sheet { page-break-after: auto; break-after: auto; }
     .line-in:focus { background: transparent; }
@@ -171,6 +176,7 @@ Tier2 Rigging LLC · 516-902-8843</textarea>
     </div>
   </div>
 
+  <div class="phone-hint">Pinch to zoom in when filling out the form.</div>
   <div class="sheets" id="sheets">
     <!-- PAGE 1 -->
     <div class="sheet-wrap"><div class="sheet p1" id="sheet1">
@@ -255,7 +261,7 @@ function doLogin() {
 function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  sizeSig();
+  fitSheets();
 }
 
 // ── FORM DEFINITION ──
@@ -497,6 +503,7 @@ function fileName() {
 async function makePdf() {
   document.activeElement && document.activeElement.blur();
   document.body.classList.add('capturing');
+  setZoom(1);
   try {
     await document.fonts.ready;
     const { jsPDF } = window.jspdf;
@@ -511,6 +518,7 @@ async function makePdf() {
     return pdf;
   } finally {
     document.body.classList.remove('capturing');
+    fitSheets();
   }
 }
 async function downloadPdf() {
@@ -563,7 +571,22 @@ loadDraft();
 // Prefill from URL, e.g. canopy-inspection.html?customer=Justin&serial=001371&email=...
 new URLSearchParams(location.search).forEach((v, k) => { const e = document.querySelector(`.line-in[data-k="${k}"]`); if (e && !e.value) e.value = v; });
 setToday(); mirror();
-window.addEventListener('resize', sizeSig);
+// ── FIT TO SCREEN (phones/tablets) ──
+let currentZoom = 1;
+function setZoom(z) {
+  currentZoom = z;
+  document.querySelectorAll('.sheet-wrap').forEach(w => { w.style.zoom = z; });
+  document.body.classList.toggle('fit', z < 1);
+  sizeSig();
+}
+function fitSheets() {
+  const avail = document.documentElement.clientWidth - 16;
+  setZoom(Math.min(1, avail / 816));
+}
+window.addEventListener('resize', fitSheets);
+window.addEventListener('orientationchange', () => setTimeout(fitSheets, 200));
+window.addEventListener('beforeprint', () => setZoom(1));
+window.addEventListener('afterprint', fitSheets);
 try { if (sessionStorage.getItem('t2_admin_session') === '1') showApp(); } catch (e) {}
 </script>
 </body>
